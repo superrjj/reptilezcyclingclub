@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Events = () => {
+  const navigate = useNavigate();
+  
   const events = [
     {
       title: "Larga Pilipinas",
@@ -22,7 +25,10 @@ const Events = () => {
               <p className="text-white font-semibold">{event.title}</p>
               <p className="text-white/60 text-sm">{event.date}</p>
             </div>
-            <button className="flex-shrink-0 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 text-primary border border-primary/50 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary hover:text-black transition-colors">
+            <button 
+              onClick={() => navigate('/members')}
+              className="flex-shrink-0 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 text-primary border border-primary/50 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary hover:text-black transition-colors"
+            >
               <span className="truncate">View Details</span>
             </button>
           </div>
