@@ -10,6 +10,11 @@ const Header = ({ onLoginClick }) => {
             alt="Reptilez Cycling Club logo"
             className="h-8 w-8 rounded-full object-contain"
           />
+          <img
+            src="/rcc2.png"
+            alt="Reptilez Cycling Club logo"
+            className="h-8 w-8 rounded-full object-contain"
+          />
           <h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Reptilez Cycling Club</h2>
         </div>
         <div className="hidden md:flex flex-1 justify-end gap-8">

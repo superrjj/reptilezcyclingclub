@@ -17,7 +17,7 @@ const Cards = () => {
     {
       image: "/upcoming_events.jpg",
       title: "Upcoming Events",
-      description: "Join our next group adventure on the trails.",
+      description: "Join our next group adventure on the road.",
       alt: "A calendar with a date circled, signifying an event"
     },
     {

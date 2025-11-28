@@ -3,12 +3,12 @@ import React from 'react';
 const Events = () => {
   const events = [
     {
-      title: "Sunrise Mountain Climb",
-      date: "October 28, 2024 - Rocky Mountain Park"
+      title: "Larga Pilipinas",
+      date: "November 29, 2025 - Nampicuan"
     },
     {
-      title: "Coastal Charity Ride",
-      date: "November 12, 2024 - Pacific Coast Highway"
+      title: "Larga Pilipinas",
+      date: "November 30, 2025 - Nampicuan to Sitio Baag"
     }
   ];
 

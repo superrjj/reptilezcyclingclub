@@ -16,11 +16,11 @@ const Hero = () => {
   return (
     <div className="@container">
       <div className="@[480px]:p-4">
-        <div className="relative min-h-[480px] overflow-hidden @[480px]:rounded-lg shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+        <div className="relative min-h-[520px] overflow-hidden @[480px]:rounded-lg shadow-[0_20px_80px_rgba(0,0,0,0.45)] w-full max-w-full">
           {heroImages.map((image, index) => (
             <div
               key={image}
-              className={`absolute inset-0 flex h-full w-full flex-col items-center justify-center gap-6 bg-cover bg-center bg-no-repeat transition-opacity duration-700 ${
+              className={`absolute inset-0 flex h-full w-full flex-col items-center justify-end gap-6 bg-cover bg-center bg-no-repeat transition-opacity duration-700 pb-12 md:pb-16 ${
                 index === currentIndex ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
