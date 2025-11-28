@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = () => {
+const Header = ({ onLoginClick }) => {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-solid border-primary/30 bg-background-dark/95 backdrop-blur">
       <div className="mx-auto flex max-w-[960px] items-center justify-between whitespace-nowrap px-4 py-3 sm:px-10">
@@ -20,7 +20,10 @@ const Header = () => {
             <a className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Events</a>
             <a className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Posts</a>
           </div>
-          <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-black text-sm font-bold leading-normal tracking-[0.015em] hover:bg-accent hover:text-white transition-colors">
+          <button
+            onClick={onLoginClick}
+            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-black text-sm font-bold leading-normal tracking-[0.015em] hover:bg-accent hover:text-white transition-colors"
+          >
             <span className="truncate">LOGIN</span>
           </button>
         </div>
