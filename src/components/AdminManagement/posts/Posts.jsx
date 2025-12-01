@@ -3,6 +3,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getPosts, createPost, updatePost, deletePost, searchPosts } from '../../../services/postsService';
 import { uploadImage } from '../../../services/imageUploadService';
 import AdminLayout from '../AdminLayout';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabase';
 
 const Posts = () => {
   const { user } = useAuth();
@@ -15,6 +16,8 @@ const Posts = () => {
   const [imagePreview, setImagePreview] = useState('');
   const fileInputRef = useRef(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [authorProfiles, setAuthorProfiles] = useState({});
+  const [authorLoading, setAuthorLoading] = useState(false);
   const [toast, setToast] = useState({
     visible: false,
     type: 'success', // 'success' | 'error'
@@ -41,6 +44,7 @@ const Posts = () => {
     try {
       const data = await getPosts();
       setPosts(data);
+      fetchAuthorProfiles(data);
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
@@ -55,6 +59,7 @@ const Posts = () => {
         try {
           const data = await searchPosts(searchQuery);
           setPosts(data);
+          fetchAuthorProfiles(data);
         } catch (error) {
           console.error('Error searching posts:', error);
         }
@@ -64,6 +69,48 @@ const Posts = () => {
       fetchPosts();
     }
   }, [searchQuery]);
+
+  const fetchAuthorProfiles = async (postsData) => {
+    if (!isSupabaseConfigured || !supabase || !Array.isArray(postsData)) return;
+    setAuthorLoading(true);
+    const uniqueIds = Array.from(
+      new Set(
+        postsData
+          .map((post) => post.author_id)
+          .filter((id) => typeof id === 'string' && id.length > 0)
+      )
+    );
+
+    if (uniqueIds.length === 0) {
+      setAuthorProfiles({});
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .in('id', uniqueIds);
+
+      if (error) {
+        console.error('Error fetching author profiles:', error);
+        return;
+      }
+
+      const map = {};
+      data?.forEach((profile) => {
+        const first = profile.first_name?.trim() || '';
+        const last = profile.last_name?.trim() || '';
+        const fullName = `${first}${last ? ` ${last}` : ''}`.trim();
+        map[profile.id] = fullName || 'Admin';
+      });
+      setAuthorProfiles(map);
+    } catch (err) {
+      console.error('Unexpected error fetching author profiles:', err);
+    } finally {
+      setAuthorLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -488,7 +535,28 @@ const Posts = () => {
               </div>
 
               {loading ? (
-                <div className="py-10 text-center text-[#96b78e]">Loading posts...</div>
+                <div className="space-y-4 py-2">
+                  {[1, 2, 3].map((skeleton) => (
+                    <div
+                      key={skeleton}
+                      className="rounded-2xl border border-[#244019] bg-gradient-to-br from-[#10180e] to-[#0b1209] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.55)] space-y-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="size-10 rounded-full shimmer-bg" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 w-32 rounded-full shimmer-bg" />
+                          <div className="h-2 w-24 rounded-full shimmer-bg" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-3 w-40 rounded-full shimmer-bg" />
+                        <div className="h-2 w-full rounded-full shimmer-bg" />
+                        <div className="h-2 w-5/6 rounded-full shimmer-bg" />
+                      </div>
+                      <div className="h-40 w-full rounded-xl shimmer-bg" />
+                    </div>
+                  ))}
+                </div>
               ) : posts.length === 0 ? (
                 <div className="py-10 text-center text-[#96b78e]">No posts found. Create your first post!</div>
               ) : (
@@ -502,7 +570,17 @@ const Posts = () => {
                             style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE")' }}
                           ></div>
                           <div>
+                          {post.author_id ? (
+                            authorLoading && !authorProfiles[post.author_id] ? (
+                              <div className="h-3 w-24 rounded-full shimmer-bg" />
+                            ) : (
+                              <p className="text-sm font-semibold text-white">
+                                {authorProfiles[post.author_id] || 'Admin'}
+                              </p>
+                            )
+                          ) : (
                             <p className="text-sm font-semibold text-white">Admin</p>
+                          )}
                             <p className="text-xs text-[#7ea373]">{formatDate(post.created_at)}</p>
                           </div>
                         </div>

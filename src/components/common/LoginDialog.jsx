@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
 const LoginDialog = ({ open, onClose }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem('rcc-remembered-email');
+    if (rememberedEmail) {
+      setFormData((prev) => ({ ...prev, email: rememberedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
 
   if (!open) return null;
 
@@ -20,6 +32,7 @@ const LoginDialog = ({ open, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setInfo('');
     setLoading(true);
 
     try {
@@ -29,10 +42,18 @@ const LoginDialog = ({ open, onClose }) => {
       if (signInError) {
         setError(signInError.message || 'Invalid username or password');
       } else if (data && data.user) {
-        // Close dialog and reset form
-        onClose();
-        setFormData({ email: '', password: '' });
+        if (rememberMe) {
+          localStorage.setItem('rcc-remembered-email', formData.email);
+        } else {
+          localStorage.removeItem('rcc-remembered-email');
+        }
 
+        // Simulate delay before proceeding
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        onClose();
+        setFormData({ email: rememberMe ? formData.email : '', password: '' });
+        setInfo('');
         // Any authenticated user can access admin dashboard
         navigate('/admin');
       } else {
@@ -42,6 +63,30 @@ const LoginDialog = ({ open, onClose }) => {
       setError('Invalid username or password');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setError('');
+    setInfo('');
+
+    if (!formData.email) {
+      setError('Enter your email first to reset your password.');
+      return;
+    }
+
+    if (!isSupabaseConfigured || !supabase) {
+      setError('Password reset is unavailable right now.');
+      return;
+    }
+
+    try {
+      await supabase.auth.resetPasswordForEmail(formData.email, {
+        redirectTo: window.location.origin,
+      });
+      setInfo('Password reset link sent! Check your inbox.');
+    } catch (resetError) {
+      setError(resetError.message || 'Unable to send reset email. Please try again.');
     }
   };
 
@@ -69,9 +114,15 @@ const LoginDialog = ({ open, onClose }) => {
           </div>
         </div>
         
-        {error && (
-          <div className="mb-6 rounded-lg bg-accent/20 border border-accent/50 px-4 py-3 text-sm text-white">
-            {error}
+        {(error || info) && (
+          <div
+            className={`mb-6 rounded-lg px-4 py-3 text-sm ${
+              error
+                ? 'bg-accent/20 border border-accent/50 text-white'
+                : 'bg-emerald-500/10 border border-emerald-400/40 text-emerald-100'
+            }`}
+          >
+            {error || info}
           </div>
         )}
         
@@ -94,14 +145,44 @@ const LoginDialog = ({ open, onClose }) => {
             <label className="text-sm font-medium text-white/80">
               Password
             </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="rounded-lg border border-primary/30 bg-black/40 px-4 py-3 text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full rounded-lg border border-primary/30 bg-black/40 px-4 py-3 pr-12 text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-3 flex items-center text-white/60 hover:text-white"
+              >
+                <span className="material-symbols-outlined">
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+            <label className="flex items-center gap-2 text-white/80">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="size-4 rounded border-primary/40 bg-transparent text-primary focus:ring-primary"
+              />
+              Remember me
+            </label>
+            <button
+              type="button"
+              className="text-primary hover:text-white font-semibold"
+              onClick={handleForgotPassword}
+            >
+              Forgot password?
+            </button>
           </div>
           
           <button
