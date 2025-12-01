@@ -17,63 +17,23 @@ const MembersPage = ({ onLoginClick }) => {
       roleType: "Rider",
       description: "Road Bike",
       image: "/harvee.jpg",
-      alt: "Portrait of Alex Johnson"
+      alt: "Portrait of Harvee"
     },
     {
-      name: "Maria Garcia",
-      role: "Lead Rider",
-      roleType: "Lead Rider",
-      description: "Route: Mountain Pass",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDx-5yTvRRd7zDxEM_NRv1FePaTo9Jiq_m0xWR27gY9B-k4k6BExMp1ItEy4YzTyMMLQRcXLC3LpZnlpUhlghi-MMX5sUcmQhhzBnS2fzrWpG1lJAPosrtRiZ_Le4OgGOJBeLDzW2li6a2jOvr4fkchrbqGi8L2HIAtY7-CppSRr85yhCCKIrhYajk0QcCMDFSvceHtSNghaFVQeeIDK8GNPJjhsStSC3MoIxMzOM4ETpk-9RiVRiJCbKqu4A5er_nFY8U0aslIZ-8",
-      alt: "Portrait of Maria Garcia"
-    },
-    {
-      name: "Chen Wei",
+      name: "John Harvee Quirido",
       role: "Rider",
       roleType: "Rider",
-      description: "Years Riding: 2",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCP5VyM2PTAflMyUu2kz_nXJpAr2YwUfird43-MDL7OloIAwR7KNbWzC3K5LQyrW09-O1kAocgRp5by_B3ZzknjACJhr4_vb1FL4cNJGAsJRf37OX6bDqTXkSnh9UJaNGluHiHE8VRSU8aosgRxni4SbWQbocE4Sp5QrSqjRjKWSmJhzBBh-eac0hSLY4yCrHFTDlK2gzw9PF96i2r5SmnxNOZjkSkrdYK2tPyOjj45r1kkJr8kUspwYa9f1xTwRbZ8VyoFh0A3cJM",
-      alt: "Portrait of Chen Wei"
+      description: "Road Bike",
+      image: "/harvee.jpg",
+      alt: "Portrait of Harvee"
     },
     {
-      name: "Samira Khan",
-      role: "Social Coordinator",
-      roleType: "Rider",
-      description: "Organizing our best events",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6iMmQH9G1zsOw7C15a-Yu_1V1Zy4WPktTwWRDFsh18I4NYD69XloSDl8IGoCPoqZwF5LavcLIVoRX7NjVcJBBrnUDH3W371bGNRKwqy-xLLXXvdTcERSpnt8SrVNPLlkNq4P5_r77LGaSMZGiqohRtAflDsPgHteKjTWb_NbU72H3NIkhxi2JGldg89er_eLIQITACLmm2Rdxd-ydv2PCHDzNm7pMSd6pGe8qU2-uU7OZ1JBN7Q9Yi9mXjnwqAGt0nRa7W0Qzzks",
-      alt: "Portrait of Samira Khan"
-    },
-    {
-      name: "David Lee",
+      name: "John Harvee Quirido",
       role: "Rider",
       roleType: "Rider",
-      description: "Years Riding: 8",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAnt9gSyJ9fdbbk0USbWpJOYx9l7zVcQku6bn6irUM6eYciOpaRzLzisq4ZBEi9S_pEzOIlA6g_0WdaI5_aqaiTW-sfgGczUcufViykMdPmPoJVU8kVmTxq0LA0gxljrDOKhNdVhxBUpqtCvkI--S-rVe3Nuel9O4TX8AeeS2wB2oRPob8qt8w0db0UcB56UJId8lRfRidfHNvH5XoO_SicGSJSLpvypgYBegQVGgZW7u_-EMxQU9-ArXM7NdUPX46MPF6fgVzO9G8",
-      alt: "Portrait of David Lee"
-    },
-    {
-      name: "Chloe Dubois",
-      role: "Rider",
-      roleType: "Rider",
-      description: "Loves a good climb",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAietRtPwBKmNWqS6VgfSz9T9MpiwQfioTIvlQif-mbJ-FJW6Tw6SiR-_mztfmdOHk4O8IbycyDa3LbrUpsYdtcRy62JQ-1c6cuc14_uZQqSESoImZUvujKKz56shNJYVsrduJLatd5TI72vdhtwKtn7_0tyNAVTtR-G7SCLFiBC14lYMcd67L_WnzAohNyrpKzPKZkWF4Ne7PCHrcASUMS-sSoWYUEUIHx0ssl60xPy8N7WZMO74KUOQvRO9z3FxTl5xJ1p5eud74",
-      alt: "Portrait of Chloe Dubois"
-    },
-    {
-      name: "Ben Carter",
-      role: "Founder",
-      roleType: "Captain",
-      description: "Years Riding: 15",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCzuGOTQRvYUC01OCAXxLbHOeyJ_JmfJ1YLPnla3HmN2Hlb6F7w2Z1ChkH037va9-9_iDvKT_W1eI0SSSpr-kGh2g1Y0Y9rqrDzfTMTfh76PJtTOq9-n9OEUxEKGMum8-ZN4YY1v6NkSR0UL6o2i3LIPZN7t6kEzGWLFyDtzGkHUTiQgSnOh94W_fiPgk73aBwwyRAmGvBYhJvukT_I7qZimp2JaqU0jL_KTqGQtXj7hz45EaitNG7Zvoy-adm2xe9sL8mLsPM_0-0",
-      alt: "Portrait of Ben Carter"
-    },
-    {
-      name: "Sofia Rossi",
-      role: "Lead Rider",
-      roleType: "Lead Rider",
-      description: "Route: Coastal Cruise",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCp0zm9TuKCIHIPI_rCEb0ONB5iuQhhHw0CU3Ed1z4hSRcjVz05HMlpGo_SXk_2QA-f06G1eXST2HRFaQ4WYxj383gkK6VJG-yOGTuraXB-z7EyQ1VQ_6HdTRdjUL-ZzsatEIgeX1b8sXw4G4tpT8nHP_IoAZFxTLp8sTVWxPYvoTiCAvduWpTkHS2u17S6vc-qdUlz1Qfs_k2LgjkPNrBxIoWE-IqGYlP4c0HhUSSFhg24cf7NltAMC99E30z2XDl-QC3PHaOuFHI",
-      alt: "Portrait of Sofia Rossi"
+      description: "Road Bike",
+      image: "/harvee.jpg",
+      alt: "Portrait of Harvee"
     }
   ];
 
