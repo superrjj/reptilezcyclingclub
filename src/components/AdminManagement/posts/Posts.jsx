@@ -225,11 +225,22 @@ const Posts = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    if (isNaN(date)) return '';
+    const datePart = date.toLocaleDateString('en-US', {
+      timeZone: 'Asia/Manila',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
+    const timePart = date
+      .toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Manila',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      })
+      .toLowerCase();
+    return `${datePart} at ${timePart}`;
   };
 
   // Prevent body scrolling

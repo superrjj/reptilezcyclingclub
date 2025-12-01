@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Header from './components/Home/Header.jsx';
-import HomePage from './components/Home/HomePage.jsx';
-import MembersPage from './components/Members/MembersPage.jsx';
+import Header from './UserManagement/Home/Header.jsx';
+import HomePage from './UserManagement/Home/HomePage.jsx';
+import MembersPage from './UserManagement/Members/MembersPage.jsx';
+import ViewPost from './UserManagement/Posts/ViewPost.jsx';
 import LoginDialog from './components/common/LoginDialog.jsx';
 import Dashboard from './components/AdminManagement/dashboard/Dashboard.jsx';
 import Posts from './components/AdminManagement/posts/Posts.jsx';
@@ -82,6 +83,11 @@ function App() {
           <Route path="/members" element={
             <MainLayout onLoginClick={() => setLoginOpen(true)} loginOpen={loginOpen} setLoginOpen={setLoginOpen}>
               <MembersPage onLoginClick={() => setLoginOpen(true)} />
+            </MainLayout>
+          } />
+          <Route path="/posts" element={
+            <MainLayout onLoginClick={() => setLoginOpen(true)} loginOpen={loginOpen} setLoginOpen={setLoginOpen}>
+              <ViewPost />
             </MainLayout>
           } />
         </Routes>

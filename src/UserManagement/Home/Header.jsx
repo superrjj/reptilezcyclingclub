@@ -57,13 +57,14 @@ const Header = ({ onLoginClick }) => {
             }`}>
               Home
             </Link>
-            <button
-              type="button"
-              onClick={handleMaintenanceClick}
-              className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors"
+            <Link
+              to="/posts"
+              className={`text-sm font-medium leading-normal transition-colors ${
+                location.pathname === '/posts' ? 'text-primary' : 'text-white hover:text-primary'
+              }`}
             >
               Posts
-            </button>
+            </Link>
             <button
               type="button"
               onClick={handleMaintenanceClick}
