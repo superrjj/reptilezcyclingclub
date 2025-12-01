@@ -14,6 +14,12 @@ const Posts = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const fileInputRef = useRef(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [toast, setToast] = useState({
+    visible: false,
+    type: 'success', // 'success' | 'error'
+    message: '',
+  });
   
   // Form state
   const [formData, setFormData] = useState({
@@ -74,18 +80,25 @@ const Posts = () => {
     }));
   };
 
+  const showToast = (type, message) => {
+    setToast({ visible: true, type, message });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, visible: false }));
+    }, 3000);
+  };
+
   const handleImageFile = (file) => {
     if (!file) return;
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      showToast('error', 'Please select an image file');
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB');
+    // Validate file size (max 30MB)
+    if (file.size > 30 * 1024 * 1024) {
+      showToast('error', 'Image size should be less than 30MB');
       return;
     }
 
@@ -172,10 +185,11 @@ const Posts = () => {
       // Reset form and refresh posts
       resetForm();
       fetchPosts();
+      showToast('success', editingPost ? 'Post updated successfully.' : 'Post created successfully.');
     } catch (error) {
       console.error('Error saving post:', error);
       const errorMessage = error?.message || 'Error saving post. Please try again.';
-      alert(errorMessage);
+      showToast('error', errorMessage);
     } finally {
       setUploading(false);
     }
@@ -195,14 +209,15 @@ const Posts = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      try {
-        await deletePost(id);
-        fetchPosts();
-      } catch (error) {
-        console.error('Error deleting post:', error);
-        alert('Error deleting post. Please try again.');
-      }
+    try {
+      await deletePost(id);
+      fetchPosts();
+      showToast('success', 'Post deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      showToast('error', 'Error deleting post. Please try again.');
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -253,7 +268,56 @@ const Posts = () => {
 
   return (
     <AdminLayout>
-      <main className="flex-1 overflow-y-auto bg-black/10 p-6">
+      <main className="relative flex-1 overflow-y-auto bg-black/10 p-6">
+        {/* Delete Confirmation Dialog */}
+        {deleteTarget && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+            <div className="w-full max-w-sm rounded-2xl border border-red-500/40 bg-[#0b0909] px-6 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.9)]">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-full bg-red-500/10 border border-red-400/60 text-red-300">
+                  <span className="material-symbols-outlined text-2xl">warning</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">Delete post?</p>
+                  <p className="text-xs text-red-200/80">
+                    This action cannot be undone. The post will be permanently removed.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-5 flex justify-end gap-3 text-sm">
+                <button
+                  type="button"
+                  onClick={() => setDeleteTarget(null)}
+                  className="rounded-full border border-zinc-600 px-4 py-2 text-zinc-200 hover:bg-zinc-800/80 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(deleteTarget.id)}
+                  className="flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 font-semibold text-white shadow-lg shadow-red-500/30 hover:bg-red-400 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-base">delete</span>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {toast.visible && (
+          <div
+            className={`fixed right-6 top-20 z-50 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-semibold shadow-[0_18px_50px_rgba(0,0,0,0.65)] ${
+              toast.type === 'success'
+                ? 'border-emerald-400/60 bg-emerald-500/10 text-emerald-200'
+                : 'border-red-400/60 bg-red-500/10 text-red-200'
+            }`}
+          >
+            <span className="material-symbols-outlined text-xl">
+              {toast.type === 'success' ? 'check_circle' : 'error'}
+            </span>
+            <p>{toast.message}</p>
+          </div>
+        )}
         <div className="mx-auto max-w-6xl space-y-6">
           <div className="flex flex-col gap-1">
             <p className="text-white text-3xl font-black leading-tight tracking-[-0.033em]">Post Management</p>
@@ -335,7 +399,7 @@ const Posts = () => {
                     >
                       <span className="material-symbols-outlined text-4xl mb-2">upload_file</span>
                       <p className="text-sm font-medium">Drag & drop or tap to upload</p>
-                      <p className="text-xs text-[#6b8a63] mt-1">JPG/PNG, max 5MB</p>
+                      <p className="text-xs text-[#6b8a63] mt-1">JPG/PNG, max 30MB</p>
                     </div>
                   )}
                   <input
@@ -480,7 +544,7 @@ const Posts = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(post.id)}
+                          onClick={() => setDeleteTarget(post)}
                           className="flex items-center gap-2 text-[#f26c6c] hover:text-[#ff9c9c] transition-colors"
                         >
                           <span className="material-symbols-outlined text-base">delete</span>

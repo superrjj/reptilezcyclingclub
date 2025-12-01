@@ -9,8 +9,7 @@ const Header = ({ onLoginClick }) => {
   const [maintenanceVisible, setMaintenanceVisible] = useState(false);
 
   useEffect(() => {
-    const adminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
-    setIsAdmin(adminLoggedIn || (user && user.isAdmin));
+    setIsAdmin(!!(user && user.isAdmin));
   }, [user]);
 
   useEffect(() => {

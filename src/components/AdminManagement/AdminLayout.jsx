@@ -43,7 +43,10 @@ const AdminLayout = ({ children }) => {
                       : 'text-white hover:bg-white/5'
                   }`}
                   href="/admin"
-                  onClick={(e) => { e.preventDefault(); navigate('/admin'); }}
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    navigate('/admin'); 
+                  }}
                 >
                   <span className="material-symbols-outlined">dashboard</span>
                   <p className="text-sm font-medium leading-normal">Dashboard</p>
@@ -62,16 +65,22 @@ const AdminLayout = ({ children }) => {
                 </a>
                 <a 
                   className="flex items-center gap-3 px-3 py-2 rounded-lg text-white hover:bg-white/5 transition-colors" 
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
+                  href="/admin/events"
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    navigate('/admin/events'); 
+                  }}
                 >
                   <span className="material-symbols-outlined">event</span>
                   <p className="text-sm font-medium leading-normal">Events</p>
                 </a>
                 <a 
                   className="flex items-center gap-3 px-3 py-2 rounded-lg text-white hover:bg-white/5 transition-colors" 
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
+                  href="/admin/members"
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    navigate('/admin/members'); 
+                  }}
                 >
                   <span className="material-symbols-outlined">group</span>
                   <p className="text-sm font-medium leading-normal">Members</p>

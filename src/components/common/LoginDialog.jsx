@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-// Admin credentials
-const ADMIN_USERNAME = 'adminrcc';
-const ADMIN_PASSWORD = 'rccadmin2020';
-
 const LoginDialog = ({ open, onClose }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -27,41 +23,18 @@ const LoginDialog = ({ open, onClose }) => {
     setLoading(true);
 
     try {
-      // Check admin credentials first (local admin)
-      if (formData.email === ADMIN_USERNAME && formData.password === ADMIN_PASSWORD) {
-        // Admin login successful
-        // Store admin session in localStorage
-        localStorage.setItem('adminLoggedIn', 'true');
-        localStorage.setItem('adminUsername', ADMIN_USERNAME);
-        
-        // Close dialog and reset form
-        onClose();
-        setFormData({ email: '', password: '' });
-        
-        // Redirect to admin dashboard
-        navigate('/admin');
-        return;
-      }
-
-      // Try Supabase authentication (for admin@reptilez.com or other users)
+      // Supabase authentication (any user from Authentication > Users)
       const { data, error: signInError } = await signIn(formData.email, formData.password);
-      
+
       if (signInError) {
         setError(signInError.message || 'Invalid username or password');
       } else if (data && data.user) {
-        // Check if this is the admin email
-        if (formData.email === 'admin@reptilez.com') {
-          localStorage.setItem('adminLoggedIn', 'true');
-          localStorage.setItem('adminUsername', formData.email);
-        }
-        
+        // Close dialog and reset form
         onClose();
         setFormData({ email: '', password: '' });
-        
-        // Redirect to admin dashboard if admin, otherwise stay on current page
-        if (formData.email === 'admin@reptilez.com') {
-          navigate('/admin');
-        }
+
+        // Any authenticated user can access admin dashboard
+        navigate('/admin');
       } else {
         setError('Invalid username or password');
       }

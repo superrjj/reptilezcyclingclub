@@ -9,37 +9,23 @@ import ViewPost from './UserManagement/Posts/ViewPost.jsx';
 import LoginDialog from './components/common/LoginDialog.jsx';
 import Dashboard from './components/AdminManagement/dashboard/Dashboard.jsx';
 import Posts from './components/AdminManagement/posts/Posts.jsx';
+import AdminEvents from './components/AdminManagement/events/Events.jsx';
+import AdminMembers from './components/AdminManagement/members/Members.jsx';
 
-// Protected route for admin dashboard
-const ProtectedAdminRoute = () => {
+// Generic protected route (any authenticated user)
+const RequireAuth = ({ children }) => {
   const { user, loading } = useAuth();
-  const isAdmin = localStorage.getItem('adminLoggedIn') === 'true' || (user && (user.isAdmin || user.email === 'admin@reptilez.com'));
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen text-white">Loading...</div>;
   }
 
-  if (!isAdmin) {
+  // Require authenticated user (any Supabase auth user)
+  if (!user) {
     return <Navigate to="/" replace />;
   }
 
-  return <Dashboard />;
-};
-
-// Protected route for admin posts
-const ProtectedPostsRoute = () => {
-  const { user, loading } = useAuth();
-  const isAdmin = localStorage.getItem('adminLoggedIn') === 'true' || (user && (user.isAdmin || user.email === 'admin@reptilez.com'));
-
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen text-white">Loading...</div>;
-  }
-
-  if (!isAdmin) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <Posts />;
+  return children;
 };
 
 // Main layout wrapper for public pages
@@ -73,8 +59,38 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/admin" element={<ProtectedAdminRoute />} />
-          <Route path="/admin/posts" element={<ProtectedPostsRoute />} />
+          <Route
+            path="/admin"
+            element={
+              <RequireAuth>
+                <Dashboard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/posts"
+            element={
+              <RequireAuth>
+                <Posts />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/events"
+            element={
+              <RequireAuth>
+                <AdminEvents />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/members"
+            element={
+              <RequireAuth>
+                <AdminMembers />
+              </RequireAuth>
+            }
+          />
           <Route path="/" element={
             <MainLayout onLoginClick={() => setLoginOpen(true)} loginOpen={loginOpen} setLoginOpen={setLoginOpen}>
               <HomePage />

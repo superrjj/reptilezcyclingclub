@@ -16,18 +16,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if admin is logged in (local)
-    const adminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
-    if (adminLoggedIn) {
-      setUser({ 
-        id: 'admin',
-        email: localStorage.getItem('adminUsername') || 'adminrcc',
-        isAdmin: true 
-      });
-      setLoading(false);
-      return;
-    }
-
     // Only use Supabase if configured
     if (!isSupabaseConfigured || !supabase) {
       setLoading(false);
@@ -43,10 +31,6 @@ export const AuthProvider = ({ children }) => {
           ...session.user, 
           isAdmin 
         });
-        if (isAdmin) {
-          localStorage.setItem('adminLoggedIn', 'true');
-          localStorage.setItem('adminUsername', session.user.email);
-        }
       } else {
         setUser(null);
       }
@@ -64,14 +48,8 @@ export const AuthProvider = ({ children }) => {
           ...session.user, 
           isAdmin 
         });
-        if (isAdmin) {
-          localStorage.setItem('adminLoggedIn', 'true');
-          localStorage.setItem('adminUsername', session.user.email);
-        }
       } else {
         setUser(null);
-        localStorage.removeItem('adminLoggedIn');
-        localStorage.removeItem('adminUsername');
       }
       setLoading(false);
     });
@@ -111,9 +89,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signOut = async () => {
-    // Clear admin session
-    localStorage.removeItem('adminLoggedIn');
-    localStorage.removeItem('adminUsername');
     setUser(null);
 
     // If Supabase is configured, sign out from there too

@@ -54,8 +54,17 @@ const Dashboard = () => {
           </header>
 
           <div className="flex-1 p-8 overflow-y-auto h-full">
-            {/* PageHeading */}
-            <div className="flex flex-wrap justify-between gap-3 pb-4">
+            {/* Under Maintenance Banner */}
+            <div className="mb-6 rounded-2xl border border-yellow-400/40 bg-yellow-500/10 px-5 py-4 flex items-start gap-3">
+              <div className="mt-0.5 flex items-center justify-center">
+                <span className="material-symbols-outlined text-2xl text-yellow-300">warning</span>
+              </div>
+              <div>
+                <p className="text-white text-sm font-semibold">Dashboard Layout is Under Maintenance</p>
+                <p className="text-white/80 text-xs">
+                  Temporary UI only. Final design will be updated soon by <span className="font-semibold">Dev Harvee</span>.
+                </p>
+              </div>
             </div>
 
             {/* Stats */}
