@@ -12,11 +12,11 @@ const MembersPage = ({ onLoginClick }) => {
   // Local fallback data
   const localMembers = [
     {
-      name: "John Harvee Quirido",
-      role: "Rider",
-      roleType: "Rider",
+      name: "Mark Darwin Manguan",
+      role: "Founder",
+      roleType: "Founder",
       description: "Road Bike",
-      image: "/harvee.jpg",
+      image: "/kuyamd.jpg",
       alt: "Portrait of Harvee"
     },
     {
@@ -37,7 +37,7 @@ const MembersPage = ({ onLoginClick }) => {
     }
   ];
 
-  const filters = ['All', 'Captain', 'Lead Rider', 'Rider'];
+  const filters = ['All', 'Captain', 'Rider', 'Founder'];
 
   // Fetch members from Supabase on mount and when filters change
   useEffect(() => {

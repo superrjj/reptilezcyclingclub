@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 // Admin credentials
@@ -10,6 +11,7 @@ const LoginDialog = ({ open, onClose }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   if (!open) return null;
 
@@ -25,7 +27,7 @@ const LoginDialog = ({ open, onClose }) => {
     setLoading(true);
 
     try {
-      // Check admin credentials first
+      // Check admin credentials first (local admin)
       if (formData.email === ADMIN_USERNAME && formData.password === ADMIN_PASSWORD) {
         // Admin login successful
         // Store admin session in localStorage
@@ -36,19 +38,32 @@ const LoginDialog = ({ open, onClose }) => {
         onClose();
         setFormData({ email: '', password: '' });
         
-        // Reload page to update UI
-        window.location.reload();
+        // Redirect to admin dashboard
+        navigate('/admin');
         return;
       }
 
-      // If not admin, try Supabase authentication (if configured)
+      // Try Supabase authentication (for admin@reptilez.com or other users)
       const { data, error: signInError } = await signIn(formData.email, formData.password);
       
       if (signInError) {
         setError(signInError.message || 'Invalid username or password');
-      } else if (data) {
+      } else if (data && data.user) {
+        // Check if this is the admin email
+        if (formData.email === 'admin@reptilez.com') {
+          localStorage.setItem('adminLoggedIn', 'true');
+          localStorage.setItem('adminUsername', formData.email);
+        }
+        
         onClose();
         setFormData({ email: '', password: '' });
+        
+        // Redirect to admin dashboard if admin, otherwise stay on current page
+        if (formData.email === 'admin@reptilez.com') {
+          navigate('/admin');
+        }
+      } else {
+        setError('Invalid username or password');
       }
     } catch (err) {
       setError('Invalid username or password');

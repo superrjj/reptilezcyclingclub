@@ -1,0 +1,75 @@
+================================================================================
+  ADMIN ACCOUNT SETUP - SUPABASE
+================================================================================
+
+STEP 1: CREATE ADMIN ACCOUNT SA SUPABASE
+----------------------------------------
+1. Open mo ang Supabase Dashboard:
+   https://supabase.com/dashboard/project/qrlqnmyrxsizdlnvyili
+
+2. Pumunta sa Authentication:
+   - Click "Authentication" sa left sidebar
+   - Click "Users"
+
+3. Create Admin Account:
+   - Click "Add User" button (top right)
+   - Select "Create new user"
+   
+4. Fill in ang details:
+   - Email: admin@reptilez.com
+   - Password: rccadmin2020
+   - IMPORTANT: Turn ON ang "Auto Confirm User" (dapat naka-check)
+   
+5. Click "Create User"
+
+6. Verify:
+   - Dapat may lalabas na new user sa list
+   - Email: admin@reptilez.com
+   - Status: Confirmed
+
+
+STEP 2: TEST ADMIN LOGIN
+-------------------------
+1. Run mo ang React app:
+   npm start
+
+2. Open mo ang browser:
+   http://localhost:3000
+
+3. Click "LOGIN" button
+
+4. Test mo ang dalawang admin login:
+
+   A. Local Admin (gumagana na):
+      - Username: adminrcc
+      - Password: rccadmin2020
+      - Dapat successful
+
+   B. Supabase Admin (bagong setup):
+      - Email: admin@reptilez.com
+      - Password: rccadmin2020
+      - Dapat successful din
+
+
+CURRENT ADMIN ACCOUNTS
+----------------------
+1. Local Admin (via localStorage):
+   - Username: adminrcc
+   - Password: rccadmin2020
+   - Status: ✅ Working
+
+2. Supabase Admin (via Supabase Auth):
+   - Email: admin@reptilez.com
+   - Password: rccadmin2020
+   - Status: ⏳ Need to create sa Supabase Dashboard
+
+
+NOTES
+-----
+- Parehong password sila: rccadmin2020
+- Parehong admin access sila
+- Local admin = localStorage (walang database)
+- Supabase admin = Supabase Auth (may database connection)
+
+================================================================================
+

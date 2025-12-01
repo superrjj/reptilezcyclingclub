@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if admin is logged in
+    // Check if admin is logged in (local)
     const adminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
     if (adminLoggedIn) {
       setUser({ 
@@ -36,7 +36,20 @@ export const AuthProvider = ({ children }) => {
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        // Check if user is admin
+        const isAdmin = session.user.email === 'admin@reptilez.com';
+        setUser({ 
+          ...session.user, 
+          isAdmin 
+        });
+        if (isAdmin) {
+          localStorage.setItem('adminLoggedIn', 'true');
+          localStorage.setItem('adminUsername', session.user.email);
+        }
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 
@@ -44,7 +57,22 @@ export const AuthProvider = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        // Check if user is admin
+        const isAdmin = session.user.email === 'admin@reptilez.com';
+        setUser({ 
+          ...session.user, 
+          isAdmin 
+        });
+        if (isAdmin) {
+          localStorage.setItem('adminLoggedIn', 'true');
+          localStorage.setItem('adminUsername', session.user.email);
+        }
+      } else {
+        setUser(null);
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('adminUsername');
+      }
       setLoading(false);
     });
 

@@ -6,11 +6,18 @@ const Header = ({ onLoginClick }) => {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [maintenanceVisible, setMaintenanceVisible] = useState(false);
 
   useEffect(() => {
     const adminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
     setIsAdmin(adminLoggedIn || (user && user.isAdmin));
   }, [user]);
+
+  useEffect(() => {
+    if (!maintenanceVisible) return;
+    const timer = setTimeout(() => setMaintenanceVisible(false), 2500);
+    return () => clearTimeout(timer);
+  }, [maintenanceVisible]);
 
   const handleLogout = async () => {
     await signOut();
@@ -18,9 +25,18 @@ const Header = ({ onLoginClick }) => {
     window.location.reload();
   };
 
+  const handleMaintenanceClick = () => {
+    setMaintenanceVisible(true);
+  };
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-solid border-primary/30 bg-background-dark/95 backdrop-blur">
-      <div className="mx-auto flex max-w-[960px] items-center justify-between whitespace-nowrap px-4 py-3 sm:px-10">
+      {maintenanceVisible && (
+        <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-xl border border-primary/50 bg-black/90 px-6 py-3 text-sm font-semibold text-white shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+          Under Maintenance (Hindi pa po tapos) by Dev Harvee
+        </div>
+      )}
+      <div className="mx-auto flex max-w-[960px] items-center justify-between whitespace-nowrap px-4 py-4 sm:px-10">
         <Link to="/" className="flex items-center gap-4 text-white">
           <img
             src="/rcc1.png"
@@ -41,14 +57,32 @@ const Header = ({ onLoginClick }) => {
             }`}>
               Home
             </Link>
-            <a className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">About Us</a>
+            <button
+              type="button"
+              onClick={handleMaintenanceClick}
+              className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              Posts
+            </button>
+            <button
+              type="button"
+              onClick={handleMaintenanceClick}
+              className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              Events
+            </button>
             <Link to="/members" className={`text-sm font-medium leading-normal transition-colors ${
               location.pathname === '/members' ? 'text-primary' : 'text-white hover:text-primary'
             }`}>
               Members
             </Link>
-            <a className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Events</a>
-            <a className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Posts</a>
+            <button
+              type="button"
+              onClick={handleMaintenanceClick}
+              className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              About Us
+            </button>
           </div>
           {isAdmin ? (
             <div className="flex items-center gap-3">
