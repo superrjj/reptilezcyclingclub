@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
+import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Home/Header.jsx';
 import HomePage from './components/Home/HomePage.jsx';
 import MembersPage from './components/Members/MembersPage.jsx';
@@ -10,7 +11,8 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false);
 
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
       <div
         className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden text-white"
         style={{
@@ -33,6 +35,7 @@ function App() {
         <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
       </div>
     </Router>
+    </AuthProvider>
   );
 }
 

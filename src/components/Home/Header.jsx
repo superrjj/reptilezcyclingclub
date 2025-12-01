@@ -1,8 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Header = ({ onLoginClick }) => {
   const location = useLocation();
+  const { user, signOut } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const adminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+    setIsAdmin(adminLoggedIn || (user && user.isAdmin));
+  }, [user]);
+
+  const handleLogout = async () => {
+    await signOut();
+    setIsAdmin(false);
+    window.location.reload();
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-solid border-primary/30 bg-background-dark/95 backdrop-blur">
@@ -36,12 +50,24 @@ const Header = ({ onLoginClick }) => {
             <a className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Events</a>
             <a className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Posts</a>
           </div>
-          <button
-            onClick={onLoginClick}
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-black text-sm font-bold leading-normal tracking-[0.015em] hover:bg-accent hover:text-white transition-colors"
-          >
-            <span className="truncate">LOGIN</span>
-          </button>
+          {isAdmin ? (
+            <div className="flex items-center gap-3">
+              <span className="text-primary text-sm font-medium">Admin</span>
+              <button
+                onClick={handleLogout}
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-accent text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-red-600 transition-colors"
+              >
+                <span className="truncate">LOGOUT</span>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onLoginClick}
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-black text-sm font-bold leading-normal tracking-[0.015em] hover:bg-accent hover:text-white transition-colors"
+            >
+              <span className="truncate">LOGIN</span>
+            </button>
+          )}
         </div>
         <div className="md:hidden">
           <button className="text-white">

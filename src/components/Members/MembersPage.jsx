@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../Home/Header';
+import { getMembers, searchMembers, getMembersByRole } from '../../services/membersService';
 
 const MembersPage = ({ onLoginClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [useSupabase, setUseSupabase] = useState(false); // Set to true when ready to use Supabase
 
-  const members = [
+  // Local fallback data
+  const localMembers = [
     {
       name: "John Harvee Quirido",
       role: "Rider",
@@ -74,9 +79,40 @@ const MembersPage = ({ onLoginClick }) => {
 
   const filters = ['All', 'Captain', 'Lead Rider', 'Rider'];
 
+  // Fetch members from Supabase on mount and when filters change
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (useSupabase) {
+        setLoading(true);
+        try {
+          let data;
+          if (selectedFilter !== 'All') {
+            data = await getMembersByRole(selectedFilter);
+          } else if (searchQuery) {
+            data = await searchMembers(searchQuery);
+          } else {
+            data = await getMembers();
+          }
+          setMembers(data);
+        } catch (error) {
+          console.error('Error fetching members:', error);
+          setMembers(localMembers); // Fallback to local data
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setMembers(localMembers);
+        setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, [useSupabase, selectedFilter, searchQuery]);
+
+  // Filter members (for local data or after Supabase fetch)
   const filteredMembers = members.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = selectedFilter === 'All' || member.roleType === selectedFilter;
+    const matchesSearch = member.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? true;
+    const matchesFilter = selectedFilter === 'All' || member.role_type === selectedFilter || member.roleType === selectedFilter;
     return matchesSearch && matchesFilter;
   });
 
@@ -135,28 +171,40 @@ const MembersPage = ({ onLoginClick }) => {
               </div>
 
               <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-6 p-4">
-                {filteredMembers.map((member, index) => (
-                  <div key={index} className="flex flex-col gap-3 text-center pb-3 group">
-                    <div className="px-4">
-                      <div
-                        className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300"
-                        style={{ backgroundImage: `url("${member.image}")` }}
-                        alt={member.alt}
-                      ></div>
-                    </div>
-                    <div>
-                      <p className="text-white text-base font-medium leading-normal">{member.name}</p>
-                      <p className={`text-sm font-bold leading-normal ${
-                        member.roleType === 'Captain' || member.roleType === 'Lead Rider' || member.role === 'Founder'
-                          ? 'text-primary'
-                          : 'text-primary/70'
-                      }`}>
-                        {member.role}
-                      </p>
-                      <p className="text-primary/70 text-sm font-normal leading-normal">{member.description}</p>
-                    </div>
+                {loading ? (
+                  <div className="col-span-full text-center text-white/60 py-8">
+                    Loading members...
                   </div>
-                ))}
+                ) : filteredMembers.length === 0 ? (
+                  <div className="col-span-full text-center text-white/60 py-8">
+                    No members found.
+                  </div>
+                ) : (
+                  filteredMembers.map((member, index) => (
+                    <div key={member.id || index} className="flex flex-col gap-3 text-center pb-3 group">
+                      <div className="px-4">
+                        <div
+                          className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300"
+                          style={{ backgroundImage: `url("${member.image || member.image_url}")` }}
+                          alt={member.alt || member.name}
+                        ></div>
+                      </div>
+                      <div>
+                        <p className="text-white text-base font-medium leading-normal">{member.name}</p>
+                        <p className={`text-sm font-bold leading-normal ${
+                          (member.role_type === 'Captain' || member.roleType === 'Captain' || 
+                           member.role_type === 'Lead Rider' || member.roleType === 'Lead Rider' || 
+                           member.role === 'Founder')
+                            ? 'text-primary'
+                            : 'text-primary/70'
+                        }`}>
+                          {member.role || member.role_name}
+                        </p>
+                        <p className="text-primary/70 text-sm font-normal leading-normal">{member.description || member.bio}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </main>
           </div>
