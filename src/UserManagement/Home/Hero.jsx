@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const heroImages = ['/bg_team_hero.jpg', '/bg_team_hero_1.jpg', '/bg_team_hero_2.jpg'];
+const heroImages = ['/bg_team_hero.jpg', '/bg_team_hero_1.jpg', '/bg_team_hero_2.jpg', '/bg_team_hero_3.jpg'];
 
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
