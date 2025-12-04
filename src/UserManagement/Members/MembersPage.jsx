@@ -85,17 +85,17 @@ const MembersPage = () => {
       }}
     >
       <div className="layout-container flex h-full grow flex-col">
-        <div className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 pt-24">
-            <main className="flex flex-col gap-4 py-8">
-              <div className="flex flex-wrap justify-between gap-3 p-4">
+        <div className="px-4 md:px-6 lg:px-8 flex flex-1 justify-center py-5">
+          <div className="layout-content-container flex flex-col w-full max-w-[1400px] flex-1 pt-24">
+            <main className="flex flex-col gap-6 py-8">
+              <div className="flex flex-wrap justify-between gap-3">
                 <div className="flex min-w-72 flex-col gap-3">
                   <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Meet the Reptilez</p>
                   <p className="text-primary/70 text-base font-normal leading-normal">The dedicated riders who make our club a community.</p>
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-4 px-4 py-3 items-center">
+              <div className="flex flex-col md:flex-row gap-4 py-3 items-center">
                 <div className="w-full md:flex-1">
                   <label className="flex flex-col min-w-40 h-12 w-full">
                     <div className="flex w-full flex-1 items-stretch rounded-lg h-full">
@@ -128,11 +128,19 @@ const MembersPage = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-6 p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {loading ? (
-                  <div className="col-span-full text-center text-white/60 py-8">
-                    Loading members...
-                  </div>
+                  Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className="flex flex-col gap-3 text-center pb-3">
+                      <div className="px-4 flex justify-center">
+                        <div className="w-full max-w-[240px] aspect-square rounded-full shimmer-bg" />
+                      </div>
+                      <div className="space-y-2 px-8">
+                        <div className="h-3 rounded-full shimmer-bg" />
+                        <div className="h-2 rounded-full shimmer-bg" />
+                      </div>
+                    </div>
+                  ))
                 ) : filteredMembers.length === 0 ? (
                   <div className="col-span-full text-center text-white/60 py-8">
                     No members found.
@@ -140,9 +148,9 @@ const MembersPage = () => {
                 ) : (
                   filteredMembers.map((member, index) => (
                     <div key={member.id || index} className="flex flex-col gap-3 text-center pb-3 group">
-                      <div className="px-4">
+                      <div className="px-4 flex justify-center">
                         <div
-                          className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300"
+                          className="w-full max-w-[240px] bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300"
                           style={{ backgroundImage: `url("${member.image || member.image_url}")` }}
                           alt={member.alt || member.name}
                         ></div>

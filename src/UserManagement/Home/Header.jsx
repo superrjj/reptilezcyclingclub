@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-const Header = ({ onLoginClick, onRouteChangeStart }) => {
+const Header = ({ onLoginClick }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -49,17 +49,10 @@ const Header = ({ onLoginClick, onRouteChangeStart }) => {
     };
   }, [mobileMenuOpen]);
 
-  const triggerNavigation = (path) => {
-    if (location.pathname === path) return;
-    if (onRouteChangeStart) {
-      onRouteChangeStart();
-    }
-    navigate(path);
-  };
-
   const handleLinkClick = (e, path) => {
     e.preventDefault();
-    triggerNavigation(path);
+    if (location.pathname === path) return;
+    navigate(path);
     setMobileMenuOpen(false);
   };
 

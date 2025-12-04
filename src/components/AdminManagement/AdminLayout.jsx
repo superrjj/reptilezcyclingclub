@@ -137,10 +137,19 @@ const AdminLayout = ({ children }) => {
                   className="size-10 rounded-full object-contain"
                 />
                 <div className="flex flex-col">
-                  <h1 className="text-gray-900 dark:text-white text-base font-bold leading-normal">
-                    {getDisplayName()}
-                  </h1>
-                  <p className="text-primary text-sm font-normal leading-normal">Admin</p>
+                  {profileLoading && !profile ? (
+                    <>
+                      <div className="h-4 w-28 rounded-full shimmer-bg" />
+                      <div className="mt-1 h-3 w-16 rounded-full shimmer-bg" />
+                    </>
+                  ) : (
+                    <>
+                      <h1 className="text-gray-900 dark:text-white text-base font-bold leading-normal">
+                        {getDisplayName()}
+                      </h1>
+                      <p className="text-primary text-sm font-normal leading-normal">Admin</p>
+                    </>
+                  )}
                 </div>
               </div>
               

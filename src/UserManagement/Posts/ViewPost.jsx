@@ -241,40 +241,7 @@ const ViewPost = () => {
     if (!deviceFingerprint?.id) return;
     const alreadyLiked = !!likedPosts[postId];
 
-    if (supabaseReady) {
-      try {
-        if (alreadyLiked) {
-          await removePostLike(postId, deviceFingerprint.id);
-          setLikedPosts((prev) => {
-            const next = { ...prev };
-            delete next[postId];
-            return next;
-          });
-          setLikeCounts((prev) => ({
-            ...prev,
-            [postId]: Math.max(0, (prev[postId] || 1) - 1),
-          }));
-        } else {
-          await upsertPostLike(postId, deviceFingerprint);
-          setLikedPosts((prev) => ({
-            ...prev,
-            [postId]: true,
-          }));
-          setLikeCounts((prev) => ({
-            ...prev,
-            [postId]: (prev[postId] || 0) + 1,
-          }));
-        }
-      } catch (likeError) {
-        console.error('Unable to update like in Supabase', likeError);
-        setShareState({ postId, message: 'Unable to update hearts right now.' });
-        setTimeout(() => {
-          setShareState((prev) => (prev.postId === postId ? { postId: null, message: '' } : prev));
-        }, 2500);
-      }
-      return;
-    }
-
+    // Optimistic UI update
     setLikedPosts((prev) => {
       const next = { ...prev };
       if (alreadyLiked) {
@@ -288,6 +255,40 @@ const ViewPost = () => {
       ...prev,
       [postId]: nextLikeValue(prev[postId], alreadyLiked),
     }));
+
+    if (!supabaseReady) return;
+
+    try {
+      if (alreadyLiked) {
+        await removePostLike(postId, deviceFingerprint.id);
+      } else {
+        await upsertPostLike(postId, deviceFingerprint);
+      }
+    } catch (likeError) {
+      console.error('Unable to update like in Supabase', likeError);
+
+      // Rollback optimistic update on error
+      setLikedPosts((prev) => {
+        const next = { ...prev };
+        if (alreadyLiked) {
+          // we removed it optimistically, add it back
+          next[postId] = true;
+        } else {
+          // we added it optimistically, remove it
+          delete next[postId];
+        }
+        return next;
+      });
+      setLikeCounts((prev) => ({
+        ...prev,
+        [postId]: nextLikeValue(prev[postId], !alreadyLiked),
+      }));
+
+      setShareState({ postId, message: 'Unable to update hearts right now.' });
+      setTimeout(() => {
+        setShareState((prev) => (prev.postId === postId ? { postId: null, message: '' } : prev));
+      }, 2500);
+    }
   };
 
   const handleShare = async (post) => {
@@ -349,8 +350,27 @@ const ViewPost = () => {
             </section>
             <div className="mt-6">
               {loading ? (
-                <div className="flex min-h-[280px] items-center justify-center text-white/70">
-                  Loading posts...
+                <div className="space-y-4 pb-12">
+                  {[1, 2, 3].map((skeleton) => (
+                    <div
+                      key={skeleton}
+                      className="overflow-hidden rounded-3xl border border-white/5 bg-black/40 p-5 md:p-6 space-y-4"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="size-12 rounded-full shimmer-bg" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 w-40 rounded-full shimmer-bg" />
+                          <div className="h-2 w-24 rounded-full shimmer-bg" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-4 w-3/4 rounded-full shimmer-bg" />
+                        <div className="h-3 w-full rounded-full shimmer-bg" />
+                        <div className="h-3 w-5/6 rounded-full shimmer-bg" />
+                      </div>
+                      <div className="h-40 w-full rounded-2xl shimmer-bg" />
+                    </div>
+                  ))}
                 </div>
               ) : filteredPosts.length === 0 ? (
                 <div className="flex min-h-[280px] items-center justify-center text-white/60">
