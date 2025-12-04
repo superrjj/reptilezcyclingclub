@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-const Header = ({ onLoginClick }) => {
+const Header = ({ onLoginClick, onRouteChangeStart }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [maintenanceVisible, setMaintenanceVisible] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsAdmin(!!(user && user.isAdmin));
@@ -30,9 +31,36 @@ const Header = ({ onLoginClick }) => {
     setMaintenanceVisible(true);
   };
 
+  useEffect(() => {
+    if (!mobileMenuOpen) {
+      document.body.style.overflow = '';
+      return undefined;
+    }
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
+  const triggerNavigation = (path) => {
+    if (location.pathname === path) return;
+    if (onRouteChangeStart) {
+      onRouteChangeStart();
+    }
+    navigate(path);
+  };
+
   const handleLinkClick = (e, path) => {
     e.preventDefault();
-    navigate(path);
+    triggerNavigation(path);
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -43,7 +71,11 @@ const Header = ({ onLoginClick }) => {
         </div>
       )}
       <div className="mx-auto flex max-w-[960px] items-center justify-between whitespace-nowrap px-4 py-4 sm:px-10">
-        <Link to="/" className="flex items-center gap-4 text-white">
+        <Link
+          to="/"
+          onClick={(e) => handleLinkClick(e, '/')}
+          className="flex items-center gap-4 text-white"
+        >
           <img
             src="/rcc1.png"
             alt="Reptilez Cycling Club logo"
@@ -120,11 +152,89 @@ const Header = ({ onLoginClick }) => {
           )}
         </div>
         <div className="md:hidden">
-          <button className="text-white">
-            <span className="material-symbols-outlined">menu</span>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="rounded-full border border-white/15 bg-white/5 p-2 text-white transition hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            <span className="material-symbols-outlined text-3xl">
+              {mobileMenuOpen ? 'close' : 'menu'}
+            </span>
           </button>
         </div>
       </div>
+      {mobileMenuOpen && (
+        <div className="md:hidden">
+          <div
+            className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="fixed inset-x-4 top-24 z-50 flex origin-top scale-100 flex-col gap-4 rounded-2xl border border-white/10 bg-background-dark/98 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.85)] transition">
+            <nav className="flex flex-col gap-3">
+              {[
+                { label: 'Home', path: '/' },
+                { label: 'Posts', path: '/posts' },
+                { label: 'Members', path: '/members' },
+              ].map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={(e) => handleLinkClick(e, item.path)}
+                  className={`rounded-xl px-4 py-3 text-lg font-semibold transition ${
+                    location.pathname === item.path
+                      ? 'bg-primary/15 text-primary'
+                      : 'text-white hover:bg-white/5'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <button
+                type="button"
+                onClick={handleMaintenanceClick}
+                className="rounded-xl px-4 py-3 text-left text-lg font-semibold text-white transition hover:bg-white/5"
+              >
+                Events (soon)
+              </button>
+              <button
+                type="button"
+                onClick={handleMaintenanceClick}
+                className="rounded-xl px-4 py-3 text-left text-lg font-semibold text-white transition hover:bg-white/5"
+              >
+                About Us (soon)
+              </button>
+            </nav>
+            <div className="rounded-2xl border border-white/10 p-4 shadow-inner shadow-black/30">
+              {isAdmin ? (
+                <div className="flex flex-col gap-3">
+                  <div className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+                    Admin
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-center rounded-xl bg-accent py-3 text-base font-bold text-white transition hover:bg-red-600"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onLoginClick();
+                  }}
+                  className="flex items-center justify-center rounded-xl bg-primary py-3 text-base font-bold text-white transition hover:bg-green-700"
+                >
+                  Login
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

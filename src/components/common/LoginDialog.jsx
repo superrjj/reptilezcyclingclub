@@ -91,8 +91,8 @@ const LoginDialog = ({ open, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-      <div className="w-full max-w-md rounded-xl border border-primary/30 bg-background-dark p-8 shadow-[0_30px_120px_rgba(0,0,0,0.8)]">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md px-4">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-background-dark/95 p-8 shadow-[0_40px_140px_rgba(0,0,0,0.85)]">
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1"></div>
           <div className="flex-1 flex flex-col items-center gap-3">

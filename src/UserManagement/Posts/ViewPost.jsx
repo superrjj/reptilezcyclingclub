@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getPosts } from '../../services/postsService';
+import { fetchPostLikeSummary, removePostLike, upsertPostLike } from '../../services/postLikesService';
+import { isSupabaseConfigured } from '../../lib/supabase';
 
 const fallbackPosts = [
   {
@@ -24,12 +26,44 @@ const fallbackPosts = [
 
 const MAX_PREVIEW_LENGTH = 150;
 
+const categoryThemes = {
+  Announcements: {
+    badge: 'bg-emerald-500/15 text-emerald-300 border border-emerald-400/30',
+    avatar: 'bg-emerald-600/30 text-emerald-200 border border-emerald-400/50',
+  },
+  'Race Reports': {
+    badge: 'bg-rose-500/15 text-rose-200 border border-rose-400/30',
+    avatar: 'bg-rose-600/30 text-rose-200 border border-rose-400/40',
+  },
+  default: {
+    badge: 'bg-primary/15 text-primary border border-primary/40',
+    avatar: 'bg-primary/20 text-primary border border-primary/40',
+  },
+};
+
+const getStoredLikes = () => {
+  try {
+    const stored = localStorage.getItem('rcc-post-likes');
+    return stored ? JSON.parse(stored) : {};
+  } catch (error) {
+    console.error('Unable to parse stored likes', error);
+    return {};
+  }
+};
+
+const supabaseReady = isSupabaseConfigured;
+
 const ViewPost = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [error, setError] = useState('');
   const [expandedPosts, setExpandedPosts] = useState({});
+  const [likedPosts, setLikedPosts] = useState(() => (supabaseReady ? {} : getStoredLikes()));
+  const [likeCounts, setLikeCounts] = useState({});
+  const [deviceFingerprint, setDeviceFingerprint] = useState(null);
+  const [activeMedia, setActiveMedia] = useState(null);
+  const [shareState, setShareState] = useState({ postId: null, message: '' });
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -51,6 +85,72 @@ const ViewPost = () => {
     };
 
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    if (!supabaseReady) {
+      localStorage.setItem('rcc-post-likes', JSON.stringify(likedPosts));
+    }
+  }, [likedPosts]);
+
+  useEffect(() => {
+    if (supabaseReady || Object.keys(likedPosts).length === 0) return;
+    setLikeCounts(
+      Object.keys(likedPosts).reduce((acc, postId) => {
+        acc[postId] = 1;
+        return acc;
+      }, {})
+    );
+  }, [likedPosts]);
+
+  useEffect(() => {
+    const initFingerprint = async () => {
+      try {
+        let deviceId = localStorage.getItem('rcc-device-id');
+        if (!deviceId) {
+          deviceId =
+            (window.crypto?.randomUUID && window.crypto.randomUUID()) ||
+            `device-${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+          localStorage.setItem('rcc-device-id', deviceId);
+        }
+        const model = navigator.userAgent || 'Unknown Device';
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown Region';
+
+        let location = timezone;
+
+        if (navigator.geolocation) {
+          try {
+            const coords = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(
+                (pos) => resolve(pos.coords),
+                (err) => reject(err),
+                { maximumAge: 600000, timeout: 5000 }
+              );
+            });
+            if (coords?.latitude && coords?.longitude) {
+              location = `${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`;
+            }
+          } catch {
+            // user denied or failed – keep timezone as fallback
+          }
+        }
+
+        setDeviceFingerprint({
+          id: deviceId,
+          model,
+          location,
+        });
+      } catch (fingerprintError) {
+        console.error('Failed to initialize fingerprint', fingerprintError);
+        setDeviceFingerprint({
+          id: 'unknown',
+          model: 'Unknown Device',
+          location: 'Unknown Region',
+        });
+      }
+    };
+
+    initFingerprint();
   }, []);
 
   const filteredPosts = useMemo(() => {
@@ -79,6 +179,142 @@ const ViewPost = () => {
       })
       .toLowerCase();
     return `${datePart} at ${timePart}`;
+  };
+
+  const getInitials = (name = '') => {
+    const fallback = 'RCC';
+    if (!name) return fallback;
+    const trimmed = name.trim();
+    if (!trimmed) return fallback;
+    const parts = trimmed.split(' ').filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  };
+
+  const getCategoryTheme = (category) => {
+    if (!category) return categoryThemes.default;
+    return categoryThemes[category] || categoryThemes.default;
+  };
+
+  useEffect(() => {
+    if (!supabaseReady || !deviceFingerprint?.id) return;
+    let isMounted = true;
+    const loadSupabaseLikes = async () => {
+      try {
+        const { counts, likedPostIds } = await fetchPostLikeSummary(deviceFingerprint.id);
+        if (!isMounted) return;
+        setLikeCounts(counts);
+        setLikedPosts(
+          likedPostIds.reduce((acc, id) => {
+            acc[id] = true;
+            return acc;
+          }, {})
+        );
+      } catch (likeError) {
+        console.error('Failed to load like summary', likeError);
+      }
+    };
+    loadSupabaseLikes();
+    return () => {
+      isMounted = false;
+    };
+  }, [deviceFingerprint]);
+
+  const nextLikeValue = (current = 0, liked) => {
+    if (liked) {
+      return Math.max(0, current - 1);
+    }
+    return current + 1;
+  };
+
+  const heartCopy = (count, liked) => {
+    if (count > 0) {
+      if (liked) {
+        return count === 1 ? 'You love this' : `You and ${count - 1} rider${count - 1 === 1 ? '' : 's'} love this`;
+      }
+      return `${count} rider${count === 1 ? '' : 's'} love this`;
+    }
+    return 'Be the first to send hearts';
+  };
+
+  const toggleLike = async (postId) => {
+    if (!deviceFingerprint?.id) return;
+    const alreadyLiked = !!likedPosts[postId];
+
+    if (supabaseReady) {
+      try {
+        if (alreadyLiked) {
+          await removePostLike(postId, deviceFingerprint.id);
+          setLikedPosts((prev) => {
+            const next = { ...prev };
+            delete next[postId];
+            return next;
+          });
+          setLikeCounts((prev) => ({
+            ...prev,
+            [postId]: Math.max(0, (prev[postId] || 1) - 1),
+          }));
+        } else {
+          await upsertPostLike(postId, deviceFingerprint);
+          setLikedPosts((prev) => ({
+            ...prev,
+            [postId]: true,
+          }));
+          setLikeCounts((prev) => ({
+            ...prev,
+            [postId]: (prev[postId] || 0) + 1,
+          }));
+        }
+      } catch (likeError) {
+        console.error('Unable to update like in Supabase', likeError);
+        setShareState({ postId, message: 'Unable to update hearts right now.' });
+        setTimeout(() => {
+          setShareState((prev) => (prev.postId === postId ? { postId: null, message: '' } : prev));
+        }, 2500);
+      }
+      return;
+    }
+
+    setLikedPosts((prev) => {
+      const next = { ...prev };
+      if (alreadyLiked) {
+        delete next[postId];
+      } else {
+        next[postId] = true;
+      }
+      return next;
+    });
+    setLikeCounts((prev) => ({
+      ...prev,
+      [postId]: nextLikeValue(prev[postId], alreadyLiked),
+    }));
+  };
+
+  const handleShare = async (post) => {
+    const sharePayload = {
+      title: post.title,
+      text: post.content,
+      url: `${window.location.origin}/posts#${post.id}`,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(sharePayload);
+        setShareState({ postId: post.id, message: 'Shared successfully!' });
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(sharePayload.url);
+        setShareState({ postId: post.id, message: 'Link copied to clipboard.' });
+      } else {
+        setShareState({ postId: post.id, message: 'Sharing not supported on this device.' });
+      }
+    } catch (shareError) {
+      console.error('Share failed', shareError);
+      setShareState({ postId: post.id, message: 'Share cancelled or failed.' });
+    } finally {
+      setTimeout(() => {
+        setShareState((prev) => (prev.postId === post.id ? { postId: null, message: '' } : prev));
+      }, 2500);
+    }
   };
 
   return (
@@ -125,50 +361,127 @@ const ViewPost = () => {
                   {filteredPosts.map((post) => (
                     <article
                       key={post.id}
-                      className="rounded-2xl border border-primary/20 bg-black/40 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+                      className="overflow-hidden rounded-3xl border border-white/5 bg-black/40 shadow-[0_30px_100px_rgba(0,0,0,0.6)] backdrop-blur-md"
                     >
-                      <div className="p-5 space-y-3">
-                        <div className="flex flex-wrap items-center gap-3">
-                        <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary whitespace-nowrap">
-                            {post.category || 'Announcements'}
+                      <div className="space-y-4 p-5 md:p-6">
+                        <div className="flex flex-wrap items-center gap-4">
+                          <div className="relative">
+                            <div className="flex size-12 items-center justify-center rounded-full border-2 border-primary/60 bg-black/40 p-[3px]">
+                              <img
+                                src="/rcc1.png"
+                                alt="Reptilez Cycling Club avatar"
+                                className="h-10 w-10 rounded-full object-contain"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="text-base font-semibold text-white">
+                              {post.author_name || 'Reptilez Cycling Club'}
+                            </p>
+                            <p className="text-xs text-white/60">{formatDate(post.created_at)}</p>
+                          </div>
+                          <span
+                            className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${getCategoryTheme(post.category).badge}`}
+                          >
+                            {post.category || 'Updates'}
                           </span>
-                          <span className="text-xs text-white/60">{formatDate(post.created_at)}</span>
                         </div>
-                        <h3 className="text-2xl font-semibold text-white leading-tight">{post.title}</h3>
-                      <p className="text-white/80 text-sm leading-relaxed break-words">
-                        {(() => {
-                          const content = post.content || '';
-                          const isExpanded = expandedPosts[post.id];
-                          const shouldTruncate = content.length > MAX_PREVIEW_LENGTH;
-                          if (!shouldTruncate || isExpanded) {
-                            return content;
-                          }
-                          return `${content.substring(0, MAX_PREVIEW_LENGTH)}...`;
-                        })()}
-                      </p>
-                      {(post.content || '').length > MAX_PREVIEW_LENGTH && (
-                        <button
-                          type="button"
-                          className="text-primary font-semibold text-xs hover:text-white transition-colors"
-                          onClick={() =>
-                            setExpandedPosts((prev) => ({
-                              ...prev,
-                              [post.id]: !prev[post.id],
-                            }))
-                          }
-                        >
-                          {expandedPosts[post.id] ? 'See less' : 'See more'}
-                        </button>
-                      )}
+                        <div className="space-y-3">
+                          <h3 className="text-2xl font-bold text-white leading-snug">{post.title}</h3>
+                          <p className="whitespace-pre-line text-white/80 text-sm leading-relaxed break-words">
+                            {(() => {
+                              const content = post.content || '';
+                              const isExpanded = expandedPosts[post.id];
+                              const shouldTruncate = content.length > MAX_PREVIEW_LENGTH;
+                              if (!shouldTruncate || isExpanded) {
+                                return content;
+                              }
+                              return `${content.substring(0, MAX_PREVIEW_LENGTH)}...`;
+                            })()}
+                          </p>
+                          {(post.content || '').length > MAX_PREVIEW_LENGTH && (
+                            <button
+                              type="button"
+                              className="text-primary font-semibold text-xs hover:text-white transition-colors"
+                              onClick={() =>
+                                setExpandedPosts((prev) => ({
+                                  ...prev,
+                                  [post.id]: !prev[post.id],
+                                }))
+                              }
+                            >
+                              {expandedPosts[post.id] ? 'See less' : 'See more'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                       {post.featured_image && (
-                        <div className="overflow-hidden rounded-b-2xl border-t border-primary/20">
+                        <button
+                          type="button"
+                          className="group relative flex w-full overflow-hidden border-y border-white/5 focus:outline-none"
+                          onClick={() =>
+                            setActiveMedia({
+                              src: post.featured_image,
+                              title: post.title,
+                              meta: post.category,
+                            })
+                          }
+                          aria-label={`View full image for ${post.title}`}
+                        >
                           <div
-                            className="aspect-[4/3] w-full bg-cover bg-center"
+                            className="aspect-video w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.02]"
                             style={{ backgroundImage: `url("${post.featured_image}")` }}
                             role="img"
                             aria-label={post.title}
                           />
+                        </button>
+                      )}
+                      <div className="flex flex-wrap items-center gap-3 border-t border-white/5 bg-black/30 px-5 py-3 text-xs text-white/70 md:px-6">
+                        <span className="flex items-center gap-2">
+                          <span className="flex items-center gap-1 rounded-full bg-black/50 px-2 py-1">
+                            <span
+                              className={`material-symbols-outlined text-base ${likedPosts[post.id] ? 'text-rose-400' : 'text-primary'}`}
+                              style={likedPosts[post.id] ? { fontVariationSettings: "'FILL' 1" } : {}}
+                            >
+                              favorite
+                            </span>
+                            <span className="text-xs font-semibold text-white/80">
+                              {likeCounts[post.id] ?? 0}
+                            </span>
+                          </span>
+                          <span>{heartCopy(likeCounts[post.id] ?? 0, !!likedPosts[post.id])}</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-base text-primary">share</span>
+                          Share-ready post
+                        </span>
+                      </div>
+                      <div className="flex divide-x divide-white/5 border-t border-white/5 bg-black/20">
+                        {[
+                          { label: likedPosts[post.id] ? 'Liked' : 'Heart', icon: 'favorite', onClick: () => toggleLike(post.id), active: likedPosts[post.id] },
+                          { label: 'Share', icon: 'ios_share', onClick: () => handleShare(post), active: false },
+                        ].map((action) => (
+                          <button
+                            key={action.label}
+                            type="button"
+                            onClick={action.onClick}
+                            className={`flex flex-1 items-center justify-center gap-2 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:bg-white/5 ${
+                              action.active ? 'text-primary' : 'text-white/70'
+                            }`}
+                          >
+                            <span
+                              className="material-symbols-outlined text-base"
+                              style={action.icon === 'favorite' && action.active ? { fontVariationSettings: "'FILL' 1" } : {}}
+                            >
+                              {action.icon}
+                            </span>
+                            {action.label}
+                          </button>
+                        ))}
+                      </div>
+                      {shareState.postId === post.id && shareState.message && (
+                        <div className="border-t border-white/5 bg-black/30 px-5 py-2 text-xs text-primary md:px-6">
+                          {shareState.message}
                         </div>
                       )}
                     </article>
@@ -179,6 +492,31 @@ const ViewPost = () => {
           </div>
         </div>
       </div>
+      {activeMedia && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 px-4 backdrop-blur">
+          <button
+            type="button"
+            className="absolute right-6 top-6 rounded-full border border-white/20 bg-white/10 p-2 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            onClick={() => setActiveMedia(null)}
+            aria-label="Close media viewer"
+          >
+            <span className="material-symbols-outlined text-2xl">close</span>
+          </button>
+          <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-[0_40px_140px_rgba(0,0,0,0.85)]">
+            <div className="flex max-h-[80vh] items-center justify-center bg-black">
+              <img
+                src={activeMedia.src}
+                alt={activeMedia.title}
+                className="max-h-[80vh] w-auto max-w-full object-contain"
+              />
+            </div>
+            <div className="border-t border-white/10 px-6 py-4 text-center text-white/80">
+              <p className="text-lg font-semibold">{activeMedia.title}</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-white/50">{activeMedia.meta}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

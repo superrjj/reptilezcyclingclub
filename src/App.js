@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Header from './UserManagement/Home/Header.jsx';
@@ -30,7 +30,22 @@ const RequireAuth = ({ children }) => {
 };
 
 // Main layout wrapper for public pages
-const MainLayout = ({ children, onLoginClick, loginOpen, setLoginOpen }) => {
+const MainLayout = ({
+  children,
+  onLoginClick,
+  loginOpen,
+  setLoginOpen,
+  routeLoading,
+  setRouteLoading,
+}) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!routeLoading) return;
+    const timer = setTimeout(() => setRouteLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, [location.pathname, routeLoading, setRouteLoading]);
+
   return (
     <div
       className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden text-white"
@@ -43,11 +58,17 @@ const MainLayout = ({ children, onLoginClick, loginOpen, setLoginOpen }) => {
       <div className="layout-container flex h-full grow flex-col">
         <div className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 pt-24">
-            <Header onLoginClick={onLoginClick} />
+            <Header onLoginClick={onLoginClick} onRouteChangeStart={() => setRouteLoading(true)} />
             {children}
           </div>
         </div>
       </div>
+      {routeLoading && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-black/60 backdrop-blur">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/70">Loading</p>
+        </div>
+      )}
       <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
     </div>
   );
@@ -55,6 +76,7 @@ const MainLayout = ({ children, onLoginClick, loginOpen, setLoginOpen }) => {
 
 function App() {
   const [loginOpen, setLoginOpen] = useState(false);
+  const [routeLoading, setRouteLoading] = useState(false);
 
   return (
     <AuthProvider>
@@ -100,21 +122,48 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route path="/" element={
-            <MainLayout onLoginClick={() => setLoginOpen(true)} loginOpen={loginOpen} setLoginOpen={setLoginOpen}>
-              <HomePage />
-            </MainLayout>
-          } />
-          <Route path="/members" element={
-            <MainLayout onLoginClick={() => setLoginOpen(true)} loginOpen={loginOpen} setLoginOpen={setLoginOpen}>
-              <MembersPage onLoginClick={() => setLoginOpen(true)} />
-            </MainLayout>
-          } />
-          <Route path="/posts" element={
-            <MainLayout onLoginClick={() => setLoginOpen(true)} loginOpen={loginOpen} setLoginOpen={setLoginOpen}>
-              <ViewPost />
-            </MainLayout>
-          } />
+          <Route
+            path="/"
+            element={
+              <MainLayout
+                onLoginClick={() => setLoginOpen(true)}
+                loginOpen={loginOpen}
+                setLoginOpen={setLoginOpen}
+                routeLoading={routeLoading}
+                setRouteLoading={setRouteLoading}
+              >
+                <HomePage />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/members"
+            element={
+              <MainLayout
+                onLoginClick={() => setLoginOpen(true)}
+                loginOpen={loginOpen}
+                setLoginOpen={setLoginOpen}
+                routeLoading={routeLoading}
+                setRouteLoading={setRouteLoading}
+              >
+                <MembersPage />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/posts"
+            element={
+              <MainLayout
+                onLoginClick={() => setLoginOpen(true)}
+                loginOpen={loginOpen}
+                setLoginOpen={setLoginOpen}
+                routeLoading={routeLoading}
+                setRouteLoading={setRouteLoading}
+              >
+                <ViewPost />
+              </MainLayout>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

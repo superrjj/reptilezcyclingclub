@@ -23,6 +23,7 @@ const Posts = () => {
     type: 'success', // 'success' | 'error'
     message: '',
   });
+  const [expandedAdminPosts, setExpandedAdminPosts] = useState({});
   
   // Form state
   const [formData, setFormData] = useState({
@@ -318,15 +319,15 @@ const Posts = () => {
       <main className="relative flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-8">
         {/* Delete Confirmation Dialog */}
         {deleteTarget && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-            <div className="w-full max-w-sm rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 px-6 py-6 shadow-lg">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm">
+            <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-background-dark/95 px-6 py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-full bg-red-500/10 border border-red-400/60 text-red-500">
+                <div className="flex size-10 items-center justify-center rounded-full bg-red-500/15 border border-red-400/60 text-red-400">
                   <span className="material-symbols-outlined text-2xl">warning</span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Delete post?</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-sm font-semibold text-white">Delete post?</p>
+                  <p className="text-xs text-white/60">
                     This action cannot be undone. The post will be permanently removed.
                   </p>
                 </div>
@@ -335,7 +336,7 @@ const Posts = () => {
                 <button
                   type="button"
                   onClick={() => setDeleteTarget(null)}
-                  className="rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+                  className="rounded-lg border border-white/20 px-4 py-2 text-white/80 hover:bg-white/5 transition-colors"
                 >
                   Cancel
                 </button>
@@ -366,11 +367,7 @@ const Posts = () => {
           </div>
         )}
         <div className="mx-auto max-w-6xl space-y-6">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Post Management</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Create, edit, and manage all club posts and announcements.</p>
-          </div>
-
+          
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Composer */}
             <section className="lg:col-span-1 space-y-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6">
@@ -582,11 +579,31 @@ const Posts = () => {
 
                         <div className="mt-4">
                           <h3 className="text-xl font-bold text-gray-900 dark:text-white">{post.title}</h3>
-                          <p className="mt-2 text-gray-600 dark:text-gray-300">
-                            {post.content.length > 160
-                              ? `${post.content.substring(0, 160)}...`
-                              : post.content}
+                          <p className="mt-2 whitespace-pre-line text-gray-600 dark:text-gray-300">
+                            {(() => {
+                              const content = post.content || '';
+                              const isExpanded = expandedAdminPosts[post.id];
+                              const shouldTruncate = content.length > 160;
+                              if (!shouldTruncate || isExpanded) {
+                                return content;
+                              }
+                              return `${content.substring(0, 160)}...`;
+                            })()}
                           </p>
+                          {(post.content || '').length > 160 && (
+                            <button
+                              type="button"
+                              className="mt-1 text-sm font-semibold text-primary hover:text-green-700 transition-colors"
+                              onClick={() =>
+                                setExpandedAdminPosts((prev) => ({
+                                  ...prev,
+                                  [post.id]: !prev[post.id],
+                                }))
+                              }
+                            >
+                              {expandedAdminPosts[post.id] ? 'See less' : 'See more'}
+                            </button>
+                          )}
                         </div>
                       </div>
 
