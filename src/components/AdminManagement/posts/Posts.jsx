@@ -610,7 +610,7 @@ const Posts = () => {
                       {post.featured_image && (
                         <img
                           alt="Post featured image"
-                          className="w-full h-96 object-cover"
+                          className="w-full h-64 object-cover"
                           src={post.featured_image}
                         />
                       )}
