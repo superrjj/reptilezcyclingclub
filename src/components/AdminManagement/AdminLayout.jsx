@@ -194,6 +194,21 @@ const AdminLayout = ({ children }) => {
                   <span className="material-symbols-outlined">group</span>
                   <p className="text-sm font-medium leading-normal">Members</p>
                 </a>
+                <a 
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                    isActive('/admin/file-maintenance') 
+                      ? 'bg-primary/20 text-white' 
+                      : 'text-white hover:bg-white/5'
+                  }`}
+                  href="/admin/file-maintenance"
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    navigate('/admin/file-maintenance'); 
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={isActive('/admin/file-maintenance') ? { fontVariationSettings: "'FILL' 1" } : {}}>folder_managed</span>
+                  <p className="text-sm font-medium leading-normal">File Maintenance</p>
+                </a>
               </nav>
             </div>
             

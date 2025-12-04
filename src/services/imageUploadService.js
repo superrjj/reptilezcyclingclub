@@ -12,9 +12,14 @@ export const uploadImage = async (file, folder = 'posts') => {
   }
 
   try {
-    // Generate unique filename
+    // Generate unique filename - sanitize original filename and remove special characters
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+    const sanitizedName = file.name
+      .replace(/\.[^/.]+$/, '') // Remove extension
+      .replace(/[^a-zA-Z0-9]/g, '-') // Replace special chars with hyphens
+      .toLowerCase()
+      .substring(0, 50); // Limit length
+    const fileName = `${sanitizedName}_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
 
     // Upload file to Supabase Storage

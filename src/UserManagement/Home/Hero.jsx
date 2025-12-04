@@ -1,25 +1,70 @@
 import React, { useEffect, useState } from 'react';
-
-const heroImages = ['/bg_team_hero.jpg', '/bg_team_hero_1.jpg', '/bg_team_hero_2.jpg', '/bg_team_hero_3.jpg'];
+import { getMaintenanceByType } from '../../services/maintenanceService';
 
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [heroImages, setHeroImages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchHeroImages = async () => {
+      try {
+        const maintenanceData = await getMaintenanceByType('Hero');
+        if (maintenanceData && maintenanceData.length > 0) {
+          const images = maintenanceData.map(item => item.image_url).filter(Boolean);
+          setHeroImages(images);
+        }
+      } catch (error) {
+        console.error('Error fetching hero images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroImages();
+  }, []);
+
+  useEffect(() => {
+    if (heroImages.length === 0) return;
     const intervalId = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % heroImages.length);
     }, 3000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [heroImages.length]);
+
+  if (loading) {
+    return (
+      <div className="@container">
+        <div className="@[480px]:p-4">
+          <div className="relative min-h-[520px] overflow-hidden @[480px]:rounded-lg shadow-[0_20px_80px_rgba(0,0,0,0.45)] w-full max-w-[160%] mx-auto bg-zinc-900 animate-pulse"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (heroImages.length === 0) {
+    return (
+      <div className="@container">
+        <div className="@[480px]:p-4">
+          <div className="relative min-h-[520px] overflow-hidden @[480px]:rounded-lg shadow-[0_20px_80px_rgba(0,0,0,0.45)] w-full max-w-[160%] mx-auto bg-zinc-900 flex items-center justify-center">
+            <div className="text-center text-white/60">
+              <p className="text-lg font-semibold">No hero images uploaded yet</p>
+              <p className="text-sm mt-2">Please upload images in the admin panel</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="@container">
       <div className="@[480px]:p-4">
-        <div className="relative min-h-[520px] overflow-hidden @[480px]:rounded-lg shadow-[0_20px_80px_rgba(0,0,0,0.45)] w-full max-w-full">
+        <div className="relative min-h-[520px] overflow-hidden @[480px]:rounded-lg shadow-[0_20px_80px_rgba(0,0,0,0.45)] w-full max-w-[160%] mx-auto">
           {heroImages.map((image, index) => (
             <div
-              key={image}
+              key={`${image}-${index}`}
               className={`absolute inset-0 flex h-full w-full flex-col items-center justify-end gap-6 bg-cover bg-center bg-no-repeat transition-opacity duration-700 pb-12 md:pb-16 ${
                 index === currentIndex ? 'opacity-100' : 'opacity-0'
               }`}

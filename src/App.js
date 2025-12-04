@@ -11,6 +11,7 @@ import Dashboard from './components/AdminManagement/dashboard/Dashboard.jsx';
 import Posts from './components/AdminManagement/posts/Posts.jsx';
 import AdminEvents from './components/AdminManagement/events/Events.jsx';
 import AdminMembers from './components/AdminManagement/members/Members.jsx';
+import FileMaintenance from './components/AdminManagement/fileMaintenance/FileMaintenance.jsx';
 
 // Generic protected route (any authenticated user)
 const RequireAuth = ({ children }) => {
@@ -88,6 +89,14 @@ function App() {
             element={
               <RequireAuth>
                 <AdminMembers />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/file-maintenance"
+            element={
+              <RequireAuth>
+                <FileMaintenance />
               </RequireAuth>
             }
           />

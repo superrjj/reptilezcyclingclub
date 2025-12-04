@@ -149,6 +149,38 @@ export const updatePost = async (id, postData) => {
 };
 
 /**
+ * Fetch posts by category
+ * @param {string} category - Category name
+ * @returns {Promise<Array>} Array of post objects
+ */
+export const getPostsByCategory = async (category) => {
+  if (!isSupabaseConfigured || !supabase) {
+    console.warn('Supabase is not configured. Returning empty array.');
+    return [];
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('category', category)
+      .eq('status', 'Published')
+      .not('featured_image', 'is', null)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching posts by category:', error);
+      throw error;
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error in getPostsByCategory:', error);
+    return [];
+  }
+};
+
+/**
  * Delete a post
  * @param {string} id - Post ID
  * @returns {Promise<boolean>} True if successful

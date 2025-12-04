@@ -562,25 +562,31 @@ const Posts = () => {
               ) : (
                 <div className="space-y-4">
                   {posts.map((post) => (
-                    <article key={post.id} className="rounded-2xl border border-[#244019] bg-gradient-to-br from-[#10180e] to-[#0b1209] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.55)]">
+                    <article
+                      key={post.id}
+                      className="rounded-2xl border border-[#244019] bg-gradient-to-br from-[#10180e] to-[#0b1209] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.55)]"
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <div
                             className="size-10 rounded-full border border-[#3a5b2f] bg-cover bg-center"
-                            style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE")' }}
+                            style={{
+                              backgroundImage:
+                                'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE")',
+                            }}
                           ></div>
                           <div>
-                          {post.author_id ? (
-                            authorLoading && !authorProfiles[post.author_id] ? (
-                              <div className="h-3 w-24 rounded-full shimmer-bg" />
+                            {post.author_id ? (
+                              authorLoading && !authorProfiles[post.author_id] ? (
+                                <div className="h-3 w-24 rounded-full shimmer-bg" />
+                              ) : (
+                                <p className="text-sm font-semibold text-white">
+                                  {authorProfiles[post.author_id] || 'Admin'}
+                                </p>
+                              )
                             ) : (
-                              <p className="text-sm font-semibold text-white">
-                                {authorProfiles[post.author_id] || 'Admin'}
-                              </p>
-                            )
-                          ) : (
-                            <p className="text-sm font-semibold text-white">Admin</p>
-                          )}
+                              <p className="text-sm font-semibold text-white">Admin</p>
+                            )}
                             <p className="text-xs text-[#7ea373]">{formatDate(post.created_at)}</p>
                           </div>
                         </div>
@@ -598,14 +604,14 @@ const Posts = () => {
                       <div className="mt-4 space-y-2">
                         <h3 className="text-lg font-bold text-white">{post.title}</h3>
                         <p className="text-sm text-[#a6c39b] leading-relaxed line-clamp-3">
-                          {post.content.length > 160 ? `${post.content.substring(0, 160)}...` : post.content}
+                          {post.content.length > 160
+                            ? `${post.content.substring(0, 160)}...`
+                            : post.content}
                         </p>
                       </div>
 
                       {post.featured_image && (
-                        <div
-                          className="mt-4 overflow-hidden rounded-xl border border-[#2d4b20]"
-                        >
+                        <div className="mt-4 overflow-hidden rounded-xl border border-[#2d4b20]">
                           <div
                             className="aspect-video w-full bg-cover bg-center"
                             style={{ backgroundImage: `url("${post.featured_image}")` }}
