@@ -315,18 +315,18 @@ const Posts = () => {
 
   return (
     <AdminLayout>
-      <main className="relative flex-1 overflow-y-auto bg-black/10 p-6">
+      <main className="relative flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-8">
         {/* Delete Confirmation Dialog */}
         {deleteTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-            <div className="w-full max-w-sm rounded-2xl border border-red-500/40 bg-[#0b0909] px-6 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.9)]">
+            <div className="w-full max-w-sm rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 px-6 py-6 shadow-lg">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-full bg-red-500/10 border border-red-400/60 text-red-300">
+                <div className="flex size-10 items-center justify-center rounded-full bg-red-500/10 border border-red-400/60 text-red-500">
                   <span className="material-symbols-outlined text-2xl">warning</span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">Delete post?</p>
-                  <p className="text-xs text-red-200/80">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Delete post?</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     This action cannot be undone. The post will be permanently removed.
                   </p>
                 </div>
@@ -335,14 +335,14 @@ const Posts = () => {
                 <button
                   type="button"
                   onClick={() => setDeleteTarget(null)}
-                  className="rounded-full border border-zinc-600 px-4 py-2 text-zinc-200 hover:bg-zinc-800/80 transition-colors"
+                  className="rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(deleteTarget.id)}
-                  className="flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 font-semibold text-white shadow-lg shadow-red-500/30 hover:bg-red-400 transition-colors"
+                  className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600 transition-colors"
                 >
                   <span className="material-symbols-outlined text-base">delete</span>
                   Delete
@@ -353,10 +353,10 @@ const Posts = () => {
         )}
         {toast.visible && (
           <div
-            className={`fixed right-6 top-20 z-50 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-semibold shadow-[0_18px_50px_rgba(0,0,0,0.65)] ${
+            className={`fixed right-6 top-20 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-semibold shadow-lg ${
               toast.type === 'success'
-                ? 'border-emerald-400/60 bg-emerald-500/10 text-emerald-200'
-                : 'border-red-400/60 bg-red-500/10 text-red-200'
+                ? 'border-green-400/60 bg-green-500/10 text-green-700 dark:text-green-200'
+                : 'border-red-400/60 bg-red-500/10 text-red-700 dark:text-red-200'
             }`}
           >
             <span className="material-symbols-outlined text-xl">
@@ -366,36 +366,29 @@ const Posts = () => {
           </div>
         )}
         <div className="mx-auto max-w-6xl space-y-6">
-          <div className="flex flex-col gap-1">
-            <p className="text-white text-3xl font-black leading-tight tracking-[-0.033em]">Post Management</p>
-            <p className="text-[#7fe06c] text-sm font-medium">Create, edit, and manage all club posts and announcements.</p>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Post Management</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Create, edit, and manage all club posts and announcements.</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Composer */}
-            <section className="space-y-5 rounded-2xl border border-[#2b4c1f] bg-[#111b10] p-6 shadow-[0_20px_60px_rgba(5,10,4,0.6)]">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#6fb95b]">Post Builder</p>
-                  <h2 className="text-white text-2xl font-semibold mt-1">
-                    {editingPost ? 'Update Post' : 'Create New Post'}
-                  </h2>
-                  <p className="text-xs text-[#9fb99a] mt-1">
-                    {editingPost ? 'Editing existing announcement' : 'Draft a new announcement for the club.'}
-                  </p>
-                </div>
-                {editingPost && (
-                  <span className="rounded-full bg-[#213318] px-3 py-1 text-xs font-semibold text-[#9bf781]">
-                    Editing
-                  </span>
-                )}
+            <section className="lg:col-span-1 space-y-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6">
+              <div>
+                <p className="text-sm font-medium text-primary mb-1">POST BUILDER</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                  {editingPost ? 'Update Post' : 'Create New Post'}
+                </h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                  {editingPost ? 'Editing existing announcement' : 'Draft a new announcement for the club.'}
+                </p>
               </div>
 
-              <form className="space-y-5" onSubmit={handleSubmit}>
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
-                  <label className="text-sm font-semibold text-[#c7f5b8]" htmlFor="post-title">Post Title</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="post-title">Post Title</label>
                   <input
-                    className="mt-2 w-full rounded-xl border border-[#385c2d] bg-[#0f160c] px-4 py-3 text-sm text-[#f1ffeb] placeholder:text-[#7d9b75] focus:border-[#6fe05f] focus:ring-2 focus:ring-[#6fe05f44]"
+                    className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2"
                     id="post-title"
                     name="title"
                     placeholder="e.g., Annual Club Championship"
@@ -407,13 +400,13 @@ const Posts = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-[#c7f5b8]" htmlFor="post-content">Content</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="post-content">Content</label>
                   <textarea
-                    className="mt-2 w-full rounded-xl border border-[#385c2d] bg-[#0f160c] px-4 py-3 text-sm text-[#f1ffeb] placeholder:text-[#7d9b75] focus:border-[#6fe05f] focus:ring-2 focus:ring-[#6fe05f44]"
+                    className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2"
                     id="post-content"
                     name="content"
                     placeholder="Write your post content here..."
-                    rows="6"
+                    rows="4"
                     value={formData.content}
                     onChange={handleInputChange}
                     required
@@ -421,9 +414,9 @@ const Posts = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-[#c7f5b8]">Featured Image</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Featured Image</label>
                   {imagePreview || (editingPost && formData.featured_image) ? (
-                    <div className="relative mt-3 overflow-hidden rounded-xl border border-[#385c2d]">
+                    <div className="relative mt-1 overflow-hidden rounded-md border border-gray-300 dark:border-gray-600">
                       <img
                         src={imagePreview || formData.featured_image}
                         alt="Preview"
@@ -432,21 +425,25 @@ const Posts = () => {
                       <button
                         type="button"
                         onClick={removeImage}
-                        className="absolute right-3 top-3 rounded-full bg-[#f25757] p-2 text-white shadow-md hover:bg-[#ff7a7a]"
+                        className="absolute right-3 top-3 rounded-full bg-red-500 p-2 text-white shadow-md hover:bg-red-600"
                       >
                         <span className="material-symbols-outlined text-base">close</span>
                       </button>
                     </div>
                   ) : (
                     <div
-                      className="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#3c5d31] bg-[#0b1208] px-6 py-8 text-center text-[#98c589] transition hover:border-[#6fe05f] hover:text-[#c9ffb8]"
+                      className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors"
                       onClick={() => fileInputRef.current?.click()}
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                     >
-                      <span className="material-symbols-outlined text-4xl mb-2">upload_file</span>
-                      <p className="text-sm font-medium">Drag & drop or tap to upload</p>
-                      <p className="text-xs text-[#6b8a63] mt-1">JPG/PNG, max 30MB</p>
+                      <div className="space-y-1 text-center">
+                        <span className="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-500">upload_file</span>
+                        <div className="flex text-sm text-gray-600 dark:text-gray-400">
+                          <p>Drag & drop or tap to upload</p>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-500">JPG/PNG, max 30MB</p>
+                      </div>
                     </div>
                   )}
                   <input
@@ -460,78 +457,67 @@ const Posts = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-[#c7f5b8]" htmlFor="category">Category</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="category">Category</label>
                     <select
-                      className="mt-2 w-full rounded-xl border border-[#385c2d] bg-[#0f160c] px-4 py-3 text-sm text-[#f1ffeb] focus:border-[#6fe05f] focus:ring-2 focus:ring-[#6fe05f44]"
+                      className="w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2"
                       id="category"
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
                     >
                       <option>Announcements</option>
-                      <option>Race Reports</option>
-                      <option>Club News</option>
+                      <option>Events</option>
+                      <option>News</option>
                     </select>
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-[#c7f5b8]">Status</span>
-                    <div className="mt-3 flex items-center justify-between rounded-xl border border-[#2c4520] bg-[#0c1209] px-4 py-2">
-                      <span className={`text-xs font-semibold ${formData.status === 'Draft' ? 'text-[#f1ffeb]' : 'text-[#8aa07f]'}`}>Draft</span>
-                      <label className="relative inline-flex cursor-pointer items-center">
-                        <input
-                          className="peer sr-only"
-                          type="checkbox"
-                          checked={formData.status === 'Published'}
-                          onChange={handleStatusToggle}
-                        />
-                        <div className="h-6 w-11 rounded-full bg-[#23331a] transition peer-checked:bg-[#6fe05f]"></div>
-                        <div className="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-5"></div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <div className="flex items-center space-x-2 mt-2">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Draft</span>
+                      <label className="flex items-center cursor-pointer" htmlFor="status-toggle">
+                        <div className="relative">
+                          <input
+                            className="sr-only"
+                            id="status-toggle"
+                            type="checkbox"
+                            checked={formData.status === 'Published'}
+                            onChange={handleStatusToggle}
+                          />
+                          <div className={`block w-12 h-6 rounded-full transition-colors ${formData.status === 'Published' ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-700'}`}></div>
+                          <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform" style={{ transform: formData.status === 'Published' ? 'translateX(1.5rem)' : 'translateX(0)' }}></div>
+                        </div>
                       </label>
-                      <span className={`text-xs font-semibold ${formData.status === 'Published' ? 'text-[#f1ffeb]' : 'text-[#8aa07f]'}`}>Published</span>
+                      <span className="text-sm font-medium text-primary">Published</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 pt-2 md:flex-row">
-                  <button
-                    className="flex-1 rounded-full bg-[#6fe05f] px-4 py-3 text-sm font-bold text-[#041005] shadow-lg shadow-[#6fe05f33] transition hover:bg-[#5ec84f] disabled:cursor-not-allowed disabled:opacity-60"
-                    type="submit"
-                    disabled={uploading}
-                  >
-                    {uploading ? 'Saving...' : editingPost ? 'Update Post' : 'Save Post'}
-                  </button>
-                  <button
-                    className="flex-1 rounded-full border border-[#36542a] px-4 py-3 text-sm font-semibold text-[#dcefd0] transition hover:bg-[#162110]"
-                    type="button"
-                    onClick={resetForm}
-                    disabled={uploading}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                <button
+                  className="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                  type="submit"
+                  disabled={uploading}
+                >
+                  {uploading ? 'Saving...' : editingPost ? 'Update Post' : 'Create Post'}
+                </button>
               </form>
             </section>
 
             {/* Posts List */}
-            <section className="lg:col-span-2 rounded-2xl border border-[#28441b] bg-[#080f08] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.65)]">
-              <div className="flex flex-col gap-3 pb-4">
-                <div>
-                  <p className="text-white text-2xl font-semibold">Existing Posts</p>
-                  <p className="text-xs text-[#93b58c]">Review and manage announcements in one place.</p>
-                </div>
-                <label className="flex min-w-40 h-12 w-full rounded-full border border-[#2c4720] bg-[#0e150c] px-4 text-[#9cc097] focus-within:border-[#6fe05f] focus-within:ring-2 focus-within:ring-[#6fe05f33]">
-                  <span className="flex items-center pr-3 text-[#6ca655]">
-                    <span className="material-symbols-outlined text-base">search</span>
-                  </span>
+            <section className="lg:col-span-2 space-y-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Existing Posts</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">Review and manage announcements in one place.</p>
+                <div className="relative">
+                  <span className="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">search</span>
                   <input
-                    className="w-full flex-1 bg-transparent text-sm text-white placeholder:text-[#6ca655] focus:outline-none"
+                    className="w-full pl-10 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2"
                     placeholder="Filter posts by title..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                </label>
+                </div>
               </div>
 
               {loading ? (
@@ -539,7 +525,7 @@ const Posts = () => {
                   {[1, 2, 3].map((skeleton) => (
                     <div
                       key={skeleton}
-                      className="rounded-2xl border border-[#244019] bg-gradient-to-br from-[#10180e] to-[#0b1209] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.55)] space-y-4"
+                      className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-4 space-y-4"
                     >
                       <div className="flex items-center gap-3">
                         <div className="size-10 rounded-full shimmer-bg" />
@@ -553,83 +539,76 @@ const Posts = () => {
                         <div className="h-2 w-full rounded-full shimmer-bg" />
                         <div className="h-2 w-5/6 rounded-full shimmer-bg" />
                       </div>
-                      <div className="h-40 w-full rounded-xl shimmer-bg" />
+                      <div className="h-40 w-full rounded-md shimmer-bg" />
                     </div>
                   ))}
                 </div>
               ) : posts.length === 0 ? (
-                <div className="py-10 text-center text-[#96b78e]">No posts found. Create your first post!</div>
+                <div className="py-10 text-center text-gray-500 dark:text-gray-400">No posts found. Create your first post!</div>
               ) : (
                 <div className="space-y-4">
                   {posts.map((post) => (
                     <article
                       key={post.id}
-                      className="rounded-2xl border border-[#244019] bg-gradient-to-br from-[#10180e] to-[#0b1209] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.55)]"
+                      className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 overflow-hidden"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="size-10 rounded-full border border-[#3a5b2f] bg-cover bg-center"
-                            style={{
-                              backgroundImage:
-                                'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE")',
-                            }}
-                          ></div>
-                          <div>
-                            {post.author_id ? (
-                              authorLoading && !authorProfiles[post.author_id] ? (
-                                <div className="h-3 w-24 rounded-full shimmer-bg" />
+                      <div className="p-6">
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3">
+                            <img
+                              alt="Profile picture"
+                              className="h-12 w-12 rounded-full object-cover"
+                              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE"
+                            />
+                            <div>
+                              {post.author_id ? (
+                                authorLoading && !authorProfiles[post.author_id] ? (
+                                  <div className="h-3 w-24 rounded-full shimmer-bg" />
+                                ) : (
+                                  <p className="font-semibold text-gray-900 dark:text-white">
+                                    {authorProfiles[post.author_id] || 'Admin'}
+                                  </p>
+                                )
                               ) : (
-                                <p className="text-sm font-semibold text-white">
-                                  {authorProfiles[post.author_id] || 'Admin'}
-                                </p>
-                              )
-                            ) : (
-                              <p className="text-sm font-semibold text-white">Admin</p>
-                            )}
-                            <p className="text-xs text-[#7ea373]">{formatDate(post.created_at)}</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">Admin</p>
+                              )}
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(post.created_at)}</p>
+                            </div>
                           </div>
+                          <span className="bg-primary/20 text-primary text-xs font-semibold px-2.5 py-1 rounded-full">
+                            {post.status}
+                          </span>
                         </div>
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            post.status === 'Published'
-                              ? 'bg-[#173115] text-[#87f676]'
-                              : 'bg-[#221b11] text-[#f6d190]'
-                          }`}
-                        >
-                          {post.status}
-                        </span>
-                      </div>
 
-                      <div className="mt-4 space-y-2">
-                        <h3 className="text-lg font-bold text-white">{post.title}</h3>
-                        <p className="text-sm text-[#a6c39b] leading-relaxed line-clamp-3">
-                          {post.content.length > 160
-                            ? `${post.content.substring(0, 160)}...`
-                            : post.content}
-                        </p>
+                        <div className="mt-4">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">{post.title}</h3>
+                          <p className="mt-2 text-gray-600 dark:text-gray-300">
+                            {post.content.length > 160
+                              ? `${post.content.substring(0, 160)}...`
+                              : post.content}
+                          </p>
+                        </div>
                       </div>
 
                       {post.featured_image && (
-                        <div className="mt-4 overflow-hidden rounded-xl border border-[#2d4b20]">
-                          <div
-                            className="aspect-video w-full bg-cover bg-center"
-                            style={{ backgroundImage: `url("${post.featured_image}")` }}
-                          ></div>
-                        </div>
+                        <img
+                          alt="Post featured image"
+                          className="w-full h-96 object-cover"
+                          src={post.featured_image}
+                        />
                       )}
 
-                      <div className="mt-4 flex items-center justify-between border-t border-[#1f3117] pt-4 text-sm font-semibold">
+                      <div className="p-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-800">
                         <button
                           onClick={() => handleEdit(post)}
-                          className="flex items-center gap-2 text-[#7ae769] hover:text-white transition-colors"
+                          className="flex items-center gap-2 text-primary hover:text-green-700 transition-colors"
                         >
                           <span className="material-symbols-outlined text-base">edit</span>
                           Edit
                         </button>
                         <button
                           onClick={() => setDeleteTarget(post)}
-                          className="flex items-center gap-2 text-[#f26c6c] hover:text-[#ff9c9c] transition-colors"
+                          className="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors"
                         >
                           <span className="material-symbols-outlined text-base">delete</span>
                           Delete

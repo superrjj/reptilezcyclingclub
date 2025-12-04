@@ -86,17 +86,17 @@ const AdminLayout = ({ children }) => {
   };
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-background-dark text-white">
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200">
       {confirmLogoutOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="w-full max-w-sm rounded-2xl border border-primary/40 bg-background-dark px-6 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.9)]">
+          <div className="w-full max-w-sm rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 px-6 py-6 shadow-lg">
             <div className="flex items-center gap-3">
               <div className="flex size-12 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary">
                 <span className="material-symbols-outlined text-2xl">logout</span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Sign out from Admin Panel?</p>
-                <p className="text-xs text-white/70">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">Sign out from Admin Panel?</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   You will be redirected back to the public site after confirming.
                 </p>
               </div>
@@ -105,7 +105,7 @@ const AdminLayout = ({ children }) => {
               <button
                 type="button"
                 onClick={cancelLogout}
-                className="rounded-full border border-white/20 px-4 py-2 text-white/80 hover:bg-white/10 transition-colors"
+                className="rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                 disabled={logoutProcessing}
               >
                 Cancel
@@ -113,7 +113,7 @@ const AdminLayout = ({ children }) => {
               <button
                 type="button"
                 onClick={confirmLogout}
-                className="flex items-center gap-2 rounded-full bg-primary px-5 py-2 font-semibold text-black shadow-lg shadow-primary/30 hover:bg-primary/90 transition-colors disabled:opacity-60"
+                className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2 font-semibold text-white hover:bg-green-700 transition-colors disabled:opacity-60"
                 disabled={logoutProcessing}
               >
                 {logoutProcessing && (
@@ -127,29 +127,29 @@ const AdminLayout = ({ children }) => {
       )}
       <div className="flex h-screen">
         {/* SideNavBar */}
-        <aside className="w-64 flex-shrink-0 bg-background-dark border-r border-primary/30 h-full overflow-y-auto">
+        <aside className="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-gray-200 dark:border-gray-800 h-full overflow-y-auto">
           <div className="flex h-full flex-col justify-between p-4">
             <div className="flex flex-col gap-4">
-              <div className="flex gap-3 items-center px-3 py-2">
+              <div className="flex gap-3 items-center px-2 py-2">
                 <img
                   src="/rcc2.png"
                   alt="Reptilez Cycling Club logo"
                   className="size-10 rounded-full object-contain"
                 />
                 <div className="flex flex-col">
-                  <h1 className="text-white text-base font-medium leading-normal">
+                  <h1 className="text-gray-900 dark:text-white text-base font-bold leading-normal">
                     {getDisplayName()}
                   </h1>
-                  <p className="text-primary/70 text-sm font-normal leading-normal">Admin</p>
+                  <p className="text-primary text-sm font-normal leading-normal">Admin</p>
                 </div>
               </div>
               
               <nav className="flex flex-col gap-2 mt-4">
                 <a 
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin') 
-                      ? 'bg-primary/20 text-white' 
-                      : 'text-white hover:bg-white/5'
+                      ? 'bg-primary text-white font-medium' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
                   }`}
                   href="/admin"
                   onClick={(e) => { 
@@ -161,10 +161,10 @@ const AdminLayout = ({ children }) => {
                   <p className="text-sm font-medium leading-normal">Dashboard</p>
                 </a>
                 <a 
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin/posts') 
-                      ? 'bg-primary/20 text-white' 
-                      : 'text-white hover:bg-white/5'
+                      ? 'bg-primary text-white font-medium' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
                   }`}
                   href="/admin/posts"
                   onClick={(e) => { e.preventDefault(); navigate('/admin/posts'); }}
@@ -173,7 +173,7 @@ const AdminLayout = ({ children }) => {
                   <p className="text-sm font-medium leading-normal">Posts</p>
                 </a>
                 <a 
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-white hover:bg-white/5 transition-colors" 
+                  className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" 
                   href="/admin/events"
                   onClick={(e) => { 
                     e.preventDefault(); 
@@ -184,21 +184,21 @@ const AdminLayout = ({ children }) => {
                   <p className="text-sm font-medium leading-normal">Events</p>
                 </a>
                 <a 
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-white hover:bg-white/5 transition-colors" 
+                  className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" 
                   href="/admin/members"
                   onClick={(e) => { 
                     e.preventDefault(); 
                     navigate('/admin/members'); 
                   }}
                 >
-                  <span className="material-symbols-outlined">group</span>
+                  <span className="material-symbols-outlined">groups</span>
                   <p className="text-sm font-medium leading-normal">Members</p>
                 </a>
                 <a 
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin/file-maintenance') 
-                      ? 'bg-primary/20 text-white' 
-                      : 'text-white hover:bg-white/5'
+                      ? 'bg-primary text-white font-medium' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
                   }`}
                   href="/admin/file-maintenance"
                   onClick={(e) => { 
@@ -206,15 +206,15 @@ const AdminLayout = ({ children }) => {
                     navigate('/admin/file-maintenance'); 
                   }}
                 >
-                  <span className="material-symbols-outlined" style={isActive('/admin/file-maintenance') ? { fontVariationSettings: "'FILL' 1" } : {}}>folder_managed</span>
+                  <span className="material-symbols-outlined" style={isActive('/admin/file-maintenance') ? { fontVariationSettings: "'FILL' 1" } : {}}>folder_open</span>
                   <p className="text-sm font-medium leading-normal">File Maintenance</p>
                 </a>
               </nav>
             </div>
             
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
               <a 
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-white hover:bg-white/5 transition-colors" 
+                className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" 
                 href="#"
                 onClick={(e) => e.preventDefault()}
               >
@@ -223,7 +223,7 @@ const AdminLayout = ({ children }) => {
               </a>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-white hover:bg-white/5 transition-colors text-left w-full"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-left w-full"
               >
                 <span className="material-symbols-outlined">logout</span>
                 <p className="text-sm font-medium leading-normal">Logout</p>

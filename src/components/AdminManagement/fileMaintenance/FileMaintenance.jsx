@@ -181,18 +181,18 @@ const FileMaintenance = () => {
   };
 
   const ImageUploadSection = ({ type, title, description, images, fileInputRef }) => (
-    <section className="rounded-2xl border border-[#2b4c1f] bg-[#111b10] p-6 shadow-[0_20px_60px_rgba(5,10,4,0.6)]">
+    <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6">
       <div className="mb-5">
-        <p className="text-xs uppercase tracking-[0.2em] text-[#6fb95b]">{title}</p>
-        <h2 className="text-white text-2xl font-semibold mt-1">{title} Management</h2>
-        <p className="text-xs text-[#9fb99a] mt-1">{description}</p>
+        <p className="text-sm font-medium text-primary mb-1">{title}</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{title} Management</h2>
+        <p className="text-gray-500 dark:text-gray-400">{description}</p>
       </div>
 
       <form onSubmit={(e) => handleSubmit(e, type)} className="mb-6">
         <div>
-          <label className="text-sm font-semibold text-[#c7f5b8]">{title} Image</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{title} Image</label>
           {imagePreviews[type] ? (
-            <div className="relative mt-3 overflow-hidden rounded-xl border border-[#385c2d]">
+            <div className="relative mt-1 overflow-hidden rounded-md border border-gray-300 dark:border-gray-600">
               <img
                 src={imagePreviews[type]}
                 alt="Preview"
@@ -201,23 +201,27 @@ const FileMaintenance = () => {
               <button
                 type="button"
                 onClick={() => removeImage(type)}
-                className="absolute right-3 top-3 rounded-full bg-[#f25757] p-2 text-white shadow-md hover:bg-[#ff7a7a]"
+                className="absolute right-3 top-3 rounded-full bg-red-500 p-2 text-white shadow-md hover:bg-red-600"
               >
                 <span className="material-symbols-outlined text-base">close</span>
               </button>
             </div>
           ) : (
             <div
-              className="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#3c5d31] bg-[#0b1208] px-6 py-8 text-center text-[#98c589] transition hover:border-[#6fe05f] hover:text-[#c9ffb8]"
+              className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors"
               onClick={() => {
                 fileInputRef.current?.click();
               }}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, type)}
             >
-              <span className="material-symbols-outlined text-4xl mb-2">upload_file</span>
-              <p className="text-sm font-medium">Drag & drop or tap to upload</p>
-              <p className="text-xs text-[#6b8a63] mt-1">JPG/PNG, max 30MB</p>
+              <div className="space-y-1 text-center">
+                <span className="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-500">upload_file</span>
+                <div className="flex text-sm text-gray-600 dark:text-gray-400">
+                  <p>Drag & drop or tap to upload</p>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-500">JPG/PNG, max 30MB</p>
+              </div>
             </div>
           )}
           <input
@@ -240,7 +244,7 @@ const FileMaintenance = () => {
         {imagePreviews[type] && (
           <button
             type="submit"
-            className="mt-4 w-full rounded-full bg-[#6fe05f] px-4 py-3 text-sm font-bold text-[#041005] shadow-lg shadow-[#6fe05f33] transition hover:bg-[#5ec84f] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
             disabled={uploading[type]}
           >
             {uploading[type] ? 'Uploading...' : `Upload ${title} Image`}
@@ -249,20 +253,20 @@ const FileMaintenance = () => {
       </form>
 
       <div>
-        <p className="text-sm font-semibold text-[#c7f5b8] mb-3">Existing {title} Images</p>
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Existing {title} Images</p>
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 rounded-xl bg-[#0f160c] border border-[#385c2d] shimmer-bg"></div>
+              <div key={i} className="h-32 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shimmer-bg"></div>
             ))}
           </div>
         ) : images.length === 0 ? (
-          <div className="py-8 text-center text-[#96b78e] text-sm">No {title.toLowerCase()} images uploaded yet.</div>
+          <div className="py-8 text-center text-gray-500 dark:text-gray-400 text-sm">No {title.toLowerCase()} images uploaded yet.</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {images.map((image) => (
               <div key={image.id} className="relative group">
-                <div className="overflow-hidden rounded-xl border border-[#385c2d] aspect-video">
+                <div className="overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 aspect-video">
                   <img
                     src={image.image_url}
                     alt={`${title} image`}
@@ -271,7 +275,7 @@ const FileMaintenance = () => {
                 </div>
                 <button
                   onClick={() => setDeleteTarget({ id: image.id, category: title, imageUrl: image.image_url })}
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 rounded-full bg-red-500/90 p-2 text-white shadow-md hover:bg-red-500 transition-opacity"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 rounded-full bg-red-500/90 p-2 text-white shadow-md hover:bg-red-600 transition-opacity"
                 >
                   <span className="material-symbols-outlined text-base">delete</span>
                 </button>
@@ -285,18 +289,18 @@ const FileMaintenance = () => {
 
   return (
     <AdminLayout>
-      <main className="relative flex-1 overflow-y-auto bg-black/10 p-6">
+      <main className="relative flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-8">
         {/* Delete Confirmation Dialog */}
         {deleteTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-            <div className="w-full max-w-sm rounded-2xl border border-red-500/40 bg-[#0b0909] px-6 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.9)]">
+            <div className="w-full max-w-sm rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 px-6 py-6 shadow-lg">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-full bg-red-500/10 border border-red-400/60 text-red-300">
+                <div className="flex size-10 items-center justify-center rounded-full bg-red-500/10 border border-red-400/60 text-red-500">
                   <span className="material-symbols-outlined text-2xl">warning</span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">Delete image?</p>
-                  <p className="text-xs text-red-200/80">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Delete image?</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     This action cannot be undone. The image will be permanently removed.
                   </p>
                 </div>
@@ -305,14 +309,14 @@ const FileMaintenance = () => {
                 <button
                   type="button"
                   onClick={() => setDeleteTarget(null)}
-                  className="rounded-full border border-zinc-600 px-4 py-2 text-zinc-200 hover:bg-zinc-800/80 transition-colors"
+                  className="rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(deleteTarget.id, deleteTarget.category, deleteTarget.imageUrl)}
-                  className="flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 font-semibold text-white shadow-lg shadow-red-500/30 hover:bg-red-400 transition-colors"
+                  className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600 transition-colors"
                 >
                   <span className="material-symbols-outlined text-base">delete</span>
                   Delete
@@ -324,10 +328,10 @@ const FileMaintenance = () => {
 
         {toast.visible && (
           <div
-            className={`fixed right-6 top-20 z-50 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-semibold shadow-[0_18px_50px_rgba(0,0,0,0.65)] ${
+            className={`fixed right-6 top-20 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-semibold shadow-lg ${
               toast.type === 'success'
-                ? 'border-emerald-400/60 bg-emerald-500/10 text-emerald-200'
-                : 'border-red-400/60 bg-red-500/10 text-red-200'
+                ? 'border-green-400/60 bg-green-500/10 text-green-700 dark:text-green-200'
+                : 'border-red-400/60 bg-red-500/10 text-red-700 dark:text-red-200'
             }`}
           >
             <span className="material-symbols-outlined text-xl">
@@ -338,9 +342,9 @@ const FileMaintenance = () => {
         )}
 
         <div className="mx-auto max-w-6xl space-y-6">
-          <div className="flex flex-col gap-1">
-            <p className="text-white text-3xl font-black leading-tight tracking-[-0.033em]">File Maintenance</p>
-            <p className="text-[#7fe06c] text-sm font-medium">Upload and manage images for Hero and Gallery sections.</p>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">File Maintenance</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Upload and manage images for Hero and Gallery sections.</p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

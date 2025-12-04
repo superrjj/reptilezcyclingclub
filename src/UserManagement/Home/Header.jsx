@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Header = ({ onLoginClick }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [maintenanceVisible, setMaintenanceVisible] = useState(false);
@@ -24,8 +25,14 @@ const Header = ({ onLoginClick }) => {
     window.location.reload();
   };
 
-  const handleMaintenanceClick = () => {
+  const handleMaintenanceClick = (e) => {
+    e.preventDefault();
     setMaintenanceVisible(true);
+  };
+
+  const handleLinkClick = (e, path) => {
+    e.preventDefault();
+    navigate(path);
   };
 
   return (
@@ -51,14 +58,19 @@ const Header = ({ onLoginClick }) => {
         </Link>
         <div className="hidden md:flex flex-1 justify-end gap-8">
           <div className="flex items-center gap-9">
-            <Link to="/" className={`text-sm font-medium leading-normal transition-colors ${
-              location.pathname === '/' ? 'text-primary' : 'text-white hover:text-primary'
-            }`}>
+            <Link 
+              to="/" 
+              onClick={(e) => handleLinkClick(e, '/')}
+              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
+                location.pathname === '/' ? 'text-primary' : 'text-white hover:text-primary'
+              }`}
+            >
               Home
             </Link>
             <Link
               to="/posts"
-              className={`text-sm font-medium leading-normal transition-colors ${
+              onClick={(e) => handleLinkClick(e, '/posts')}
+              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
                 location.pathname === '/posts' ? 'text-primary' : 'text-white hover:text-primary'
               }`}
             >
@@ -67,26 +79,30 @@ const Header = ({ onLoginClick }) => {
             <button
               type="button"
               onClick={handleMaintenanceClick}
-              className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors"
+              className="text-white text-base font-semibold leading-relaxed tracking-wide hover:text-primary transition-colors"
             >
               Events
             </button>
-            <Link to="/members" className={`text-sm font-medium leading-normal transition-colors ${
-              location.pathname === '/members' ? 'text-primary' : 'text-white hover:text-primary'
-            }`}>
+            <Link 
+              to="/members" 
+              onClick={(e) => handleLinkClick(e, '/members')}
+              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
+                location.pathname === '/members' ? 'text-primary' : 'text-white hover:text-primary'
+              }`}
+            >
               Members
             </Link>
             <button
               type="button"
               onClick={handleMaintenanceClick}
-              className="text-white text-sm font-medium leading-normal hover:text-primary transition-colors"
+              className="text-white text-base font-semibold leading-relaxed tracking-wide hover:text-primary transition-colors"
             >
               About Us
             </button>
           </div>
           {isAdmin ? (
             <div className="flex items-center gap-3">
-              <span className="text-primary text-sm font-medium">Admin</span>
+              <span className="text-primary text-base font-semibold tracking-wide">Admin</span>
               <button
                 onClick={handleLogout}
                 className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-accent text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-red-600 transition-colors"

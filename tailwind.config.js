@@ -7,16 +7,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "primary": "#22c55e", // Green
+        "primary": "#16a34a", // green-600
         "accent": "#ef4444", // Red
-        "background-light": "#ffffff", // White
-        "background-dark": "#000000", // Black
+        "background-light": "#f3f4f6", // gray-100
+        "background-dark": "#0a0a0a", // near black
       },
       fontFamily: {
-        "display": ["Plus Jakarta Sans", "sans-serif"]
+        "display": ["Roboto", "sans-serif"]
       },
       borderRadius: {
-        "DEFAULT": "0.25rem",
+        "DEFAULT": "0.75rem", // 12px
         "lg": "0.5rem",
         "xl": "0.75rem",
         "full": "9999px"
