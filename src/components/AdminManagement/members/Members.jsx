@@ -282,33 +282,37 @@ const Members = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredMembers.map((member) => (
-                  <div key={member.id} className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 rounded-xl overflow-hidden flex flex-col">
-                    <div className="relative pt-20 bg-gradient-to-br from-primary/20 to-primary/5">
+                  <div
+                    key={member.id}
+                    className="bg-white dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden flex flex-col shadow-sm"
+                  >
+                    <div className="relative h-28 bg-gradient-to-br from-white via-white to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900">
                       <img
                         alt={member.name || 'Member'}
                         className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 size-24 rounded-full border-4 border-white dark:border-gray-900 object-cover"
                         src={member.image_url || '/rcc1.png'}
                       />
                     </div>
-                    <div className="flex-grow p-4 pt-16 text-center bg-white dark:bg-gray-900/50">
+                    <div className="flex-grow p-4 pt-16 text-center bg-white dark:bg-gray-900/60">
                       <h3 className="text-gray-900 dark:text-white text-lg font-bold">{member.name || 'Unknown'}</h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{member.role || member.role_type || 'Member'}</p>
-                      {member.description && (
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{member.description}</p>
-                      )}
-                      {member.bio && !member.description && (
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{member.bio}</p>
-                      )}
+                      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary">
+                          {member.role || member.role_type || 'Member'}
+                        </span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                          {member.description || member.bio || 'Bike'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="border-t border-primary/30 p-2 flex items-center justify-end bg-white dark:bg-gray-900/50">
+                    <div className="border-t border-gray-200 dark:border-gray-800 p-2 flex items-center justify-end bg-white dark:bg-gray-900/60">
                       <div className="flex gap-1">
-                        <button 
+                        <button
                           onClick={() => handleEdit(member)}
                           className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
                           <span className="material-symbols-outlined text-xl">edit</span>
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDeleteClick(member)}
                           className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >

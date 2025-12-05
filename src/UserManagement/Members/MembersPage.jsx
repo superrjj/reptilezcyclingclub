@@ -59,6 +59,16 @@ const MembersPage = () => {
     return true;
   });
 
+  // Ensure founders always appear first
+  const sortedMembers = [...filteredMembers].sort((a, b) => {
+    const isAFounder = (a.role_type || a.role)?.toLowerCase() === 'founder';
+    const isBFounder = (b.role_type || b.role)?.toLowerCase() === 'founder';
+
+    if (isAFounder && !isBFounder) return -1;
+    if (!isAFounder && isBFounder) return 1;
+    return 0;
+  });
+
   return (
     <div 
       className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden text-white"
@@ -125,12 +135,12 @@ const MembersPage = () => {
                       </div>
                     </div>
                   ))
-                ) : filteredMembers.length === 0 ? (
+                ) : sortedMembers.length === 0 ? (
                   <div className="col-span-full text-center text-white/60 py-8">
                     No members found.
                   </div>
                 ) : (
-                  filteredMembers.map((member) => (
+                  sortedMembers.map((member) => (
                     <div key={member.id} className="flex flex-col gap-3 text-center pb-3 group">
                       <div className="px-4 flex justify-center">
                         <div
