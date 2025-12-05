@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPosts } from '../../services/postsService';
+import { getMembers } from '../../services/membersService';
 
 const Cards = () => {
   const navigate = useNavigate();
   const [latestPost, setLatestPost] = useState(null);
+  const [memberImages, setMemberImages] = useState([]);
+  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
   const cardData = [
     {
-      image: "/member_romeo.jpg",
       title: "Our Members",
       description: "Meet our passionate community of riders.",
       alt: "Portrait photo of a smiling cyclist in club gear"
@@ -51,8 +53,39 @@ const Cards = () => {
       }
     };
 
+    const fetchMemberImages = async () => {
+      try {
+        const members = await getMembers();
+        if (Array.isArray(members) && members.length > 0) {
+          // Get all member images that exist
+          const images = members
+            .map(member => member.image_url)
+            .filter(Boolean)
+            .filter(url => url && url.trim() !== '');
+          
+          if (images.length > 0) {
+            setMemberImages(images);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading member images for cards:', error);
+      }
+    };
+
     fetchLatestPost();
+    fetchMemberImages();
   }, []);
+
+  // Cycle through member images with fade animation
+  useEffect(() => {
+    if (memberImages.length === 0) return;
+    
+    const intervalId = setInterval(() => {
+      setCurrentMemberIndex((prev) => (prev + 1) % memberImages.length);
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [memberImages.length]);
 
   return (
     <section>
@@ -64,14 +97,51 @@ const Cards = () => {
             onClick={() => {
               if (card.title === 'Latest Posts') {
                 navigate('/posts');
+              } else if (card.title === 'Our Members') {
+                navigate('/members');
               }
             }}
           >
-            {/*
-              For "Latest Posts" card, only the image changes based on latest post
-            */}
             {(() => {
               const isLatestCard = card.title === 'Latest Posts' && latestPost;
+              const isMembersCard = card.title === 'Our Members' && memberImages.length > 0;
+              
+              if (isMembersCard) {
+                // Members card with fade animation
+                return (
+                  <>
+                    <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                      {memberImages.length > 0 ? (
+                        memberImages.map((image, index) => (
+                          <div
+                            key={`${image}-${index}`}
+                            className={`absolute inset-0 bg-center bg-no-repeat bg-cover transition-opacity duration-700 ${
+                              index === currentMemberIndex ? 'opacity-100' : 'opacity-0'
+                            }`}
+                            style={{ backgroundImage: `url("${image}")` }}
+                            role="img"
+                            aria-label={card.alt}
+                          ></div>
+                        ))
+                      ) : (
+                        <div 
+                          className="w-full h-full bg-center bg-no-repeat bg-cover bg-gray-800 flex items-center justify-center"
+                          role="img"
+                          aria-label={card.alt}
+                        >
+                          <span className="material-symbols-outlined text-white/40 text-6xl">group</span>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-white text-base font-medium leading-normal">{card.title}</p>
+                      <p className="text-white/60 text-sm font-normal leading-normal">{card.description}</p>
+                    </div>
+                  </>
+                );
+              }
+              
+              // Latest Posts card or other cards
               const image = isLatestCard && latestPost?.featured_image
                 ? latestPost.featured_image
                 : card.image;
@@ -80,7 +150,8 @@ const Cards = () => {
                   <div 
                     className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                     style={{ backgroundImage: `url("${image}")` }}
-                    alt={card.alt}
+                    role="img"
+                    aria-label={card.alt}
                   ></div>
                   <div>
                     <p className="text-white text-base font-medium leading-normal">{card.title}</p>
