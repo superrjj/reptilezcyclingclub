@@ -118,6 +118,19 @@ const Events = () => {
       return;
     }
 
+    // Validate that date is not in the past (only for new events, allow past dates when editing)
+    if (!editingEvent) {
+      const selectedDate = new Date(formData.eventDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      selectedDate.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        showToast('error', 'Please select a future date. Past dates are not allowed for new events.');
+        return;
+      }
+    }
+
     if (!formData.location.trim()) {
       showToast('error', 'Please enter a location');
       return;
@@ -466,8 +479,12 @@ const Events = () => {
                     type="date"
                     value={formData.eventDate}
                     onChange={handleInputChange}
+                    min={editingEvent ? undefined : new Date().toISOString().split('T')[0]}
                     required
                   />
+                  {!editingEvent && formData.eventDate && new Date(formData.eventDate) < new Date().setHours(0, 0, 0, 0) && (
+                    <p className="text-red-500 text-xs mt-1">Please select a future date</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventTime">

@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPosts } from '../../services/postsService';
 import { getMembers } from '../../services/membersService';
+import { getUpcomingEvents } from '../../services/eventsService';
 
 const Cards = () => {
   const navigate = useNavigate();
   const [latestPost, setLatestPost] = useState(null);
   const [memberImages, setMemberImages] = useState([]);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
+  const [upcomingEvent, setUpcomingEvent] = useState(null);
 
   const cardData = [
     {
@@ -72,8 +74,23 @@ const Cards = () => {
       }
     };
 
+    const fetchUpcomingEvent = async () => {
+      try {
+        const events = await getUpcomingEvents();
+        if (Array.isArray(events) && events.length > 0) {
+          // Get the first upcoming event (sorted by date, earliest first)
+          // Prefer events with images
+          const withImage = events.find(e => e.image_url);
+          setUpcomingEvent(withImage || events[0]);
+        }
+      } catch (error) {
+        console.error('Error loading upcoming event for cards:', error);
+      }
+    };
+
     fetchLatestPost();
     fetchMemberImages();
+    fetchUpcomingEvent();
   }, []);
 
   // Cycle through member images with fade animation
@@ -99,12 +116,15 @@ const Cards = () => {
                 navigate('/posts');
               } else if (card.title === 'Our Members') {
                 navigate('/members');
+              } else if (card.title === 'Upcoming Events') {
+                navigate('/events');
               }
             }}
           >
             {(() => {
               const isLatestCard = card.title === 'Latest Posts' && latestPost;
               const isMembersCard = card.title === 'Our Members' && memberImages.length > 0;
+              const isEventsCard = card.title === 'Upcoming Events' && upcomingEvent;
               
               if (isMembersCard) {
                 // Members card with fade animation
@@ -133,6 +153,24 @@ const Cards = () => {
                         </div>
                       )}
                     </div>
+                    <div>
+                      <p className="text-white text-base font-medium leading-normal">{card.title}</p>
+                      <p className="text-white/60 text-sm font-normal leading-normal">{card.description}</p>
+                    </div>
+                  </>
+                );
+              }
+              
+              if (isEventsCard) {
+                // Upcoming Events card with event image
+                return (
+                  <>
+                    <div 
+                      className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                      style={{ backgroundImage: `url("${upcomingEvent.image_url || card.image}")` }}
+                      role="img"
+                      aria-label={card.alt}
+                    ></div>
                     <div>
                       <p className="text-white text-base font-medium leading-normal">{card.title}</p>
                       <p className="text-white/60 text-sm font-normal leading-normal">{card.description}</p>

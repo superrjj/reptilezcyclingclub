@@ -60,7 +60,7 @@ const Header = ({ onLoginClick }) => {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-solid border-primary/30 bg-background-dark/95 backdrop-blur">
       {maintenanceVisible && (
         <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-xl border border-primary/50 bg-black/90 px-6 py-3 text-sm font-semibold text-white shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-          Under Maintenance (Hindi pa po tapos) by Dev Harvee
+          Hindi pa po ito tapos by Dev Harvee
         </div>
       )}
       <div className="mx-auto flex max-w-[960px] items-center justify-between whitespace-nowrap px-4 py-4 sm:px-10">
@@ -101,13 +101,15 @@ const Header = ({ onLoginClick }) => {
             >
               Posts
             </Link>
-            <button
-              type="button"
-              onClick={handleMaintenanceClick}
-              className="text-white text-base font-semibold leading-relaxed tracking-wide hover:text-primary transition-colors"
+            <Link
+              to="/events"
+              onClick={(e) => handleLinkClick(e, '/events')}
+              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
+                location.pathname === '/events' ? 'text-primary' : 'text-white hover:text-primary'
+              }`}
             >
               Events
-            </button>
+            </Link>
             <Link 
               to="/members" 
               onClick={(e) => handleLinkClick(e, '/members')}
@@ -170,6 +172,7 @@ const Header = ({ onLoginClick }) => {
               {[
                 { label: 'Home', path: '/' },
                 { label: 'Posts', path: '/posts' },
+                { label: 'Events', path: '/events' },
                 { label: 'Members', path: '/members' },
               ].map((item) => (
                 <Link
@@ -185,13 +188,6 @@ const Header = ({ onLoginClick }) => {
                   {item.label}
                 </Link>
               ))}
-              <button
-                type="button"
-                onClick={handleMaintenanceClick}
-                className="rounded-xl px-4 py-3 text-left text-lg font-semibold text-white transition hover:bg-white/5"
-              >
-                Events (soon)
-              </button>
               <button
                 type="button"
                 onClick={handleMaintenanceClick}
