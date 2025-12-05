@@ -118,3 +118,111 @@ export const getMembersByRole = async (roleType) => {
   }
 };
 
+/**
+ * Create a new member
+ * @param {Object} memberData - Member data object
+ * @param {string} memberData.name - Member full name
+ * @param {string} memberData.role - Member role (display name)
+ * @param {string} memberData.role_type - Member role type (Founder, Rider, Captain, Utility)
+ * @param {string} memberData.image_url - Member image URL (optional)
+ * @param {string} memberData.description - Member description (optional)
+ * @param {string} memberData.bio - Member bio (optional)
+ * @returns {Promise<Object>} Created member object
+ */
+export const createMember = async (memberData) => {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error('Supabase is not configured.');
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('members')
+      .insert([{
+        name: memberData.name,
+        role: memberData.role || memberData.role_type,
+        role_type: memberData.role_type,
+        image_url: memberData.image_url || null,
+        description: memberData.description || null,
+        bio: memberData.bio || null,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating member:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error in createMember:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update an existing member
+ * @param {string} id - Member ID
+ * @param {Object} memberData - Updated member data
+ * @returns {Promise<Object>} Updated member object
+ */
+export const updateMember = async (id, memberData) => {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error('Supabase is not configured.');
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('members')
+      .update({
+        name: memberData.name,
+        role: memberData.role || memberData.role_type,
+        role_type: memberData.role_type,
+        image_url: memberData.image_url !== undefined ? memberData.image_url : null,
+        description: memberData.description || null,
+        bio: memberData.bio || null,
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating member:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error in updateMember:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a member
+ * @param {string} id - Member ID
+ * @returns {Promise<boolean>} True if successful
+ */
+export const deleteMember = async (id) => {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error('Supabase is not configured.');
+  }
+
+  try {
+    const { error } = await supabase
+      .from('members')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting member:', error);
+      throw error;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in deleteMember:', error);
+    throw error;
+  }
+};
+

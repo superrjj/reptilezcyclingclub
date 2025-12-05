@@ -182,25 +182,33 @@ const AdminLayout = ({ children }) => {
                   <p className="text-sm font-medium leading-normal">Posts</p>
                 </a>
                 <a 
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" 
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                    isActive('/admin/events') 
+                      ? 'bg-primary text-white font-medium' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                  }`}
                   href="/admin/events"
                   onClick={(e) => { 
                     e.preventDefault(); 
                     navigate('/admin/events'); 
                   }}
                 >
-                  <span className="material-symbols-outlined">event</span>
+                  <span className="material-symbols-outlined" style={isActive('/admin/events') ? { fontVariationSettings: "'FILL' 1" } : {}}>event</span>
                   <p className="text-sm font-medium leading-normal">Events</p>
                 </a>
                 <a 
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" 
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                    isActive('/admin/members') 
+                      ? 'bg-primary text-white font-medium' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                  }`}
                   href="/admin/members"
                   onClick={(e) => { 
                     e.preventDefault(); 
                     navigate('/admin/members'); 
                   }}
                 >
-                  <span className="material-symbols-outlined">groups</span>
+                  <span className="material-symbols-outlined" style={isActive('/admin/members') ? { fontVariationSettings: "'FILL' 1" } : {}}>groups</span>
                   <p className="text-sm font-medium leading-normal">Members</p>
                 </a>
                 <a 

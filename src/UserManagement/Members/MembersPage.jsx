@@ -6,73 +6,57 @@ const MembersPage = () => {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [useSupabase, setUseSupabase] = useState(false); // Set to true when ready to use Supabase
 
-  // Local fallback data
-  const localMembers = [
-    {
-      name: "Mark Darwin Manguan",
-      role: "Founder",
-      roleType: "Founder",
-      description: "Road Bike",
-      image: "/kuyamd.jpg",
-      alt: "Portrait of Harvee"
-    },
-    {
-      name: "John Harvee Quirido",
-      role: "Rider",
-      roleType: "Rider",
-      description: "Road Bike",
-      image: "/harvee.jpg",
-      alt: "Portrait of Harvee"
-    },
-    {
-      name: "John Harvee Quirido",
-      role: "Rider",
-      roleType: "Rider",
-      description: "Road Bike",
-      image: "/harvee.jpg",
-      alt: "Portrait of Harvee"
-    }
-  ];
-
-  const filters = ['All', 'Captain', 'Rider', 'Founder'];
+  const filters = ['All', 'Founder', 'Captain', 'Rider', 'Utility'];
 
   // Fetch members from Supabase on mount and when filters change
   useEffect(() => {
     const fetchMembers = async () => {
-      if (useSupabase) {
-        setLoading(true);
-        try {
-          let data;
-          if (selectedFilter !== 'All') {
-            data = await getMembersByRole(selectedFilter);
-          } else if (searchQuery) {
-            data = await searchMembers(searchQuery);
-          } else {
-            data = await getMembers();
-          }
-          setMembers(data);
-        } catch (error) {
-          console.error('Error fetching members:', error);
-          setMembers(localMembers); // Fallback to local data
-        } finally {
-          setLoading(false);
+      setLoading(true);
+      try {
+        let data;
+        if (selectedFilter !== 'All') {
+          data = await getMembersByRole(selectedFilter);
+        } else if (searchQuery.trim()) {
+          data = await searchMembers(searchQuery);
+        } else {
+          data = await getMembers();
         }
-      } else {
-        setMembers(localMembers);
+        setMembers(data || []);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+        setMembers([]);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchMembers();
-  }, [useSupabase, selectedFilter, searchQuery]);
+  }, [selectedFilter, searchQuery]);
 
-  // Filter members (for local data or after Supabase fetch)
+  // Filter members (client-side filtering for search when filter is active)
   const filteredMembers = members.filter(member => {
-    const matchesSearch = member.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? true;
-    const matchesFilter = selectedFilter === 'All' || member.role_type === selectedFilter || member.roleType === selectedFilter;
-    return matchesSearch && matchesFilter;
+    if (!member || !member.name) return false;
+    
+    // If search query exists and we're not using searchMembers API (because filter is active)
+    if (selectedFilter !== 'All' && searchQuery.trim()) {
+      const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = member.role_type === selectedFilter;
+      return matchesSearch && matchesFilter;
+    }
+    
+    // If only filter is active (searchMembers API handles search when no filter)
+    if (selectedFilter !== 'All') {
+      return member.role_type === selectedFilter;
+    }
+    
+    // If only search is active, API already filtered
+    if (searchQuery.trim()) {
+      return true;
+    }
+    
+    // Show all members
+    return true;
   });
 
   return (
@@ -85,9 +69,9 @@ const MembersPage = () => {
       }}
     >
       <div className="layout-container flex h-full grow flex-col">
-        <div className="px-4 md:px-6 lg:px-8 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col w-full max-w-[1400px] flex-1 pt-24">
-            <main className="flex flex-col gap-6 py-8">
+        <div className="px-4 md:px-6 lg:px-8 flex flex-1 justify-center">
+          <div className="layout-content-container flex flex-col w-full max-w-[1400px] flex-1">
+            <main className="flex flex-col gap-6 pt-4">
               <div className="flex flex-wrap justify-between gap-3">
                 <div className="flex min-w-72 flex-col gap-3">
                   <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Meet the Reptilez</p>
@@ -146,27 +130,35 @@ const MembersPage = () => {
                     No members found.
                   </div>
                 ) : (
-                  filteredMembers.map((member, index) => (
-                    <div key={member.id || index} className="flex flex-col gap-3 text-center pb-3 group">
+                  filteredMembers.map((member) => (
+                    <div key={member.id} className="flex flex-col gap-3 text-center pb-3 group">
                       <div className="px-4 flex justify-center">
                         <div
                           className="w-full max-w-[240px] bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300"
-                          style={{ backgroundImage: `url("${member.image || member.image_url}")` }}
-                          alt={member.alt || member.name}
+                          style={{ 
+                            backgroundImage: `url("${member.image_url || '/rcc1.png'}")`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                          role="img"
+                          aria-label={member.name || 'Member'}
                         ></div>
                       </div>
                       <div>
-                        <p className="text-white text-base font-medium leading-normal">{member.name}</p>
+                        <p className="text-white text-base font-medium leading-normal">{member.name || 'Unknown'}</p>
                         <p className={`text-sm font-bold leading-normal ${
-                          (member.role_type === 'Captain' || member.roleType === 'Captain' || 
-                           member.role_type === 'Lead Rider' || member.roleType === 'Lead Rider' || 
-                           member.role === 'Founder')
+                          (member.role_type === 'Captain' || member.role_type === 'Founder')
                             ? 'text-primary'
                             : 'text-primary/70'
                         }`}>
-                          {member.role || member.role_name}
+                          {member.role_type || member.role || 'Member'}
                         </p>
-                        <p className="text-primary/70 text-sm font-normal leading-normal">{member.description || member.bio}</p>
+                        {member.description && (
+                          <p className="text-primary/70 text-sm font-normal leading-normal">{member.description}</p>
+                        )}
+                        {member.bio && !member.description && (
+                          <p className="text-primary/70 text-sm font-normal leading-normal">{member.bio}</p>
+                        )}
                       </div>
                     </div>
                   ))
