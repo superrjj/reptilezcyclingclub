@@ -4,6 +4,7 @@ import { getPosts, createPost, updatePost, deletePost, searchPosts } from '../..
 import { uploadImage } from '../../../services/imageUploadService';
 import AdminLayout from '../AdminLayout';
 import { supabase, isSupabaseConfigured } from '../../../lib/supabase';
+import { useTabVisibility } from '../../../hooks/useTabVisibility';
 
 const Posts = () => {
   const { user } = useAuth();
@@ -35,11 +36,6 @@ const Posts = () => {
     status: 'Draft'
   });
 
-  // Fetch posts on mount
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
   // Fetch posts from Supabase
   const fetchPosts = async () => {
     setLoading(true);
@@ -53,6 +49,26 @@ const Posts = () => {
       setLoading(false);
     }
   };
+
+  // Refresh function that respects current search query
+  const refreshPosts = async () => {
+    if (searchQuery.trim()) {
+      try {
+        const data = await searchPosts(searchQuery);
+        setPosts(data);
+        fetchAuthorProfiles(data);
+      } catch (error) {
+        console.error('Error searching posts:', error);
+      }
+    } else {
+      await fetchPosts();
+    }
+  };
+
+  // Fetch posts on mount
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   // Search posts
   useEffect(() => {
@@ -71,6 +87,9 @@ const Posts = () => {
       fetchPosts();
     }
   }, [searchQuery]);
+
+  // Auto-refresh when tab becomes visible
+  useTabVisibility(refreshPosts);
 
   const fetchAuthorProfiles = async (postsData) => {
     if (!isSupabaseConfigured || !supabase || !Array.isArray(postsData)) return;

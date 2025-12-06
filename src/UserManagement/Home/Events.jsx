@@ -2,28 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUpcomingEvents } from '../../services/eventsService';
 
-const Events = () => {
+const Events = ({ refreshFunctionsRef }) => {
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        const data = await getUpcomingEvents();
-        setEvents(data || []);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const data = await getUpcomingEvents();
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchEvents();
   }, []);
+
+  // Register refresh function
+  useEffect(() => {
+    if (refreshFunctionsRef?.current) {
+      const index = refreshFunctionsRef.current.length;
+      refreshFunctionsRef.current.push(fetchEvents);
+      return () => {
+        refreshFunctionsRef.current = refreshFunctionsRef.current.filter((_, i) => i !== index);
+      };
+    }
+  }, [refreshFunctionsRef]);
 
   useEffect(() => {
     if (selectedEvent) {

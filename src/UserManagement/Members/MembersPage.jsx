@@ -1,38 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getMembers, searchMembers, getMembersByRole } from '../../services/membersService';
+import { useTabVisibility } from '../../hooks/useTabVisibility';
 
 const MembersPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const searchQueryRef = useRef('');
+  const selectedFilterRef = useRef('All');
 
   const filters = ['All', 'Founder', 'Captain', 'Rider', 'Utility'];
 
   // Fetch members from Supabase on mount and when filters change
-  useEffect(() => {
-    const fetchMembers = async () => {
-      setLoading(true);
-      try {
-        let data;
-        if (selectedFilter !== 'All') {
-          data = await getMembersByRole(selectedFilter);
-        } else if (searchQuery.trim()) {
-          data = await searchMembers(searchQuery);
-        } else {
-          data = await getMembers();
-        }
-        setMembers(data || []);
-      } catch (error) {
-        console.error('Error fetching members:', error);
-        setMembers([]);
-      } finally {
-        setLoading(false);
+  const fetchMembers = async () => {
+    setLoading(true);
+    try {
+      let data;
+      const filter = selectedFilterRef.current;
+      const query = searchQueryRef.current;
+      
+      if (filter !== 'All') {
+        data = await getMembersByRole(filter);
+      } else if (query.trim()) {
+        data = await searchMembers(query);
+      } else {
+        data = await getMembers();
       }
-    };
+      setMembers(data || []);
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      setMembers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+    selectedFilterRef.current = selectedFilter;
     fetchMembers();
   }, [selectedFilter, searchQuery]);
+
+  // Auto-refresh when tab becomes visible
+  useTabVisibility(fetchMembers);
 
   // Filter members (client-side filtering for search when filter is active)
   const filteredMembers = members.filter(member => {

@@ -1,28 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { getMaintenanceByType } from '../../services/maintenanceService';
 
-const Hero = () => {
+const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [heroImages, setHeroImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchHeroImages = async () => {
-      try {
-        const maintenanceData = await getMaintenanceByType('Hero');
-        if (maintenanceData && maintenanceData.length > 0) {
-          const images = maintenanceData.map(item => item.image_url).filter(Boolean);
-          setHeroImages(images);
-        }
-      } catch (error) {
-        console.error('Error fetching hero images:', error);
-      } finally {
-        setLoading(false);
+  const fetchHeroImages = async () => {
+    setLoading(true);
+    try {
+      const maintenanceData = await getMaintenanceByType('Hero');
+      if (maintenanceData && maintenanceData.length > 0) {
+        const images = maintenanceData.map(item => item.image_url).filter(Boolean);
+        setHeroImages(images);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching hero images:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchHeroImages();
   }, []);
+
+  // Register refresh function
+  useEffect(() => {
+    if (refreshFunctionsRef?.current) {
+      const index = refreshFunctionsRef.current.length;
+      refreshFunctionsRef.current.push(fetchHeroImages);
+      return () => {
+        refreshFunctionsRef.current = refreshFunctionsRef.current.filter((_, i) => i !== index);
+      };
+    }
+  }, [refreshFunctionsRef]);
 
   useEffect(() => {
     if (heroImages.length === 0) return;
@@ -89,7 +101,9 @@ const Hero = () => {
       </div>
     </div>
   );
-};
+});
+
+Hero.displayName = 'Hero';
 
 export default Hero;
 

@@ -1,27 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { getEvents } from '../../services/eventsService';
+import { useTabVisibility } from '../../hooks/useTabVisibility';
 
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        const data = await getEvents();
-        setEvents(data || []);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const data = await getEvents();
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchEvents();
   }, []);
+
+  // Auto-refresh when tab becomes visible
+  useTabVisibility(fetchEvents);
 
   useEffect(() => {
     if (selectedEvent) {

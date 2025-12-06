@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { getPosts } from '../../services/postsService';
 import { fetchPostLikeSummary, removePostLike, upsertPostLike } from '../../services/postLikesService';
 import { isSupabaseConfigured } from '../../lib/supabase';
+import { useTabVisibility } from '../../hooks/useTabVisibility';
 
 const fallbackPosts = [
   {
@@ -65,27 +66,30 @@ const ViewPost = () => {
   const [activeMedia, setActiveMedia] = useState(null);
   const [shareState, setShareState] = useState({ postId: null, message: '' });
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      try {
-        const data = await getPosts();
-        if (Array.isArray(data) && data.length > 0) {
-          setPosts(data);
-        } else {
-          setPosts(fallbackPosts);
-        }
-      } catch (err) {
-        console.error('Error loading posts:', err);
-        setError('Unable to load posts from Supabase. Showing sample data for now.');
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const data = await getPosts();
+      if (Array.isArray(data) && data.length > 0) {
+        setPosts(data);
+      } else {
         setPosts(fallbackPosts);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err) {
+      console.error('Error loading posts:', err);
+      setError('Unable to load posts from Supabase. Showing sample data for now.');
+      setPosts(fallbackPosts);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPosts();
   }, []);
+
+  // Auto-refresh when tab becomes visible
+  useTabVisibility(fetchPosts);
 
   useEffect(() => {
     if (!supabaseReady) {

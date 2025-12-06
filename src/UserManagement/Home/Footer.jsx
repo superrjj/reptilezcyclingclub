@@ -49,7 +49,7 @@ const Footer = () => {
             </svg>
           </a>
         </div>
-        <p className="text-sm text-white/60 text-center sm:text-right">© 2024 Reptilez Cycling Club. All Rights Reserved.</p>
+        <p className="text-sm text-white/60 text-center sm:text-right">© 2021 Reptilez Cycling Club. All Rights Reserved.</p>
       </div>
     </footer>
   );

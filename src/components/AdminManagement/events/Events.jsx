@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../AdminLayout';
 import { getEvents, searchEvents, createEvent, updateEvent, deleteEvent } from '../../../services/eventsService';
 import { uploadImage } from '../../../services/imageUploadService';
+import { useTabVisibility } from '../../../hooks/useTabVisibility';
 
 const Events = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,27 +30,34 @@ const Events = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        let data;
-        if (searchQuery) {
-          data = await searchEvents(searchQuery);
-        } else {
-          data = await getEvents();
-        }
-        setEvents(data || []);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const searchQueryRef = useRef('');
 
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      let data;
+      const query = searchQueryRef.current;
+      if (query) {
+        data = await searchEvents(query);
+      } else {
+        data = await getEvents();
+      }
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
     fetchEvents();
   }, [searchQuery]);
+
+  // Auto-refresh when tab becomes visible
+  useTabVisibility(fetchEvents);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../AdminLayout';
 import { getMembers, searchMembers, createMember, updateMember, deleteMember } from '../../../services/membersService';
 import { uploadImage } from '../../../services/imageUploadService';
+import { useTabVisibility } from '../../../hooks/useTabVisibility';
 
 const Members = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,27 +28,34 @@ const Members = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      setLoading(true);
-      try {
-        let data;
-        if (searchQuery) {
-          data = await searchMembers(searchQuery);
-        } else {
-          data = await getMembers();
-        }
-        setMembers(data || []);
-      } catch (error) {
-        console.error('Error fetching members:', error);
-        setMembers([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const searchQueryRef = useRef('');
 
+  const fetchMembers = async () => {
+    setLoading(true);
+    try {
+      let data;
+      const query = searchQueryRef.current;
+      if (query) {
+        data = await searchMembers(query);
+      } else {
+        data = await getMembers();
+      }
+      setMembers(data || []);
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      setMembers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
     fetchMembers();
   }, [searchQuery]);
+
+  // Auto-refresh when tab becomes visible
+  useTabVisibility(fetchMembers);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
