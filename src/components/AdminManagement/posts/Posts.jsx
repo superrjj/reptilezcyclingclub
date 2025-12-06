@@ -12,8 +12,8 @@ const Posts = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingPost, setEditingPost] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [mediaPreviews, setMediaPreviews] = useState([]);
   const fileInputRef = useRef(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [authorProfiles, setAuthorProfiles] = useState({});
@@ -30,7 +30,8 @@ const Posts = () => {
     title: '',
     content: '',
     category: 'Announcements',
-    featured_image: '',
+    featured_image: '', // Keep for backward compatibility
+    media: [], // New: array of {url, type}
     status: 'Draft'
   });
 
@@ -135,34 +136,52 @@ const Posts = () => {
     }, 3000);
   };
 
-  const handleImageFile = (file) => {
-    if (!file) return;
+  const handleMediaFiles = (files) => {
+    if (!files || files.length === 0) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      showToast('error', 'Please select an image file');
-      return;
-    }
+    const validFiles = Array.from(files).filter(file => {
+      // Validate file type (images or videos)
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      
+      if (!isImage && !isVideo) {
+        showToast('error', `${file.name} is not an image or video file`);
+        return false;
+      }
 
-    // Validate file size (max 30MB)
-    if (file.size > 30 * 1024 * 1024) {
-      showToast('error', 'Image size should be less than 30MB');
-      return;
-    }
+      // Validate file size (max 50MB for videos, 30MB for images)
+      const maxSize = isVideo ? 50 * 1024 * 1024 : 30 * 1024 * 1024;
+      if (file.size > maxSize) {
+        showToast('error', `${file.name} is too large. Max size: ${isVideo ? '50MB' : '30MB'}`);
+        return false;
+      }
 
-    setSelectedFile(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
+    // Add to selected files
+    setSelectedFiles(prev => [...prev, ...validFiles]);
+
+    // Create previews
+    validFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const type = file.type.startsWith('video/') ? 'video' : 'image';
+        setMediaPreviews(prev => [...prev, {
+          url: reader.result,
+          type,
+          file
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    handleImageFile(file);
+  const handleMediaUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    handleMediaFiles(files);
   };
 
   const handleDragOver = (e) => {
@@ -173,16 +192,22 @@ const Posts = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const file = e.dataTransfer.files[0];
-    handleImageFile(file);
+    const files = Array.from(e.dataTransfer.files);
+    handleMediaFiles(files);
   };
 
-  const removeImage = () => {
-    setSelectedFile(null);
-    setImagePreview('');
+  const removeMedia = (index) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setMediaPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearAllMedia = () => {
+    setSelectedFiles([]);
+    setMediaPreviews([]);
     setFormData(prev => ({
       ...prev,
-      featured_image: ''
+      featured_image: '',
+      media: []
     }));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -195,27 +220,42 @@ const Posts = () => {
     setUploading(true);
     
     try {
-      let imageUrl = formData.featured_image;
-
-      // Upload image if a new file is selected
-      if (selectedFile) {
-        try {
-          imageUrl = await uploadImage(selectedFile, 'posts');
-        } catch (uploadError) {
-          console.error('Error uploading image, using base64 fallback:', uploadError);
-          // Fallback to base64 if upload fails
-          if (imagePreview) {
-            imageUrl = imagePreview;
+      let mediaArray = formData.media || [];
+      
+      // Upload new media files if any
+      if (selectedFiles.length > 0) {
+        const uploadPromises = selectedFiles.map(async (file) => {
+          try {
+            const url = await uploadImage(file, 'posts');
+            const type = file.type.startsWith('video/') ? 'video' : 'image';
+            return { url, type };
+          } catch (uploadError) {
+            console.error('Error uploading media, using base64 fallback:', uploadError);
+            // Fallback to base64 if upload fails
+            const preview = mediaPreviews.find(p => p.file === file);
+            if (preview) {
+              const type = file.type.startsWith('video/') ? 'video' : 'image';
+              return { url: preview.url, type };
+            }
+            return null;
           }
-        }
+        });
+        
+        const uploadedMedia = await Promise.all(uploadPromises);
+        mediaArray = [...mediaArray, ...uploadedMedia.filter(Boolean)];
       }
+
+      // For backward compatibility, set featured_image to first image if exists
+      const firstImage = mediaArray.find(m => m.type === 'image');
+      const featuredImage = firstImage ? firstImage.url : (formData.featured_image || '');
 
       // Only set author_id if it's a valid UUID (not 'admin' string)
       const authorId = user?.id && user.id !== 'admin' ? user.id : null;
 
       const postData = {
         ...formData,
-        featured_image: imageUrl,
+        featured_image: featuredImage, // Keep for backward compatibility
+        media: mediaArray,
         author_id: authorId
       };
 
@@ -245,15 +285,17 @@ const Posts = () => {
 
   const handleEdit = (post) => {
     setEditingPost(post);
+    const media = post.media || (post.featured_image ? [{ url: post.featured_image, type: 'image' }] : []);
     setFormData({
       title: post.title || '',
       content: post.content || '',
       category: post.category || 'Announcements',
       featured_image: post.featured_image || '',
+      media: media,
       status: post.status || 'Draft'
     });
-    setImagePreview(post.featured_image || '');
-    setSelectedFile(null);
+    setMediaPreviews(media.map(m => ({ url: m.url, type: m.type })));
+    setSelectedFiles([]);
   };
 
   const handleDelete = async (id) => {
@@ -275,11 +317,12 @@ const Posts = () => {
       content: '',
       category: 'Announcements',
       featured_image: '',
+      media: [],
       status: 'Draft'
     });
     setEditingPost(null);
-    setSelectedFile(null);
-    setImagePreview('');
+    setSelectedFiles([]);
+    setMediaPreviews([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -411,20 +454,46 @@ const Posts = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Featured Image</label>
-                  {imagePreview || (editingPost && formData.featured_image) ? (
-                    <div className="relative mt-1 overflow-hidden rounded-md border border-gray-300 dark:border-gray-600">
-                      <img
-                        src={imagePreview || formData.featured_image}
-                        alt="Preview"
-                        className="h-48 w-full object-cover"
-                      />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Media (Images & Videos)
+                  </label>
+                  {(mediaPreviews.length > 0 || (editingPost && formData.media && formData.media.length > 0)) ? (
+                    <div className="mt-1 space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        {(mediaPreviews.length > 0 ? mediaPreviews : (formData.media || [])).map((preview, index) => (
+                          <div key={index} className="relative group">
+                            {preview.type === 'video' ? (
+                              <video
+                                src={preview.url}
+                                className="h-32 w-full object-cover rounded-md border border-gray-300 dark:border-gray-600"
+                                controls={false}
+                              />
+                            ) : (
+                              <img
+                                src={preview.url}
+                                alt={`Preview ${index + 1}`}
+                                className="h-32 w-full object-cover rounded-md border border-gray-300 dark:border-gray-600"
+                              />
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeMedia(index)}
+                              className="absolute right-2 top-2 rounded-full bg-red-500 p-1.5 text-white shadow-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <span className="material-symbols-outlined text-sm">close</span>
+                            </button>
+                            <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                              {preview.type === 'video' ? 'Video' : 'Image'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                       <button
                         type="button"
-                        onClick={removeImage}
-                        className="absolute right-3 top-3 rounded-full bg-red-500 p-2 text-white shadow-md hover:bg-red-600"
+                        onClick={clearAllMedia}
+                        className="text-sm text-red-500 hover:text-red-600"
                       >
-                        <span className="material-symbols-outlined text-base">close</span>
+                        Clear all media
                       </button>
                     </div>
                   ) : (
@@ -439,18 +508,19 @@ const Posts = () => {
                         <div className="flex text-sm text-gray-600 dark:text-gray-400">
                           <p>Drag & drop or tap to upload</p>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-500">JPG/PNG, max 30MB</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500">Images/Videos, max 30MB (images) / 50MB (videos)</p>
                       </div>
                     </div>
                   )}
                   <input
                     ref={fileInputRef}
                     className="hidden"
-                    id="featured-image"
-                    name="featured_image"
+                    id="media-upload"
+                    name="media"
                     type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={handleMediaUpload}
                   />
                 </div>
 
@@ -607,13 +677,58 @@ const Posts = () => {
                         </div>
                       </div>
 
-                      {post.featured_image && (
-                        <img
-                          alt="Post featured image"
-                          className="w-full h-64 object-cover"
-                          src={post.featured_image}
-                        />
-                      )}
+                      {(() => {
+                        const media = post.media && Array.isArray(post.media) && post.media.length > 0
+                          ? post.media
+                          : (post.featured_image ? [{ url: post.featured_image, type: 'image' }] : []);
+                        
+                        if (media.length === 0) return null;
+
+                        if (media.length === 1) {
+                          const item = media[0];
+                          return item.type === 'video' ? (
+                            <video
+                              className="w-full h-64 object-cover"
+                              src={item.url}
+                              controls
+                            />
+                          ) : (
+                            <img
+                              alt="Post featured image"
+                              className="w-full h-64 object-cover"
+                              src={item.url}
+                            />
+                          );
+                        }
+
+                        // Multiple media - show grid
+                        return (
+                          <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100 dark:bg-gray-800">
+                            {media.slice(0, 4).map((item, index) => (
+                              <div key={index} className="relative">
+                                {item.type === 'video' ? (
+                                  <video
+                                    className="w-full h-32 object-cover"
+                                    src={item.url}
+                                    controls
+                                  />
+                                ) : (
+                                  <img
+                                    alt={`Post media ${index + 1}`}
+                                    className="w-full h-32 object-cover"
+                                    src={item.url}
+                                  />
+                                )}
+                                {media.length > 4 && index === 3 && (
+                                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                    <span className="text-white font-bold">+{media.length - 4}</span>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
 
                       <div className="p-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-800">
                         <button

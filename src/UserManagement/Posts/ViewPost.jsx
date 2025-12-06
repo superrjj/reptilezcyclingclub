@@ -417,27 +417,121 @@ const ViewPost = () => {
                           )}
                         </div>
                       </div>
-                      {post.featured_image && (
-                        <button
-                          type="button"
-                          className="group relative flex w-full overflow-hidden border-y border-white/5 focus:outline-none"
-                          onClick={() =>
-                            setActiveMedia({
-                              src: post.featured_image,
-                              title: post.title,
-                              meta: post.category,
-                            })
-                          }
-                          aria-label={`View full image for ${post.title}`}
-                        >
-                          <div
-                            className="aspect-video w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.02]"
-                            style={{ backgroundImage: `url("${post.featured_image}")` }}
-                            role="img"
-                            aria-label={post.title}
-                          />
-                        </button>
-                      )}
+                      {(() => {
+                        // Get media array or fallback to featured_image for backward compatibility
+                        const media = post.media && Array.isArray(post.media) && post.media.length > 0
+                          ? post.media
+                          : (post.featured_image ? [{ url: post.featured_image, type: 'image' }] : []);
+
+                        if (media.length === 0) return null;
+
+                        // Single image/video - full width display
+                        if (media.length === 1) {
+                          const item = media[0];
+                          return (
+                            <div className="relative flex w-full overflow-hidden border-y border-white/5">
+                              {item.type === 'video' ? (
+                                <video
+                                  className="w-full aspect-video object-cover"
+                                  src={item.url}
+                                  controls
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="group relative flex w-full overflow-hidden focus:outline-none"
+                                  onClick={() =>
+                                    setActiveMedia({
+                                      src: item.url,
+                                      title: post.title,
+                                      meta: post.category,
+                                    })
+                                  }
+                                  aria-label={`View full image for ${post.title}`}
+                                >
+                                  <div
+                                    className="aspect-video w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.02]"
+                                    style={{ backgroundImage: `url("${item.url}")` }}
+                                    role="img"
+                                    aria-label={post.title}
+                                  />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        }
+
+                        // Multiple images/videos - grid layout (Facebook style)
+                        const allMedia = media;
+                        const displayCount = Math.min(allMedia.length, 5);
+                        const remainingCount = allMedia.length > 5 ? allMedia.length - 5 : 0;
+
+                        // Determine grid layout based on count
+                        const getGridClass = (count) => {
+                          if (count === 1) return 'grid-cols-1';
+                          if (count === 2) return 'grid-cols-2';
+                          if (count === 3) return 'grid-cols-2';
+                          if (count === 4) return 'grid-cols-2';
+                          return 'grid-cols-3';
+                        };
+
+                        return (
+                          <div className="border-y border-white/5 bg-black/20 p-1">
+                            <div className={`grid ${getGridClass(displayCount)} gap-1`}>
+                              {allMedia.slice(0, displayCount).map((item, index) => {
+                                // For 3 items: first item spans 2 rows
+                                const isLarge = (allMedia.length === 3 && index === 0) || 
+                                             (allMedia.length === 4 && index === 0);
+                                
+                                return (
+                                  <div
+                                    key={index}
+                                    className={`relative overflow-hidden ${
+                                      isLarge ? 'row-span-2' : ''
+                                    }`}
+                                    style={{ 
+                                      aspectRatio: isLarge ? '1' : '1',
+                                      minHeight: isLarge ? '400px' : '200px'
+                                    }}
+                                  >
+                                    {item.type === 'video' ? (
+                                      <video
+                                        className="w-full h-full object-cover cursor-pointer"
+                                        src={item.url}
+                                        controls
+                                        onClick={(e) => e.stopPropagation()}
+                                      />
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className="group relative w-full h-full focus:outline-none"
+                                        onClick={() =>
+                                          setActiveMedia({
+                                            src: item.url,
+                                            title: post.title,
+                                            meta: post.category,
+                                          })
+                                        }
+                                      >
+                                        <div
+                                          className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                                          style={{ backgroundImage: `url("${item.url}")` }}
+                                        />
+                                        {remainingCount > 0 && index === 4 && (
+                                          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                                            <span className="text-white text-3xl font-bold">+{remainingCount}</span>
+                                          </div>
+                                        )}
+                                      </button>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })()}
                       <div className="flex flex-wrap items-center gap-3 border-t border-white/5 bg-black/30 px-5 py-3 text-xs text-white/70 md:px-6">
                         <span className="flex items-center gap-2">
                           <span className="flex items-center gap-1 rounded-full bg-black/50 px-2 py-1">
