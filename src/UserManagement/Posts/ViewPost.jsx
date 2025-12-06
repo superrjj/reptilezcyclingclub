@@ -115,25 +115,7 @@ const ViewPost = () => {
         }
         const model = navigator.userAgent || 'Unknown Device';
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown Region';
-
-        let location = timezone;
-
-        if (navigator.geolocation) {
-          try {
-            const coords = await new Promise((resolve, reject) => {
-              navigator.geolocation.getCurrentPosition(
-                (pos) => resolve(pos.coords),
-                (err) => reject(err),
-                { maximumAge: 600000, timeout: 5000 }
-              );
-            });
-            if (coords?.latitude && coords?.longitude) {
-              location = `${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`;
-            }
-          } catch {
-            // user denied or failed – keep timezone as fallback
-          }
-        }
+        const location = timezone;
 
         setDeviceFingerprint({
           id: deviceId,

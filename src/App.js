@@ -7,6 +7,7 @@ import HomePage from './UserManagement/Home/HomePage.jsx';
 import MembersPage from './UserManagement/Members/MembersPage.jsx';
 import ViewPost from './UserManagement/Posts/ViewPost.jsx';
 import EventsPage from './UserManagement/Events/EventsPage.jsx';
+import AboutUsPage from './UserManagement/AboutUs/AboutUsPage.jsx';
 import LoginDialog from './components/common/LoginDialog.jsx';
 import Dashboard from './components/AdminManagement/dashboard/Dashboard.jsx';
 import Posts from './components/AdminManagement/posts/Posts.jsx';
@@ -146,6 +147,18 @@ function App() {
                   setLoginOpen={setLoginOpen}
                 >
                   <EventsPage />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/about-us"
+              element={
+                <MainLayout
+                  onLoginClick={() => setLoginOpen(true)}
+                  loginOpen={loginOpen}
+                  setLoginOpen={setLoginOpen}
+                >
+                  <AboutUsPage />
                 </MainLayout>
               }
             />

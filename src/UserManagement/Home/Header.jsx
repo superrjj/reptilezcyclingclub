@@ -119,13 +119,15 @@ const Header = ({ onLoginClick }) => {
             >
               Members
             </Link>
-            <button
-              type="button"
-              onClick={handleMaintenanceClick}
-              className="text-white text-base font-semibold leading-relaxed tracking-wide hover:text-primary transition-colors"
+            <Link
+              to="/about-us"
+              onClick={(e) => handleLinkClick(e, '/about-us')}
+              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
+                location.pathname === '/about-us' ? 'text-primary' : 'text-white hover:text-primary'
+              }`}
             >
               About Us
-            </button>
+            </Link>
           </div>
           {isAdmin ? (
             <div className="flex items-center gap-3">
@@ -174,6 +176,7 @@ const Header = ({ onLoginClick }) => {
                 { label: 'Posts', path: '/posts' },
                 { label: 'Events', path: '/events' },
                 { label: 'Members', path: '/members' },
+                { label: 'About Us', path: '/about-us' },
               ].map((item) => (
                 <Link
                   key={item.path}
@@ -188,13 +191,6 @@ const Header = ({ onLoginClick }) => {
                   {item.label}
                 </Link>
               ))}
-              <button
-                type="button"
-                onClick={handleMaintenanceClick}
-                className="rounded-xl px-4 py-3 text-left text-lg font-semibold text-white transition hover:bg-white/5"
-              >
-                About Us (soon)
-              </button>
             </nav>
             <div className="rounded-2xl border border-white/10 p-4 shadow-inner shadow-black/30">
               {isAdmin ? (

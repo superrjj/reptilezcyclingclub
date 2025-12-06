@@ -118,6 +118,8 @@ const Cards = () => {
                 navigate('/members');
               } else if (card.title === 'Upcoming Events') {
                 navigate('/events');
+              } else if (card.title === 'About Us') {
+                navigate('/about-us');
               }
             }}
           >
