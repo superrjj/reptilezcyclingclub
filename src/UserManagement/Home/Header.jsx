@@ -165,11 +165,11 @@ const Header = ({ onLoginClick }) => {
       {mobileMenuOpen && (
         <div className="md:hidden">
           <div
-            className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-black/90 backdrop-blur-md"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed inset-x-4 top-24 z-50 flex origin-top scale-100 flex-col gap-4 rounded-2xl border border-white/10 bg-background-dark/98 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.85)] transition">
+          <div className="fixed inset-x-4 top-24 z-50 flex origin-top scale-100 flex-col gap-4 rounded-2xl border border-white/10 bg-background-dark p-6 shadow-[0_30px_80px_rgba(0,0,0,0.95)] transition">
             <nav className="flex flex-col gap-3">
               {[
                 { label: 'Home', path: '/' },
@@ -192,15 +192,15 @@ const Header = ({ onLoginClick }) => {
                 </Link>
               ))}
             </nav>
-            <div className="rounded-2xl border border-white/10 p-4 shadow-inner shadow-black/30">
+            <div className="pt-2 border-t border-white/30">
               {isAdmin ? (
                 <div className="flex flex-col gap-3">
-                  <div className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+                  <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary px-1">
                     Admin
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center justify-center rounded-xl bg-accent py-3 text-base font-bold text-white transition hover:bg-red-600"
+                    className="flex items-center justify-center rounded-xl bg-accent py-3 text-base font-bold text-white transition hover:bg-red-600 w-full"
                   >
                     Logout
                   </button>
@@ -211,7 +211,7 @@ const Header = ({ onLoginClick }) => {
                     setMobileMenuOpen(false);
                     onLoginClick();
                   }}
-                  className="flex items-center justify-center rounded-xl bg-primary py-3 text-base font-bold text-white transition hover:bg-green-700"
+                  className="flex items-center justify-center rounded-xl bg-primary py-3 text-base font-bold text-white transition hover:bg-green-700 w-full"
                 >
                   Login
                 </button>

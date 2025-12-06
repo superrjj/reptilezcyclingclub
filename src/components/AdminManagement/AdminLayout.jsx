@@ -12,6 +12,7 @@ const AdminLayout = ({ children }) => {
   const logoutTimerRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -85,6 +86,24 @@ const AdminLayout = ({ children }) => {
     return `${full.slice(0, 18).trim()}...`;
   };
 
+  useEffect(() => {
+    if (!mobileMenuOpen) {
+      document.body.style.overflow = '';
+      return undefined;
+    }
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200">
       {confirmLogoutOpen && (
@@ -126,8 +145,32 @@ const AdminLayout = ({ children }) => {
         </div>
       )}
       <div className="flex h-screen">
+        {/* Mobile Menu Button */}
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+          className="fixed top-4 left-4 z-50 md:hidden rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Toggle navigation menu"
+          aria-expanded={mobileMenuOpen}
+        >
+          <span className="material-symbols-outlined text-2xl">
+            {mobileMenuOpen ? 'close' : 'menu'}
+          </span>
+        </button>
+
+        {/* Mobile Overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/90 backdrop-blur-md md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* SideNavBar */}
-        <aside className="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-gray-200 dark:border-gray-800 h-full overflow-y-auto">
+        <aside className={`fixed md:static inset-y-0 left-0 z-40 w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-gray-200 dark:border-gray-800 h-full overflow-y-auto transform transition-transform duration-300 ease-in-out ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}>
           <div className="flex h-full flex-col justify-between p-4">
             <div className="flex flex-col gap-4">
               <div className="flex gap-3 items-center px-2 py-2">
@@ -163,7 +206,8 @@ const AdminLayout = ({ children }) => {
                   href="/admin"
                   onClick={(e) => { 
                     e.preventDefault(); 
-                    navigate('/admin'); 
+                    navigate('/admin');
+                    setMobileMenuOpen(false);
                   }}
                 >
                   <span className="material-symbols-outlined">dashboard</span>
@@ -176,7 +220,11 @@ const AdminLayout = ({ children }) => {
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
                   }`}
                   href="/admin/posts"
-                  onClick={(e) => { e.preventDefault(); navigate('/admin/posts'); }}
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    navigate('/admin/posts');
+                    setMobileMenuOpen(false);
+                  }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/posts') ? { fontVariationSettings: "'FILL' 1" } : {}}>article</span>
                   <p className="text-sm font-medium leading-normal">Posts</p>
@@ -190,7 +238,8 @@ const AdminLayout = ({ children }) => {
                   href="/admin/events"
                   onClick={(e) => { 
                     e.preventDefault(); 
-                    navigate('/admin/events'); 
+                    navigate('/admin/events');
+                    setMobileMenuOpen(false);
                   }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/events') ? { fontVariationSettings: "'FILL' 1" } : {}}>event</span>
@@ -205,7 +254,8 @@ const AdminLayout = ({ children }) => {
                   href="/admin/members"
                   onClick={(e) => { 
                     e.preventDefault(); 
-                    navigate('/admin/members'); 
+                    navigate('/admin/members');
+                    setMobileMenuOpen(false);
                   }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/members') ? { fontVariationSettings: "'FILL' 1" } : {}}>groups</span>
@@ -220,7 +270,8 @@ const AdminLayout = ({ children }) => {
                   href="/admin/file-maintenance"
                   onClick={(e) => { 
                     e.preventDefault(); 
-                    navigate('/admin/file-maintenance'); 
+                    navigate('/admin/file-maintenance');
+                    setMobileMenuOpen(false);
                   }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/file-maintenance') ? { fontVariationSettings: "'FILL' 1" } : {}}>folder_open</span>
@@ -233,13 +284,19 @@ const AdminLayout = ({ children }) => {
               <a 
                 className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" 
                 href="#"
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                }}
               >
                 <span className="material-symbols-outlined">settings</span>
                 <p className="text-sm font-medium leading-normal">Settings</p>
               </a>
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
                 className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-left w-full"
               >
                 <span className="material-symbols-outlined">logout</span>

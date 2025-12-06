@@ -205,7 +205,7 @@ const Members = () => {
       {/* Toast Notification */}
       {toast.visible && (
         <div
-          className={`fixed right-6 top-20 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-semibold shadow-lg ${
+            className={`fixed right-4 md:right-6 top-20 z-50 flex items-center gap-3 rounded-lg border px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm font-semibold shadow-lg ${
             toast.type === 'success'
               ? 'border-green-400/60 bg-green-500/10 text-green-700 dark:text-green-200'
               : 'border-red-400/60 bg-red-500/10 text-red-700 dark:text-red-200'
@@ -220,13 +220,13 @@ const Members = () => {
 
       <main className="flex-1 flex flex-col bg-background-light dark:bg-background-dark h-full overflow-hidden">
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto p-8">
+          <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
             {/* Sticky Header */}
-            <div className="sticky top-0 z-10 bg-background-light dark:bg-background-dark pb-6 mb-6 border-b border-gray-200 dark:border-gray-800">
-              <div className="flex flex-wrap justify-between items-center gap-4">
-                <h1 className="text-gray-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Member Management</h1>
-                <div className="flex items-center gap-4">
-                  <div className="relative w-64">
+            <div className="sticky top-0 z-10 bg-background-light dark:bg-background-dark pb-4 md:pb-6 mb-4 md:mb-6 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap sm:justify-between items-start sm:items-center gap-3 md:gap-4">
+                <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em]">Member Management</h1>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full sm:w-auto">
+                  <div className="relative w-full sm:w-48 md:w-64">
                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">search</span>
                     <input
                       className="w-full h-10 px-10 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm focus:ring-primary focus:border-primary"
@@ -330,8 +330,8 @@ const Members = () => {
 
       {/* Add New Member Dialog */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-background-dark/95 p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4 py-4">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-background-dark/95 p-4 md:p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <p className="text-sm font-medium text-primary mb-1">MEMBER MANAGEMENT</p>

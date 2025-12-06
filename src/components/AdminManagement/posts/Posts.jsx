@@ -397,7 +397,7 @@ const Posts = () => {
         )}
         {toast.visible && (
           <div
-            className={`fixed right-6 top-20 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-semibold shadow-lg ${
+            className={`fixed right-4 md:right-6 top-20 z-50 flex items-center gap-3 rounded-lg border px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm font-semibold shadow-lg ${
               toast.type === 'success'
                 ? 'border-green-400/60 bg-green-500/10 text-green-700 dark:text-green-200'
                 : 'border-red-400/60 bg-red-500/10 text-red-700 dark:text-red-200'
@@ -409,11 +409,11 @@ const Posts = () => {
             <p>{toast.message}</p>
           </div>
         )}
-        <div className="mx-auto max-w-6xl space-y-6">
+        <div className="mx-auto max-w-6xl space-y-4 md:space-y-6 px-4 md:px-6">
           
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-3">
             {/* Composer */}
-            <section className="lg:col-span-1 space-y-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6">
+            <section className="lg:col-span-1 space-y-4 md:space-y-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-4 md:p-6">
               <div>
                 <p className="text-sm font-medium text-primary mb-1">POST BUILDER</p>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
@@ -459,7 +459,7 @@ const Posts = () => {
                   </label>
                   {(mediaPreviews.length > 0 || (editingPost && formData.media && formData.media.length > 0)) ? (
                     <div className="mt-1 space-y-2">
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {(mediaPreviews.length > 0 ? mediaPreviews : (formData.media || [])).map((preview, index) => (
                           <div key={index} className="relative group">
                             {preview.type === 'video' ? (
@@ -524,7 +524,7 @@ const Posts = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="category">Category</label>
                     <select
