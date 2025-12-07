@@ -27,7 +27,7 @@ const HomePage = () => {
         <Welcome />
         <Cards refreshFunctionsRef={refreshFunctionsRef} />
         <Events refreshFunctionsRef={refreshFunctionsRef} />
-        <Gallery />
+        <Gallery refreshFunctionsRef={refreshFunctionsRef} />
       </main>
       <Footer />
     </>
