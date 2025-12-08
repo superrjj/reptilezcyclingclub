@@ -4,7 +4,7 @@ import { getMaintenanceByType } from '../../services/maintenanceService';
 const Gallery = ({ refreshFunctionsRef }) => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAll, setShowAll] = useState(false);
+  const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
 
@@ -44,7 +44,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
     }
   }, [refreshFunctionsRef]);
 
-  const displayedImages = showAll ? images : images.slice(0, 6);
+  const displayedImages = images.slice(0, 6);
   const hasMoreImages = images.length > 6;
 
   const handleImageClick = (image, index) => {
@@ -77,7 +77,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
     }
   };
 
-  // Handle keyboard navigation
+  // Handle keyboard navigation for lightbox
   useEffect(() => {
     if (!selectedImage) return;
 
@@ -106,6 +106,25 @@ const Gallery = ({ refreshFunctionsRef }) => {
       document.body.style.overflow = 'unset';
     };
   }, [selectedImage, selectedImageIndex, images]);
+
+  // Handle keyboard navigation for gallery dialog
+  useEffect(() => {
+    if (!showGalleryDialog) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowGalleryDialog(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [showGalleryDialog]);
 
   return (
     <section className="flex flex-col items-center gap-6 py-8 px-4">
@@ -142,13 +161,59 @@ const Gallery = ({ refreshFunctionsRef }) => {
           </div>
           {hasMoreImages && (
             <button
-              onClick={() => setShowAll(!showAll)}
+              onClick={() => setShowGalleryDialog(true)}
               className="mt-6 px-8 py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg shadow-primary/20"
             >
-              {showAll ? 'Show Less' : 'See More'}
+              See More
             </button>
           )}
         </>
+      )}
+
+      {/* Gallery Dialog - All Images */}
+      {showGalleryDialog && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm px-4"
+          onClick={() => setShowGalleryDialog(false)}
+        >
+          <div 
+            className="w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-background-dark/95 p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Gallery</h2>
+              <button
+                type="button"
+                onClick={() => setShowGalleryDialog(false)}
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {images.map((image, index) => (
+                <div 
+                  key={`${image.src}-${index}`}
+                  onClick={() => {
+                    setSelectedImageIndex(index);
+                    setSelectedImage(image);
+                    setShowGalleryDialog(false);
+                  }}
+                  className="relative w-full aspect-square rounded-xl overflow-hidden group cursor-pointer transition-transform duration-300 hover:scale-105"
+                >
+                  <img 
+                    className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90" 
+                    alt={image.alt}
+                    src={image.src}
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Image Lightbox Modal */}

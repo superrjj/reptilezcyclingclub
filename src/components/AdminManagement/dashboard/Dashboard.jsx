@@ -1,169 +1,405 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import AdminLayout from '../AdminLayout';
+import { getMembers } from '../../../services/membersService';
+import { getPosts } from '../../../services/postsService';
+import { getEvents, getUpcomingEvents } from '../../../services/eventsService';
+import { useTabVisibility } from '../../../hooks/useTabVisibility';
 
 const Dashboard = () => {
-  // Prevent body scrolling when dashboard is mounted
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  const recentActivities = [
-    {
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAIKcJVNjTm4ElWx_wG22xvZ6ryAriZYI4RF92PhOGsJgrjOkWELJQmHQYGw3IVeT4rHdfTSmkbPngCDjsz9mr0NySpONcBq3gW08r4anYfYWXco_wOhYqzvucBCnI8XFtDnGoeQgvZ5MHP3swRH2vZcHa_3H5hlCm9bHJKa6GWh1HPZ7fIX06jIzRLoDqfSVf_X_UlyCm3FHmgE7MhnRP-2D_XNs_s9twJ167AVfO7hjpAykpi6-42IhBF9Lys4tLFIpSo2LUQK6Y",
-      title: "Alex Johnson joined",
-      time: "2 hours ago",
-      alt: "User avatar for Alex Johnson"
-    },
-    {
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAxDOZtvfk-pJTRvR8y6jLz7UAY32HpNmEbvYhu6WUYS4R2TL3JrTRvBHkZGdtbtWDJaQqx3cWyaB4gEIDvydb75rZVHRJnWjnbzMi5ie7djgujizclIqrIYiQE11-qmECpNfIdXHqmi2DxgM7sAwT5GSiSdqxX8u6ZEo8GXVrHTCuiTEkbRcNgOTmWnPpLxMdxPIhq75ayU5pp5rIUZDxJyk3rh1F6562VoXtQtT9vkHCbQht9FlMIUriASXfH5-LK36H58Ec1nxc",
-      title: "Maria Garcia posted \"Weekend Ride Routes\"",
-      time: "5 hours ago",
-      alt: "User avatar for Maria Garcia"
-    },
-    {
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCaG44_cu-e7EhLu2F6pJolmhEE_OVQOIV4Cz9CWcQckVq7KJg3sgEShezuR9HhrSfbeudRazxc-balskJg1KLE6IiGZrm-CzO9bLbQiWo94gwut__59KygdiaTDsfUJ1nzyE7ciAWYWDa5lS2Z48XXOv5HfNlJjJrRIK20ra36oLin79dHBnMcK2oov8MyfdyOsz9mH_bIlHi1SWH5XLFEqUKsF-YT246JC6R08qbcKlONh0swv7R6kpi94rOmAZe9M4_EcE-nxjQ",
-      title: "New event created: \"Hill Climb Challenge\"",
-      time: "1 day ago",
-      alt: "Event icon"
-    },
-    {
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCUnFVxc07G-Joel9XRSmnbMxjWzZaEqlaOdWBDO30LwAl9l-TgPU6QEqpVXxaGP77lYJpueFnDBew1RoAW3_GLc3wwxWUqTx-XLYPCiCLUO72v2cFaGA9X36fOqfbufOtfv4m5QOjfk5ul8nEpZLl0XOUfH8yjTgtH3KVvurE3LRVc2gK10VVuGTMsf64aau0WCI6-Dnzkpr5m8RYE6j5dQG8iol42uwDuWOubZ0YZMuDk_-QfOHxxcCVpyDZtOB2AW5P6HVIWhrE",
-      title: "Sam Lee joined",
-      time: "2 days ago",
-      alt: "User avatar for Sam Lee"
-    }
-  ];
-
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalMembers: 0,
+    upcomingEvents: 0,
+    totalPosts: 0,
+    totalEvents: 0,
+  });
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [memberGrowth, setMemberGrowth] = useState([]);
+
+  // Format time ago
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    return date.toLocaleDateString();
+  };
+
+  // Fetch dashboard data
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      // Fetch all data in parallel
+      const [members, posts, events, upcomingEvents] = await Promise.all([
+        getMembers(),
+        getPosts(),
+        getEvents(),
+        getUpcomingEvents(),
+      ]);
+
+      // Calculate stats
+      setStats({
+        totalMembers: members?.length || 0,
+        upcomingEvents: upcomingEvents?.length || 0,
+        totalPosts: posts?.length || 0,
+        totalEvents: events?.length || 0,
+      });
+
+      // Create recent activities from all sources
+      const activities = [];
+      
+      // Add recent members (last 3)
+      const recentMembers = members?.slice(0, 3) || [];
+      recentMembers.forEach(member => {
+        activities.push({
+          type: 'member',
+          id: member.id,
+          title: `${member.name} joined`,
+          time: member.created_at,
+          image: member.image_url || null,
+          alt: `Member: ${member.name}`,
+        });
+      });
+
+      // Add recent posts (last 3)
+      const recentPosts = posts?.slice(0, 3) || [];
+      recentPosts.forEach(post => {
+        activities.push({
+          type: 'post',
+          id: post.id,
+          title: `Post created: "${post.title}"`,
+          time: post.created_at,
+          image: post.media?.[0]?.url || post.featured_image || null,
+          alt: `Post: ${post.title}`,
+        });
+      });
+
+      // Add recent events (last 3)
+      const recentEvents = events?.slice(0, 3) || [];
+      recentEvents.forEach(event => {
+        activities.push({
+          type: 'event',
+          id: event.id,
+          title: `Event created: "${event.title}"`,
+          time: event.created_at,
+          image: event.image_url || null,
+          alt: `Event: ${event.title}`,
+        });
+      });
+
+      // Sort by time and take most recent 6
+      activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+      setRecentActivities(activities.slice(0, 6));
+
+      // Calculate member growth (last 6 months)
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      
+      const monthlyData = [];
+      for (let i = 5; i >= 0; i--) {
+        const monthDate = new Date();
+        monthDate.setMonth(monthDate.getMonth() - i);
+        const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+        const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+        
+        const membersInMonth = members?.filter(m => {
+          const memberDate = new Date(m.created_at);
+          return memberDate >= monthStart && memberDate <= monthEnd;
+        }).length || 0;
+        
+        monthlyData.push({
+          month: monthDate.toLocaleDateString('en-US', { month: 'short' }),
+          count: membersInMonth,
+        });
+      }
+
+      // Calculate cumulative growth
+      let cumulative = 0;
+      const growthData = monthlyData.map((data, index) => {
+        cumulative += data.count;
+        return {
+          month: data.month,
+          value: cumulative,
+        };
+      });
+      
+      setMemberGrowth(growthData);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Simulate network-dependent loading; if things load fast, skeleton disappears quickly.
-    const timer = setTimeout(() => setLoading(false), 400);
-    return () => clearTimeout(timer);
+    fetchDashboardData();
   }, []);
+
+  // Integrate auto-refresh
+  useTabVisibility(fetchDashboardData);
+
+  // Calculate growth percentage (mock for now, can be enhanced with historical data)
+  const memberGrowthPercent = useMemo(() => {
+    if (memberGrowth.length < 2) return 0;
+    const current = memberGrowth[memberGrowth.length - 1]?.value || 0;
+    const previous = memberGrowth[memberGrowth.length - 2]?.value || 0;
+    if (previous === 0) return 0;
+    return Math.round(((current - previous) / previous) * 100);
+  }, [memberGrowth]);
+
+  // Generate chart path
+  const generateChartPath = () => {
+    if (memberGrowth.length === 0) return { linePath: '', areaPath: '' };
+    
+    const maxValue = Math.max(...memberGrowth.map(d => d.value), 1);
+    const width = 450;
+    const height = 150;
+    const padding = 20;
+    const chartWidth = width - padding * 2;
+    const chartHeight = height - padding * 2;
+    
+    const points = memberGrowth.map((data, index) => {
+      const x = padding + (index / (memberGrowth.length - 1 || 1)) * chartWidth;
+      const y = padding + chartHeight - (data.value / maxValue) * chartHeight;
+      return `${x},${y}`;
+    });
+    
+    const pathData = points.join(' ');
+    const lastPointX = points[points.length - 1]?.split(',')[0] || padding;
+    const areaPath = `M ${points[0]} L ${pathData} L ${lastPointX},${height - padding} L ${padding},${height - padding} Z`;
+    
+    return { linePath: pathData, areaPath };
+  };
+
+  const chartPaths = generateChartPath();
 
   return (
     <AdminLayout>
-      {/* Main Content */}
-        <main className="flex-1 flex flex-col bg-black/20 h-full overflow-hidden">
-          <div className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto h-full">
-            {/* Under Maintenance Banner */}
+      <main className="flex-1 flex flex-col bg-black/20 h-full overflow-hidden">
+        <div className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
             {loading ? (
-              <div className="mb-6 h-20 rounded-2xl shimmer-bg" />
+              Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="h-32 rounded-xl shimmer-bg" />
+              ))
             ) : (
-              <div className="mb-6 rounded-2xl border border-yellow-400/40 bg-yellow-500/10 px-5 py-4 flex items-start gap-3">
-                <div className="mt-0.5 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-2xl text-yellow-300">warning</span>
+              <>
+                {/* Total Members */}
+                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-2xl">people</span>
+                    </div>
+                    <div className="px-2 py-1 rounded-md bg-primary/10 border border-primary/20">
+                      <span className="text-primary text-xs font-semibold">
+                        {memberGrowthPercent > 0 ? '+' : ''}{memberGrowthPercent}%
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-white/70 text-sm font-medium mb-1">Total Members</p>
+                  <p className="text-white text-3xl font-bold mb-1">{stats.totalMembers.toLocaleString()}</p>
+                  <p className="text-primary/70 text-xs">Active club members</p>
                 </div>
-                <div>
-                  <p className="text-white text-sm font-semibold">Dashboard Layout is Under Maintenance</p>
-                  <p className="text-white/80 text-xs">
-                    Temporary UI only. Final design will be updated soon by <span className="font-semibold">Dev Harvee</span>.
-                  </p>
+
+                {/* Upcoming Events */}
+                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-2xl">event</span>
+                    </div>
+                  </div>
+                  <p className="text-white/70 text-sm font-medium mb-1">Upcoming Events</p>
+                  <p className="text-white text-3xl font-bold mb-1">{stats.upcomingEvents}</p>
+                  <p className="text-primary/70 text-xs">Scheduled events</p>
+                </div>
+
+                {/* Total Posts */}
+                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-2xl">article</span>
+                    </div>
+                  </div>
+                  <p className="text-white/70 text-sm font-medium mb-1">Total Posts</p>
+                  <p className="text-white text-3xl font-bold mb-1">{stats.totalPosts.toLocaleString()}</p>
+                  <p className="text-primary/70 text-xs">Published posts</p>
+                </div>
+
+                {/* Total Events */}
+                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-2xl">calendar_month</span>
+                    </div>
+                  </div>
+                  <p className="text-white/70 text-sm font-medium mb-1">Total Events</p>
+                  <p className="text-white text-3xl font-bold mb-1">{stats.totalEvents.toLocaleString()}</p>
+                  <p className="text-primary/70 text-xs">All time events</p>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Charts and Recent Activity */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
+            {/* Member Growth Chart */}
+            {loading ? (
+              <div className="xl:col-span-2 rounded-xl shimmer-bg h-80" />
+            ) : (
+              <div className="flex flex-col gap-4 rounded-xl border border-primary/30 p-6 xl:col-span-2 bg-gradient-to-br from-background-dark to-background-dark/80">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="text-white text-lg font-semibold mb-1">Member Growth</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-white text-3xl font-bold">{stats.totalMembers.toLocaleString()}</p>
+                      {memberGrowthPercent !== 0 && (
+                        <p className={`text-sm font-medium ${memberGrowthPercent > 0 ? 'text-primary' : 'text-red-400'}`}>
+                          {memberGrowthPercent > 0 ? '+' : ''}{memberGrowthPercent}%
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                    <span className="material-symbols-outlined text-primary text-2xl">trending_up</span>
+                  </div>
+                </div>
+                <p className="text-primary/70 text-sm mb-4">Last 6 months</p>
+                
+                <div className="flex-1 min-h-[200px] relative">
+                  {memberGrowth.length > 0 ? (
+                    <svg 
+                      viewBox="0 0 450 150" 
+                      className="w-full h-full"
+                      preserveAspectRatio="none"
+                    >
+                      {/* Area gradient */}
+                      <defs>
+                        <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="#16a34a" stopOpacity="0.3" />
+                          <stop offset="100%" stopColor="#16a34a" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      
+                      {/* Area */}
+                      <path
+                        d={chartPaths.areaPath}
+                        fill="url(#areaGradient)"
+                      />
+                      
+                      {/* Line */}
+                      <path
+                        d={`M ${chartPaths.linePath}`}
+                        fill="none"
+                        stroke="#16a34a"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      
+                      {/* Dots */}
+                      {memberGrowth.map((data, index) => {
+                        const maxValue = Math.max(...memberGrowth.map(d => d.value), 1);
+                        const width = 450;
+                        const height = 150;
+                        const padding = 20;
+                        const chartWidth = width - padding * 2;
+                        const chartHeight = height - padding * 2;
+                        const x = padding + (index / (memberGrowth.length - 1 || 1)) * chartWidth;
+                        const y = padding + chartHeight - (data.value / maxValue) * chartHeight;
+                        
+                        return (
+                          <circle
+                            key={index}
+                            cx={x}
+                            cy={y}
+                            r="4"
+                            fill="#16a34a"
+                            stroke="#0f172a"
+                            strokeWidth="2"
+                          />
+                        );
+                      })}
+                    </svg>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-white/40">
+                      <p>No data available</p>
+                    </div>
+                  )}
+                  
+                  {/* Month labels */}
+                  {memberGrowth.length > 0 && (
+                    <div className="flex justify-between mt-2">
+                      {memberGrowth.map((data, index) => (
+                        <p key={index} className="text-primary/70 text-xs font-medium">
+                          {data.month}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
-              {loading
-                ? Array.from({ length: 3 }).map((_, idx) => (
-                    <div key={idx} className="h-28 rounded-xl shimmer-bg" />
-                  ))
-                : (
-                  <>
-                    <div className="flex flex-col gap-2 rounded-xl p-6 bg-background-dark border border-primary/30">
-                      <p className="text-white text-base font-medium leading-normal">Total Members</p>
-                      <p className="text-white tracking-light text-3xl font-bold leading-tight">1,204</p>
-                      <p className="text-primary text-base font-medium leading-normal">+12% this month</p>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2 rounded-xl p-6 bg-background-dark border border-primary/30">
-                      <p className="text-white text-base font-medium leading-normal">Upcoming Events</p>
-                      <p className="text-white tracking-light text-3xl font-bold leading-tight">8</p>
-                      <p className="text-primary text-base font-medium leading-normal">+2 scheduled</p>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2 rounded-xl p-6 bg-background-dark border border-primary/30">
-                      <p className="text-white text-base font-medium leading-normal">Total Posts</p>
-                      <p className="text-white tracking-light text-3xl font-bold leading-tight">256</p>
-                      <p className="text-primary text-base font-medium leading-normal">+5% this month</p>
-                    </div>
-                  </>
-                )}
-            </div>
-
-            {/* Charts and Recent Activity */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 py-6">
-              {/* Charts */}
-              {loading ? (
-                <div className="xl:col-span-2 rounded-xl shimmer-bg h-60" />
-              ) : (
-                <div className="flex flex-col gap-2 rounded-xl border border-primary/30 p-6 xl:col-span-2 bg-background-dark">
-                  <p className="text-white text-base font-medium leading-normal">Member Growth</p>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-white tracking-light text-[32px] font-bold leading-tight truncate">1,204</p>
-                    <p className="text-primary text-base font-medium leading-normal">+8.5%</p>
-                  </div>
-                  <p className="text-primary/70 text-sm font-normal leading-normal">Last 6 months</p>
-                  
-                  <div className="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
-                    <svg fill="none" height="100%" preserveAspectRatio="none" viewBox="-3 0 478 150" width="100%" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z" fill="url(#paint0_linear_1131_5935)"></path>
-                      <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#16a34a" strokeLinecap="round" strokeWidth="3"></path>
-                      <defs>
-                        <linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_1131_5935" x1="236" x2="236" y1="1" y2="149">
-                          <stop stopColor="#16a34a" stopOpacity="0.3"></stop>
-                          <stop offset="1" stopColor="#16a34a" stopOpacity="0"></stop>
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    
-                    <div className="flex justify-around">
-                      <p className="text-primary/70 text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
-                      <p className="text-primary/70 text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
-                      <p className="text-primary/70 text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
-                      <p className="text-primary/70 text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
-                      <p className="text-primary/70 text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
-                      <p className="text-primary/70 text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
-                    </div>
+            {/* Recent Activity */}
+            {loading ? (
+              <div className="rounded-xl shimmer-bg h-80" />
+            ) : (
+              <div className="flex flex-col gap-4 rounded-xl border border-primary/30 p-6 bg-gradient-to-br from-background-dark to-background-dark/80">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-white text-lg font-semibold">Recent Activity</h3>
+                  <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                    <span className="material-symbols-outlined text-primary text-xl">notifications</span>
                   </div>
                 </div>
-              )}
-
-              {/* Recent Activity Table */}
-              {loading ? (
-                <div className="rounded-xl shimmer-bg h-60" />
-              ) : (
-                <div className="flex flex-col gap-4 rounded-xl border border-primary/30 p-6 bg-background-dark">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-white text-base font-medium leading-normal">Recent Activity</h3>
-                    <a className="text-primary text-sm font-medium hover:underline" href="#">View All</a>
-                  </div>
-                  
-                  <div className="flex flex-col gap-4">
-                    {recentActivities.map((activity, index) => (
-                      <div key={index} className="flex items-center gap-4">
-                        <div
-                          className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                          style={{ backgroundImage: `url("${activity.image}")` }}
-                          alt={activity.alt}
-                        ></div>
-                        <div className="flex-1">
-                          <p className="text-white text-sm font-medium leading-normal">{activity.title}</p>
-                          <p className="text-white/60 text-xs">{activity.time}</p>
+                
+                <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pr-1">
+                  {recentActivities.length > 0 ? (
+                    recentActivities.map((activity, index) => (
+                      <div 
+                        key={`${activity.type}-${activity.id}-${index}`} 
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors group w-full"
+                      >
+                        <div className="flex-shrink-0">
+                          {activity.image ? (
+                            <div
+                              className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border-2 border-primary/30 group-hover:border-primary/50 transition-colors overflow-hidden"
+                              style={{ backgroundImage: `url("${activity.image}")` }}
+                              alt={activity.alt}
+                            />
+                          ) : (
+                            <div className="size-12 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary/30 group-hover:border-primary/50 transition-colors overflow-hidden">
+                              <span className="material-symbols-outlined text-primary text-xl">
+                                {activity.type === 'member' ? 'person' : activity.type === 'post' ? 'article' : 'event'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-sm font-medium leading-tight truncate group-hover:text-primary transition-colors">
+                            {activity.title}
+                          </p>
+                          <p className="text-white/50 text-xs mt-1">{formatTimeAgo(activity.time)}</p>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    ))
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <span className="material-symbols-outlined text-white/20 text-5xl mb-2">inbox</span>
+                      <p className="text-white/40 text-sm">No recent activity</p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        </main>
+        </div>
+      </main>
     </AdminLayout>
   );
 };
