@@ -157,14 +157,14 @@ const AboutUsPage = () => {
         <div className="relative w-full h-80 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden border border-primary/30">
           <div 
             className="absolute inset-0 bg-center bg-cover bg-no-repeat"
-            style={{ backgroundImage: 'url("/about_us_bg.jpg")' }}
+            style={{ backgroundImage: 'url("/rcc_bg.jpg")' }}
             role="img"
             aria-label="Reptilez Cycling Club team photo"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
             <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] mb-2">
-              About Reptilez Cycling Club
+              About D&R Reptilez Sports
             </h1>
             <p className="text-primary/90 text-base md:text-lg font-normal leading-relaxed max-w-3xl">
               We are more than just a cycling club. We are a community dedicated to nurturing young talents, 
