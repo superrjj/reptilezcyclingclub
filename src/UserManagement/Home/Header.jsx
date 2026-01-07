@@ -9,6 +9,7 @@ const Header = ({ onLoginClick }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [maintenanceVisible, setMaintenanceVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     setIsAdmin(!!(user && user.isAdmin));
@@ -19,6 +20,14 @@ const Header = ({ onLoginClick }) => {
     const timer = setTimeout(() => setMaintenanceVisible(false), 2500);
     return () => clearTimeout(timer);
   }, [maintenanceVisible]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     await signOut();
@@ -57,152 +66,170 @@ const Header = ({ onLoginClick }) => {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-solid border-primary/30 bg-background-dark/95 backdrop-blur">
+    <header 
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'border-b border-primary/40 bg-black/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,255,0,0.1)]' 
+          : 'border-b border-primary/20 bg-black/70 backdrop-blur-lg'
+      }`}
+    >
       {maintenanceVisible && (
-        <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-xl border border-primary/50 bg-black/90 px-6 py-3 text-sm font-semibold text-white shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-          Hindi pa po ito tapos by Dev Harvee
+        <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 animate-[slideDown_0.3s_ease-out] rounded-2xl border-2 border-primary/60 bg-gradient-to-br from-black via-gray-900 to-black px-8 py-4 text-sm font-bold text-white shadow-[0_0_40px_rgba(0,255,0,0.3),0_20px_60px_rgba(0,0,0,0.8)]">
+          <span className="relative">
+            Hindi pa po ito tapos by Dev Harvee
+            <span className="absolute -inset-1 animate-pulse rounded-xl bg-primary/20 blur-sm -z-10"></span>
+          </span>
         </div>
       )}
-      <div className="mx-auto flex max-w-[960px] items-center justify-between whitespace-nowrap px-4 py-4 sm:px-10">
+      
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-5 sm:px-12">
         <Link
           to="/"
           onClick={(e) => handleLinkClick(e, '/')}
-          className="flex items-center gap-4 text-white"
+          className="group flex items-center gap-4 transition-all duration-300 hover:scale-105"
         >
-          <img
-            src="/rcc1.png"
-            alt="Reptilez Cycling Club logo"
-            className="h-8 w-8 rounded-full object-contain"
-          />
-          <img
-            src="/rcc2.png"
-            alt="Reptilez Cycling Club logo"
-            className="h-8 w-8 rounded-full object-contain"
-          />
-          <h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">D&R Reptilez Sports</h2>
-        </Link>
-        <div className="hidden md:flex flex-1 justify-end gap-8">
-          <div className="flex items-center gap-9">
-            <Link 
-              to="/" 
-              onClick={(e) => handleLinkClick(e, '/')}
-              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
-                location.pathname === '/' ? 'text-primary' : 'text-white hover:text-primary'
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/posts"
-              onClick={(e) => handleLinkClick(e, '/posts')}
-              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
-                location.pathname === '/posts' ? 'text-primary' : 'text-white hover:text-primary'
-              }`}
-            >
-              Posts
-            </Link>
-            <Link
-              to="/events"
-              onClick={(e) => handleLinkClick(e, '/events')}
-              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
-                location.pathname === '/events' ? 'text-primary' : 'text-white hover:text-primary'
-              }`}
-            >
-              Events
-            </Link>
-            <Link 
-              to="/members" 
-              onClick={(e) => handleLinkClick(e, '/members')}
-              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
-                location.pathname === '/members' ? 'text-primary' : 'text-white hover:text-primary'
-              }`}
-            >
-              Members
-            </Link>
-            <Link
-              to="/about-us"
-              onClick={(e) => handleLinkClick(e, '/about-us')}
-              className={`text-base font-semibold leading-relaxed tracking-wide transition-colors ${
-                location.pathname === '/about-us' ? 'text-primary' : 'text-white hover:text-primary'
-              }`}
-            >
-              About Us
-            </Link>
+          <div className="flex items-center gap-2 relative">
+            {['/rcc1.png', '/rcc2.png', '/rcc3.png'].map((src, idx) => (
+              <div 
+                key={src}
+                className="relative transition-transform duration-300 group-hover:scale-110"
+                style={{ transitionDelay: `${idx * 50}ms` }}
+              >
+                <img
+                  src={src}
+                  alt="Reptilez Cycling Club logo"
+                  className="h-10 w-10 rounded-full object-contain ring-2 ring-primary/30 group-hover:ring-primary/60 transition-all duration-300"
+                />
+                <div className="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
+            ))}
           </div>
+          
+          <h2 className="relative text-white text-xl font-black leading-tight tracking-tight bg-clip-text bg-gradient-to-r from-white via-primary to-white group-hover:from-primary group-hover:via-white group-hover:to-primary transition-all duration-500">
+            D&R Reptilez Sports
+            <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-transparent via-primary to-transparent group-hover:w-full transition-all duration-500"></span>
+          </h2>
+        </Link>
+
+        <div className="hidden md:flex flex-1 justify-end gap-10">
+          <nav className="flex items-center gap-8">
+            {[
+              { label: 'Home', path: '/' },
+              { label: 'Posts', path: '/posts' },
+              { label: 'Events', path: '/events' },
+              { label: 'Members', path: '/members' },
+              { label: 'About Us', path: '/about-us' },
+            ].map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={(e) => handleLinkClick(e, item.path)}
+                className={`group relative text-base font-bold tracking-wide transition-all duration-300 ${
+                  location.pathname === item.path 
+                    ? 'text-primary' 
+                    : 'text-white/90 hover:text-primary'
+                }`}
+              >
+                {item.label}
+                <span className={`absolute -bottom-1 left-0 h-[3px] bg-gradient-to-r from-primary via-green-400 to-primary transition-all duration-300 ${
+                  location.pathname === item.path 
+                    ? 'w-full shadow-[0_0_10px_rgba(0,255,0,0.6)]' 
+                    : 'w-0 group-hover:w-full'
+                }`}></span>
+              </Link>
+            ))}
+          </nav>
+
           {isAdmin ? (
-            <div className="flex items-center gap-3">
-              <span className="text-primary text-base font-semibold tracking-wide">Admin</span>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <span className="text-primary text-sm font-black tracking-widest uppercase">Admin</span>
+                <div className="absolute -inset-1 bg-primary/20 blur-sm rounded -z-10 animate-pulse"></div>
+              </div>
               <button
                 onClick={handleLogout}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-accent text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-red-600 transition-colors"
+                className="group relative overflow-hidden rounded-xl px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(220,38,38,0.5)]"
               >
-                <span className="truncate">LOGOUT</span>
+                <span className="relative z-10">LOGOUT</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
             </div>
           ) : (
             <button
               onClick={onLoginClick}
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-green-700 transition-colors"
+              className="group relative overflow-hidden rounded-xl px-6 py-2.5 bg-gradient-to-r from-primary to-green-600 text-white text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(0,255,0,0.5)]"
             >
-              <span className="truncate">LOGIN</span>
+              <span className="relative z-10">LOGIN</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
           )}
         </div>
+
         <div className="md:hidden">
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="rounded-full border border-white/15 bg-white/5 p-2 text-white transition hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="relative rounded-xl border-2 border-primary/40 bg-gradient-to-br from-black/60 to-gray-900/60 p-2.5 text-white transition-all duration-300 hover:border-primary hover:shadow-[0_0_20px_rgba(0,255,0,0.3)] focus:outline-none focus:ring-2 focus:ring-primary/60"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
           >
-            <span className="material-symbols-outlined text-3xl">
+            <span className="material-symbols-outlined text-3xl transition-transform duration-300" style={{ transform: mobileMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
               {mobileMenuOpen ? 'close' : 'menu'}
             </span>
           </button>
         </div>
       </div>
+
       {mobileMenuOpen && (
         <div className="md:hidden">
           <div
-            className="fixed inset-0 z-40 bg-black/90 backdrop-blur-md"
+            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-[fadeIn_0.3s_ease-out]"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed inset-x-4 top-24 z-50 flex origin-top scale-100 flex-col gap-4 rounded-2xl border border-white/10 bg-background-dark p-6 shadow-[0_30px_80px_rgba(0,0,0,0.95)] transition">
-            <nav className="flex flex-col gap-3">
+          <div className="fixed inset-x-4 top-24 z-50 animate-[slideDown_0.3s_ease-out] origin-top rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-black via-gray-900 to-black p-8 shadow-[0_0_60px_rgba(0,255,0,0.2),0_30px_90px_rgba(0,0,0,0.95)]">
+            <nav className="flex flex-col gap-2">
               {[
                 { label: 'Home', path: '/' },
                 { label: 'Posts', path: '/posts' },
                 { label: 'Events', path: '/events' },
                 { label: 'Members', path: '/members' },
                 { label: 'About Us', path: '/about-us' },
-              ].map((item) => (
+              ].map((item, idx) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={(e) => handleLinkClick(e, item.path)}
-                  className={`rounded-xl px-4 py-3 text-lg font-semibold transition ${
+                  className={`group relative overflow-hidden rounded-2xl px-5 py-4 text-lg font-bold transition-all duration-300 ${
                     location.pathname === item.path
-                      ? 'bg-primary/15 text-primary'
-                      : 'text-white hover:bg-white/5'
+                      ? 'bg-gradient-to-r from-primary/20 to-green-600/20 text-primary shadow-[inset_0_0_20px_rgba(0,255,0,0.2)]'
+                      : 'text-white/90 hover:bg-white/5 hover:text-primary'
                   }`}
+                  style={{ animationDelay: `${idx * 50}ms` }}
                 >
-                  {item.label}
+                  <span className="relative z-10">{item.label}</span>
+                  {location.pathname === item.path && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 animate-pulse"></div>
+                  )}
                 </Link>
               ))}
             </nav>
-            <div className="pt-2 border-t border-white/30">
+
+            <div className="pt-6 mt-6 border-t-2 border-primary/30">
               {isAdmin ? (
-                <div className="flex flex-col gap-3">
-                  <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary px-1">
-                    Admin
+                <div className="flex flex-col gap-4">
+                  <div className="relative inline-block">
+                    <div className="text-xs font-black uppercase tracking-[0.25em] text-primary px-2">
+                      Admin Access
+                    </div>
+                    <div className="absolute -inset-1 bg-primary/20 blur-md rounded -z-10 animate-pulse"></div>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center justify-center rounded-xl bg-accent py-3 text-base font-bold text-white transition hover:bg-red-600 w-full"
+                    className="group relative overflow-hidden flex items-center justify-center rounded-2xl bg-gradient-to-r from-red-600 to-red-700 py-4 text-base font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] w-full"
                   >
-                    Logout
+                    <span className="relative z-10">Logout</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
                 </div>
               ) : (
@@ -211,9 +238,10 @@ const Header = ({ onLoginClick }) => {
                     setMobileMenuOpen(false);
                     onLoginClick();
                   }}
-                  className="flex items-center justify-center rounded-xl bg-primary py-3 text-base font-bold text-white transition hover:bg-green-700 w-full"
+                  className="group relative overflow-hidden flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-green-600 py-4 text-base font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,255,0,0.5)] w-full"
                 >
-                  Login
+                  <span className="relative z-10">Login</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
               )}
             </div>
@@ -225,4 +253,3 @@ const Header = ({ onLoginClick }) => {
 };
 
 export default Header;
-

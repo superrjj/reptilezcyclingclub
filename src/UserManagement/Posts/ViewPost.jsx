@@ -4,6 +4,7 @@ import { fetchPostLikeSummary, removePostLike, upsertPostLike } from '../../serv
 import { isSupabaseConfigured } from '../../lib/supabase';
 import { useTabVisibility } from '../../hooks/useTabVisibility';
 
+
 const fallbackPosts = [
   {
     id: 'demo-1',
