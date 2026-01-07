@@ -30,7 +30,7 @@ const Cards = ({ refreshFunctionsRef }) => {
       alt: "A calendar with a date circled, signifying an event"
     },
     {
-      image: "/about_us_bg.jpg",
+      image: "/rcc_bg.jpg",
       title: "About Us",
       description: "Learn more about our story and mission.",
       alt: "A group of cyclists posing for a photo together"
