@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getPosts } from '../../services/postsService';
 import { fetchPostLikeSummary, removePostLike, upsertPostLike } from '../../services/postLikesService';
 import { isSupabaseConfigured } from '../../lib/supabase';
@@ -55,7 +56,9 @@ const getStoredLikes = () => {
 
 const supabaseReady = isSupabaseConfigured;
 
-const ViewPost = () => {
+const ViewPost = ({ singleView = false }) => {
+  const { postId } = useParams();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -75,6 +78,14 @@ const ViewPost = () => {
       const data = await getPosts();
       if (Array.isArray(data) && data.length > 0) {
         setPosts(data);
+        
+        // If single view and post not found, redirect to posts page
+        if (singleView && postId) {
+          const postExists = data.some(p => p.id === postId);
+          if (!postExists) {
+            navigate('/posts');
+          }
+        }
       } else {
         setPosts(fallbackPosts);
       }
@@ -143,11 +154,17 @@ const ViewPost = () => {
   }, []);
 
   const filteredPosts = useMemo(() => {
+    // If single view mode, only show the specific post
+    if (singleView && postId) {
+      return posts.filter(post => post.id === postId);
+    }
+    
+    // Otherwise, apply search filter
     return posts.filter((post) =>
       post.title?.toLowerCase().includes(search.toLowerCase()) ||
       post.content?.toLowerCase().includes(search.toLowerCase())
     );
-  }, [posts, search]);
+  }, [posts, search, singleView, postId]);
 
   const formatDate = (value) => {
     if (!value) return '';
@@ -371,17 +388,32 @@ const ViewPost = () => {
         <div className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-2">
           <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 pt-3 md:pt-2 pb-8">
             <section className="space-y-3">
-              <label className="flex min-w-40 h-12 w-full rounded-full border border-primary/40 bg-black/70 px-4 text-white backdrop-blur focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
-                <span className="flex items-center pr-3 text-primary/70">
-                  <span className="material-symbols-outlined text-base">search</span>
-                </span>
-                <input
-                  className="w-full flex-1 bg-transparent text-sm text-white placeholder:text-primary/70 focus:outline-none"
-                  placeholder="Search posts..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </label>
+              {/* Only show search bar if not in single view mode */}
+              {!singleView && (
+                <label className="flex min-w-40 h-12 w-full rounded-full border border-primary/40 bg-black/70 px-4 text-white backdrop-blur focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
+                  <span className="flex items-center pr-3 text-primary/70">
+                    <span className="material-symbols-outlined text-base">search</span>
+                  </span>
+                  <input
+                    className="w-full flex-1 bg-transparent text-sm text-white placeholder:text-primary/70 focus:outline-none"
+                    placeholder="Search posts..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </label>
+              )}
+              
+              {/* Back button for single view */}
+              {singleView && (
+                <button
+                  onClick={() => navigate('/posts')}
+                  className="flex items-center gap-2 text-primary hover:text-white transition-colors group"
+                >
+                  <span className="material-symbols-outlined text-xl transition-transform group-hover:-translate-x-1">arrow_back</span>
+                  <span className="font-semibold">Back to all posts</span>
+                </button>
+              )}
+              
               {error && (
                 <div className="rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-white/90">
                   {error}

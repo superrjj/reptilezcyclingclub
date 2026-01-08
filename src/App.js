@@ -138,6 +138,19 @@ function App() {
                 </MainLayout>
               }
             />
+            {/* Single Post View Route */}
+            <Route
+              path="/posts/:postId"
+              element={
+                <MainLayout
+                  onLoginClick={() => setLoginOpen(true)}
+                  loginOpen={loginOpen}
+                  setLoginOpen={setLoginOpen}
+                >
+                  <ViewPost singleView={true} />
+                </MainLayout>
+              }
+            />
             <Route
               path="/events"
               element={
