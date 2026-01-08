@@ -65,6 +65,8 @@ const ViewPost = () => {
   const [likeCounts, setLikeCounts] = useState({});
   const [deviceFingerprint, setDeviceFingerprint] = useState(null);
   const [activeMedia, setActiveMedia] = useState(null);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [allMediaForViewer, setAllMediaForViewer] = useState([]);
   const [shareState, setShareState] = useState({ postId: null, message: '' });
 
   const fetchPosts = async () => {
@@ -258,10 +260,8 @@ const ViewPost = () => {
       setLikedPosts((prev) => {
         const next = { ...prev };
         if (alreadyLiked) {
-          // we removed it optimistically, add it back
           next[postId] = true;
         } else {
-          // we added it optimistically, remove it
           delete next[postId];
         }
         return next;
@@ -282,28 +282,81 @@ const ViewPost = () => {
     const sharePayload = {
       title: post.title,
       text: post.content,
-      url: `${window.location.origin}/posts#${post.id}`,
+      url: `${window.location.origin}/posts/${post.id}`,
     };
 
     try {
       if (navigator.share) {
         await navigator.share(sharePayload);
-        setShareState({ postId: post.id, message: 'Shared successfully!' });
+        setShareState({ postId: post.id, message: '✓ Shared successfully!' });
       } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(sharePayload.url);
-        setShareState({ postId: post.id, message: 'Link copied to clipboard.' });
+        setShareState({ postId: post.id, message: '✓ Link copied to clipboard!' });
       } else {
         setShareState({ postId: post.id, message: 'Sharing not supported on this device.' });
       }
     } catch (shareError) {
+      if (shareError.name === 'AbortError') {
+        // User cancelled - don't show error
+        return;
+      }
       console.error('Share failed', shareError);
-      setShareState({ postId: post.id, message: 'Share cancelled or failed.' });
+      setShareState({ postId: post.id, message: '✗ Share failed. Please try again.' });
     } finally {
       setTimeout(() => {
         setShareState((prev) => (prev.postId === post.id ? { postId: null, message: '' } : prev));
       }, 2500);
     }
   };
+
+  const openMediaViewer = (mediaArray, startIndex, postTitle, postCategory) => {
+    setAllMediaForViewer(mediaArray.filter(m => m.type === 'image'));
+    setCurrentMediaIndex(startIndex);
+    setActiveMedia({
+      src: mediaArray[startIndex].url,
+      title: postTitle,
+      meta: postCategory,
+    });
+  };
+
+  const handleNextMedia = () => {
+    if (currentMediaIndex < allMediaForViewer.length - 1) {
+      const nextIndex = currentMediaIndex + 1;
+      setCurrentMediaIndex(nextIndex);
+      setActiveMedia(prev => ({
+        ...prev,
+        src: allMediaForViewer[nextIndex].url,
+      }));
+    }
+  };
+
+  const handlePrevMedia = () => {
+    if (currentMediaIndex > 0) {
+      const prevIndex = currentMediaIndex - 1;
+      setCurrentMediaIndex(prevIndex);
+      setActiveMedia(prev => ({
+        ...prev,
+        src: allMediaForViewer[prevIndex].url,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    if (!activeMedia) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setActiveMedia(null);
+      } else if (e.key === 'ArrowRight') {
+        handleNextMedia();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrevMedia();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeMedia, currentMediaIndex, allMediaForViewer]);
 
   return (
     <div
@@ -423,14 +476,13 @@ const ViewPost = () => {
                         </div>
                       </div>
                       {(() => {
-                        // Get media array or fallback to featured_image for backward compatibility
                         const media = post.media && Array.isArray(post.media) && post.media.length > 0
                           ? post.media
                           : (post.featured_image ? [{ url: post.featured_image, type: 'image' }] : []);
 
                         if (media.length === 0) return null;
 
-                        // Single image/video - full width display
+                        // Single media
                         if (media.length === 1) {
                           const item = media[0];
                           return (
@@ -446,13 +498,7 @@ const ViewPost = () => {
                                 <button
                                   type="button"
                                   className="group relative flex w-full overflow-hidden focus:outline-none"
-                                  onClick={() =>
-                                    setActiveMedia({
-                                      src: item.url,
-                                      title: post.title,
-                                      meta: post.category,
-                                    })
-                                  }
+                                  onClick={() => openMediaViewer(media, 0, post.title, post.category)}
                                   aria-label={`View full image for ${post.title}`}
                                 >
                                   <div
@@ -467,73 +513,137 @@ const ViewPost = () => {
                           );
                         }
 
-                        // Multiple images/videos - grid layout (Facebook style)
-                        const allMedia = media;
-                        const displayCount = Math.min(allMedia.length, 5);
-                        const remainingCount = allMedia.length > 5 ? allMedia.length - 5 : 0;
+                        // Multiple media - Facebook-style grid (max 5 shown)
+                        const displayCount = Math.min(media.length, 5);
+                        const remainingCount = media.length > 5 ? media.length - 5 : 0;
 
-                        // Determine grid layout based on count
-                        const getGridClass = (count) => {
-                          if (count === 1) return 'grid-cols-1';
-                          if (count === 2) return 'grid-cols-2';
-                          if (count === 3) return 'grid-cols-2';
-                          if (count === 4) return 'grid-cols-2';
-                          return 'grid-cols-3';
-                        };
+                        // Grid layout logic
+                        let gridClass = '';
+                        let gridItems = [];
+
+                        if (displayCount === 2) {
+                          gridClass = 'grid grid-cols-2 gap-1';
+                          gridItems = media.slice(0, 2).map((item, idx) => ({
+                            item,
+                            idx,
+                            className: 'aspect-square'
+                          }));
+                        } else if (displayCount === 3) {
+                          // For 3 images: First 2 images on top row, 1 large image below spanning full width
+                          gridItems = [
+                            { item: media[0], idx: 0, className: 'aspect-square' },
+                            { item: media[1], idx: 1, className: 'aspect-square' },
+                            { item: media[2], idx: 2, className: 'col-span-2 aspect-video' }
+                          ];
+                        } else if (displayCount === 4) {
+                          gridClass = 'grid grid-cols-2 gap-1';
+                          gridItems = media.slice(0, 4).map((item, idx) => ({
+                            item,
+                            idx,
+                            className: 'aspect-square'
+                          }));
+                        } else if (displayCount >= 5) {
+                          // For 5+ images: 2 large images on top (taller), 3 smaller below
+                          gridItems = [
+                            { item: media[0], idx: 0, className: 'col-span-1', isLarge: true },
+                            { item: media[1], idx: 1, className: 'col-span-1', isLarge: true },
+                            { item: media[2], idx: 2, className: 'aspect-square', isLarge: false },
+                            { item: media[3], idx: 3, className: 'aspect-square', isLarge: false },
+                            { item: media[4], idx: 4, className: 'aspect-square', isLarge: false }
+                          ];
+                        }
 
                         return (
                           <div className="border-y border-white/5 bg-black/20 p-1">
-                            <div className={`grid ${getGridClass(displayCount)} gap-1`}>
-                              {allMedia.slice(0, displayCount).map((item, index) => {
-                                // For 3 items: first item spans 2 rows
-                                const isLarge = (allMedia.length === 3 && index === 0) || 
-                                             (allMedia.length === 4 && index === 0);
-                                
-                                return (
-                                  <div
-                                    key={index}
-                                    className={`relative overflow-hidden ${
-                                      isLarge ? 'row-span-2' : ''
-                                    }`}
-                                    style={{ 
-                                      aspectRatio: isLarge ? '1' : '1',
-                                      minHeight: isLarge ? '400px' : '200px'
-                                    }}
-                                  >
-                                    {item.type === 'video' ? (
-                                      <video
-                                        className="w-full h-full object-cover cursor-pointer"
-                                        src={item.url}
-                                        controls
-                                        onClick={(e) => e.stopPropagation()}
-                                      />
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        className="group relative w-full h-full focus:outline-none"
-                                        onClick={() =>
-                                          setActiveMedia({
-                                            src: item.url,
-                                            title: post.title,
-                                            meta: post.category,
-                                          })
-                                        }
-                                      >
-                                        <div
-                                          className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-                                          style={{ backgroundImage: `url("${item.url}")` }}
+                            {displayCount >= 5 ? (
+                              // Special layout for 5+ images
+                              <div className="flex flex-col gap-1">
+                                {/* Top row - 2 large images */}
+                                <div className="grid grid-cols-2 gap-1">
+                                  {gridItems.slice(0, 2).map(({ item, idx, className }) => (
+                                    <div key={idx} className="relative overflow-hidden" style={{ aspectRatio: '1/1.2' }}>
+                                      {item.type === 'video' ? (
+                                        <video
+                                          className="w-full h-full object-cover cursor-pointer"
+                                          src={item.url}
+                                          controls
+                                          onClick={(e) => e.stopPropagation()}
                                         />
-                                        {remainingCount > 0 && index === 4 && (
-                                          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                                            <span className="text-white text-3xl font-bold">+{remainingCount}</span>
-                                          </div>
-                                        )}
-                                      </button>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          className="group relative w-full h-full focus:outline-none"
+                                          onClick={() => openMediaViewer(media, idx, post.title, post.category)}
+                                        >
+                                          <div
+                                            className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                                            style={{ backgroundImage: `url("${item.url}")` }}
+                                          />
+                                        </button>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                                {/* Bottom row - 3 smaller images */}
+                                <div className="grid grid-cols-3 gap-1">
+                                  {gridItems.slice(2, 5).map(({ item, idx, className }) => (
+                                    <div key={idx} className={`relative overflow-hidden ${className}`}>
+                                      {item.type === 'video' ? (
+                                        <video
+                                          className="w-full h-full object-cover cursor-pointer"
+                                          src={item.url}
+                                          controls
+                                          onClick={(e) => e.stopPropagation()}
+                                        />
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          className="group relative w-full h-full focus:outline-none"
+                                          onClick={() => openMediaViewer(media, idx, post.title, post.category)}
+                                        >
+                                          <div
+                                            className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                                            style={{ backgroundImage: `url("${item.url}")` }}
+                                          />
+                                          {remainingCount > 0 && idx === 4 && (
+                                            <div className="absolute inset-0 bg-black/70 flex items-center justify-center pointer-events-none">
+                                              <span className="text-white text-4xl font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">+{remainingCount}</span>
+                                            </div>
+                                          )}
+                                        </button>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              // Original layout for 2-4 images
+                              <div className={displayCount === 3 ? 'grid grid-cols-2 gap-1' : gridClass}>
+                                {gridItems.map(({ item, idx, className }) => (
+                                <div key={idx} className={`relative overflow-hidden ${className}`}>
+                                  {item.type === 'video' ? (
+                                    <video
+                                      className="w-full h-full object-cover cursor-pointer"
+                                      src={item.url}
+                                      controls
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      className="group relative w-full h-full focus:outline-none"
+                                      onClick={() => openMediaViewer(media, idx, post.title, post.category)}
+                                    >
+                                      <div
+                                        className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                                        style={{ backgroundImage: `url("${item.url}")` }}
+                                      />
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
                             </div>
+                            )}
                           </div>
                         );
                       })()}
@@ -581,8 +691,10 @@ const ViewPost = () => {
                         ))}
                       </div>
                       {shareState.postId === post.id && shareState.message && (
-                        <div className="border-t border-white/5 bg-black/30 px-5 py-2 text-xs text-primary md:px-6">
-                          {shareState.message}
+                        <div className="border-t border-white/5 bg-black/30 px-5 py-3 text-sm text-center">
+                          <span className={shareState.message.startsWith('✓') ? 'text-primary' : 'text-rose-400'}>
+                            {shareState.message}
+                          </span>
                         </div>
                       )}
                     </article>
@@ -594,15 +706,42 @@ const ViewPost = () => {
         </div>
       </div>
       {activeMedia && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 px-4 backdrop-blur">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 px-4 backdrop-blur-xl">
+          {/* Close Button */}
           <button
             type="button"
-            className="absolute right-6 top-6 rounded-full border border-white/20 bg-white/10 p-2 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="absolute right-6 top-6 z-10 rounded-full border border-white/20 bg-black/60 p-3 text-white hover:bg-primary/80 focus:outline-none transition-all duration-300 hover:scale-110"
             onClick={() => setActiveMedia(null)}
             aria-label="Close media viewer"
           >
             <span className="material-symbols-outlined text-2xl">close</span>
           </button>
+
+          {/* Previous Button */}
+          {currentMediaIndex > 0 && (
+            <button
+              type="button"
+              className="absolute left-6 z-10 rounded-full border border-white/20 bg-black/60 p-3 text-white hover:bg-primary/80 focus:outline-none transition-all duration-300 hover:scale-110"
+              onClick={handlePrevMedia}
+              aria-label="Previous image"
+            >
+              <span className="material-symbols-outlined text-2xl">chevron_left</span>
+            </button>
+          )}
+
+          {/* Next Button */}
+          {currentMediaIndex < allMediaForViewer.length - 1 && (
+            <button
+              type="button"
+              className="absolute right-6 z-10 rounded-full border border-white/20 bg-black/60 p-3 text-white hover:bg-primary/80 focus:outline-none transition-all duration-300 hover:scale-110"
+              onClick={handleNextMedia}
+              aria-label="Next image"
+            >
+              <span className="material-symbols-outlined text-2xl">chevron_right</span>
+            </button>
+          )}
+
+          {/* Image Container */}
           <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-[0_40px_140px_rgba(0,0,0,0.85)]">
             <div className="flex max-h-[80vh] items-center justify-center bg-black">
               <img
@@ -614,13 +753,33 @@ const ViewPost = () => {
             <div className="border-t border-white/10 px-6 py-4 text-center text-white/80">
               <p className="text-lg font-semibold">{activeMedia.title}</p>
               <p className="text-xs uppercase tracking-[0.3em] text-white/50">{activeMedia.meta}</p>
+              <p className="text-sm text-white/60 mt-2">
+                {currentMediaIndex + 1} / {allMediaForViewer.length}
+              </p>
             </div>
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes shimmer {
+          0% { background-position: -1000px 0; }
+          100% { background-position: 1000px 0; }
+        }
+
+        .shimmer-bg {
+          background: linear-gradient(
+            90deg,
+            rgba(24, 24, 27, 1) 0%,
+            rgba(34, 197, 94, 0.1) 50%,
+            rgba(24, 24, 27, 1) 100%
+          );
+          background-size: 1000px 100%;
+          animation: shimmer 2s infinite linear;
+        }
+      `}</style>
     </div>
   );
 };
 
 export default ViewPost;
-

@@ -56,7 +56,7 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
                 <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-                <p className="text-white/60 text-sm font-medium">Loading amazing rides...</p>
+                <p className="text-white/60 text-sm font-medium">Loading amazing races...</p>
               </div>
             </div>
           </div>
@@ -99,7 +99,7 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
           {heroImages.map((image, index) => (
             <div
               key={`${image}-${index}`}
-              className={`absolute inset-0 flex h-full w-full flex-col items-center justify-end gap-8 bg-cover bg-center bg-no-repeat pb-20 transition-all duration-1000 ${
+              className={`absolute inset-0 h-full w-full bg-cover bg-center bg-no-repeat transition-all duration-1000 ${
                 index === currentIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
               }`}
               style={{
@@ -111,37 +111,35 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
               <div className={`absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-transparent transition-opacity duration-1000 ${
                 index === currentIndex ? 'opacity-100' : 'opacity-0'
               }`}></div>
-
-              {/* Button with enhanced animations */}
-              <div className={`relative z-10 transition-all duration-700 ${
-                index === currentIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}>
-                <button className="relative flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-8 @[480px]:h-14 @[480px]:px-10 bg-gradient-to-r from-primary via-green-600 to-primary bg-[length:200%_100%] bg-[position:0%_0%] hover:bg-[position:100%_0%] text-white text-base font-black leading-normal tracking-wide @[480px]:text-lg uppercase transition-all duration-500 shadow-[0_0_30px_rgba(34,197,94,0.5)] hover:shadow-[0_0_50px_rgba(34,197,94,0.8),0_0_80px_rgba(34,197,94,0.4)] hover:scale-110 transform border-2 border-green-400/30 hover:border-green-400/60 group/btn">
-                  {/* Shine effect */}
-                  <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                  
-                  {/* Pulse ring */}
-                  <div className="absolute inset-0 rounded-full animate-ping-slow opacity-0 group-hover/btn:opacity-20 bg-primary"></div>
-                  
-                  <span className="relative truncate drop-shadow-lg">Join Our Team</span>
-                </button>
-              </div>
-
-              {/* Progress indicators */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                {heroImages.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                      idx === currentIndex 
-                        ? 'w-12 bg-primary shadow-[0_0_10px_rgba(34,197,94,0.8)]' 
-                        : 'w-1.5 bg-white/30 hover:bg-white/50'
-                    }`}
-                  ></div>
-                ))}
-              </div>
             </div>
           ))}
+
+          {/* Static Button - Outside the slides */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20">
+            <button className="relative flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-8 @[480px]:h-14 @[480px]:px-10 bg-gradient-to-r from-primary via-green-600 to-primary bg-[length:200%_100%] bg-[position:0%_0%] hover:bg-[position:100%_0%] text-white text-base font-black leading-normal tracking-wide @[480px]:text-lg uppercase transition-all duration-500 shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_35px_rgba(34,197,94,0.7),0_0_50px_rgba(34,197,94,0.3)] hover:scale-110 transform border-2 border-green-400/30 hover:border-green-400/70 group/btn hover:brightness-110">
+              {/* Shine effect */}
+              <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent"></div>
+              
+              {/* Single pulse ring for subtle glow */}
+              <div className="absolute inset-0 rounded-full animate-ping-slow opacity-0 group-hover/btn:opacity-20 bg-primary blur-sm"></div>
+              
+              <span className="relative truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] group-hover/btn:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Join Our Team</span>
+            </button>
+          </div>
+
+          {/* Progress indicators */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {heroImages.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  idx === currentIndex 
+                    ? 'w-12 bg-primary shadow-[0_0_10px_rgba(34,197,94,0.8)]' 
+                    : 'w-1.5 bg-white/30 hover:bg-white/50'
+                }`}
+              ></div>
+            ))}
+          </div>
 
           {/* Navigation arrows */}
           <button 
@@ -176,9 +174,28 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
         }
 
         @keyframes ping-slow {
-          75%, 100% {
-            transform: scale(1.5);
+          0% {
+            transform: scale(1);
+            opacity: 0.3;
+          }
+          50% {
+            transform: scale(1.3);
+            opacity: 0.15;
+          }
+          100% {
+            transform: scale(1.6);
             opacity: 0;
+          }
+        }
+
+        @keyframes pulse-slow {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.4;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 0.2;
           }
         }
 
@@ -199,6 +216,10 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
 
         .animate-ping-slow {
           animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        .animate-pulse-slow {
+          animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
         .particle {

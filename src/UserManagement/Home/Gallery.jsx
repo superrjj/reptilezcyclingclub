@@ -132,7 +132,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
       }`}>
         <h2 className="text-white text-3xl sm:text-4xl font-black leading-tight tracking-tight bg-gradient-to-r from-primary via-green-400 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-          From the Roads
+          Photos of D&R Reptilez Sports
         </h2>
         <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
       </div>
@@ -291,9 +291,21 @@ const Gallery = ({ refreshFunctionsRef }) => {
       {/* Image Lightbox - Enhanced */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/98 backdrop-blur-xl animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center animate-fadeIn"
           onClick={handleCloseModal}
         >
+          {/* Blurred Background Image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${selectedImage.src})`,
+              filter: 'blur(10px)',
+              transform: 'scale(1.1)',
+            }}
+          />
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/80" />
+
           {/* Close Button */}
           <button
             onClick={handleCloseModal}

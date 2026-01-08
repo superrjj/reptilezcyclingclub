@@ -90,18 +90,13 @@ const Header = ({ onLoginClick }) => {
         >
           <div className="flex items-center gap-2 relative">
             {['/rcc1.png', '/rcc2.png', '/rcc3.png'].map((src, idx) => (
-              <div 
+              <img
                 key={src}
-                className="relative transition-transform duration-300 group-hover:scale-110"
+                src={src}
+                alt="Reptilez Cycling Club logo"
+                className="h-10 w-10 rounded-full object-contain transition-transform duration-300 group-hover:scale-110"
                 style={{ transitionDelay: `${idx * 50}ms` }}
-              >
-                <img
-                  src={src}
-                  alt="Reptilez Cycling Club logo"
-                  className="h-10 w-10 rounded-full object-contain ring-2 ring-primary/30 group-hover:ring-primary/60 transition-all duration-300"
-                />
-                <div className="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-              </div>
+              />
             ))}
           </div>
           
