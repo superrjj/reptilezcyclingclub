@@ -89,7 +89,7 @@ const Header = ({ onLoginClick }) => {
           className="group flex items-center gap-4 transition-all duration-300 hover:scale-105"
         >
           <div className="flex items-center gap-2 relative">
-            {['/rcc1.png', '/rcc2.png', '/rcc3.png'].map((src, idx) => (
+            {['/rcc1.png', '/rcc3.png'].map((src, idx) => (
               <img
                 key={src}
                 src={src}

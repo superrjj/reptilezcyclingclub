@@ -10,6 +10,11 @@ const Footer = () => {
             alt="Reptilez Cycling Club logo"
             className="h-6 w-6 rounded-full object-contain"
           />
+          <img
+            src="/rcc2.png"
+            alt="Reptilez Cycling Club logo"
+            className="h-6 w-6 rounded-full object-contain"
+          />
           <h2 className="text-white text-base font-bold leading-tight">Reptilez Cycling Club</h2>
         </div>
         <div className="flex items-center gap-4">
