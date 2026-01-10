@@ -292,39 +292,6 @@ const AboutUsPage = () => {
         </div>
       </div>
 
-      {/* CTA with Pulse Animation */}
-      <div 
-        id="cta" 
-        data-animate
-        className={`bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border border-primary/30 rounded-2xl p-8 md:p-12 backdrop-blur-sm hover:border-primary/50 transition-all duration-700 hover:shadow-[0_0_60px_rgba(34,197,94,0.3)] ${
-          visibleSections['cta'] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-        }`}
-      >
-        <div className="flex flex-col items-center text-center gap-6">
-          <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 border border-primary/50 animate-pulse shadow-[0_0_30px_rgba(34,197,94,0.4)]">
-            <span className="material-symbols-outlined text-primary text-4xl">directions_bike</span>
-          </div>
-          <div className="flex flex-col gap-3">
-            <h2 className="text-white text-3xl md:text-4xl font-black leading-tight drop-shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-              Ready to Join the Ride?
-            </h2>
-            <p className="text-primary/80 text-base md:text-lg max-w-2xl leading-relaxed">
-              Whether you're a seasoned cyclist or just starting your journey, we welcome riders 
-              of all levels. Join us for our next ride and become part of the Reptilez family.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4 justify-center mt-2">
-            <button className="px-6 py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-all duration-300 flex items-center gap-2 hover:scale-110 hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]">
-              <span className="material-symbols-outlined text-lg">mail</span>
-              Contact Us
-            </button>
-            <button className="px-6 py-3 bg-transparent border-2 border-primary text-primary hover:bg-primary/10 font-semibold rounded-lg transition-all duration-300 flex items-center gap-2 hover:scale-110 hover:shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-              <span className="material-symbols-outlined text-lg">event</span>
-              View Events
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Footer with Fade In */}
       <div 
