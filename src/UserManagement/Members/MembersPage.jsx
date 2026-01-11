@@ -7,6 +7,7 @@ const MembersPage = () => {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMember, setSelectedMember] = useState(null);
   const searchQueryRef = useRef('');
   const selectedFilterRef = useRef('All');
 
@@ -79,6 +80,25 @@ const MembersPage = () => {
     if (!isAFounder && isBFounder) return 1;
     return 0;
   });
+
+  // Handle modal close on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedMember(null);
+      }
+    };
+
+    if (selectedMember) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedMember]);
 
   return (
     <div 
@@ -155,7 +175,7 @@ const MembersPage = () => {
                     <div key={member.id} className="flex flex-col gap-3 text-center pb-3 group">
                       <div className="px-4 flex justify-center">
                         <div
-                          className="w-full max-w-[240px] bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300"
+                          className="w-full max-w-[240px] bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300 cursor-pointer"
                           style={{ 
                             backgroundImage: `url("${member.image_url || '/rcc1.png'}")`,
                             backgroundSize: 'cover',
@@ -163,6 +183,7 @@ const MembersPage = () => {
                           }}
                           role="img"
                           aria-label={member.name || 'Member'}
+                          onClick={() => setSelectedMember(member)}
                         ></div>
                       </div>
                       <div>
@@ -189,9 +210,61 @@ const MembersPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
+      {selectedMember && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          onClick={() => setSelectedMember(null)}
+        >
+          {/* Close button - positioned absolutely to viewport */}
+          <button
+            onClick={() => setSelectedMember(null)}
+            className="fixed top-4 right-4 text-white hover:text-primary transition-colors z-[60] bg-black/50 rounded-full p-2 hover:bg-black/70"
+            aria-label="Close modal"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div 
+            className="relative max-w-4xl w-full max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            {/* Image container */}
+            <div className="flex items-center justify-center mb-6">
+              <img
+                src={selectedMember.image_url || '/rcc1.png'}
+                alt={selectedMember.name || 'Member'}
+                className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
+              />
+            </div>
+
+            {/* Member info */}
+            <div className="bg-black/60 backdrop-blur-md rounded-lg p-6 text-center">
+              <h2 className="text-white text-2xl font-bold mb-2">
+                {selectedMember.name || 'Unknown'}
+              </h2>
+              <p className={`text-lg font-bold mb-3 ${
+                (selectedMember.role_type === 'Captain' || selectedMember.role_type === 'Founder')
+                  ? 'text-primary'
+                  : 'text-primary/70'
+              }`}>
+                {selectedMember.role_type || selectedMember.role || 'Member'}
+              </p>
+              {(selectedMember.description || selectedMember.bio) && (
+                <p className="text-primary/70 text-base leading-relaxed">
+                  {selectedMember.description || selectedMember.bio}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default MembersPage;
-
