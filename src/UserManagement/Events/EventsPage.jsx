@@ -50,6 +50,10 @@ const EventsPage = () => {
 
   const formatTime = (timeString) => {
     if (!timeString) return '';
+    // Check for TBA time (00:00 or 00:00:00)
+    if (timeString === '00:00' || timeString === '00:00:00' || timeString.startsWith('00:00')) {
+      return 'TBA';
+    }
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -79,7 +83,7 @@ const EventsPage = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-8">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8">
         {/* Header */}
         <div className="flex flex-col gap-3">
           <h1 className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Upcoming Events</h1>
@@ -90,7 +94,7 @@ const EventsPage = () => {
 
         {/* Upcoming Events */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="bg-black/40 border border-primary/30 rounded-xl overflow-hidden">
                 <div className="h-48 bg-primary/20 shimmer-bg" />
@@ -109,7 +113,7 @@ const EventsPage = () => {
             <p className="text-sm mt-2">Check back soon for new events!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {upcomingEvents.map((event) => (
               <div
                 key={event.id}
@@ -117,7 +121,7 @@ const EventsPage = () => {
                 onClick={() => setSelectedEvent(event)}
               >
                 {/* Event Image */}
-                <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
+                <div className="relative h-60 bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
                   {event.image_url ? (
                     <img
                       src={event.image_url}
@@ -145,7 +149,11 @@ const EventsPage = () => {
                   <div className="flex flex-col gap-2 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-primary text-base">calendar_today</span>
-                      <p className="text-white/70">{formatDate(event.event_date)}</p>
+                      <p className="text-white/70">
+                        {event.event_end_date
+                          ? `${formatDate(event.event_date)} - ${formatDate(event.event_end_date)}`
+                          : formatDate(event.event_date)}
+                      </p>
                     </div>
                     {event.event_time && (
                       <div className="flex items-center gap-2">
@@ -179,7 +187,7 @@ const EventsPage = () => {
           <>
             <div className="mt-12 pt-8 border-t border-primary/20">
               <h2 className="text-white text-3xl font-black leading-tight tracking-[-0.033em] mb-6">Past Events</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                 {pastEvents.map((event) => (
                   <div
                     key={event.id}
@@ -187,7 +195,7 @@ const EventsPage = () => {
                     onClick={() => setSelectedEvent(event)}
                   >
                     {/* Event Image */}
-                    <div className="relative h-48 bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
+                    <div className="relative h-60 bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
                       {event.image_url ? (
                         <img
                           src={event.image_url}
@@ -210,7 +218,11 @@ const EventsPage = () => {
                       <div className="flex flex-col gap-2 text-sm">
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-primary/70 text-base">calendar_today</span>
-                          <p className="text-white/60">{formatDate(event.event_date)}</p>
+                          <p className="text-white/60">
+                            {event.event_end_date
+                              ? `${formatDate(event.event_date)} - ${formatDate(event.event_end_date)}`
+                              : formatDate(event.event_date)}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-primary/70 text-base">location_on</span>
@@ -267,7 +279,11 @@ const EventsPage = () => {
                   <span className="material-symbols-outlined text-primary text-xl mt-0.5">calendar_today</span>
                   <div>
                     <p className="text-white/60 text-sm">Date</p>
-                    <p className="text-white font-medium">{formatDate(selectedEvent.event_date)}</p>
+                    <p className="text-white font-medium">
+                      {selectedEvent.event_end_date
+                        ? `${formatDate(selectedEvent.event_date)} - ${formatDate(selectedEvent.event_end_date)}`
+                        : formatDate(selectedEvent.event_date)}
+                    </p>
                   </div>
                 </div>
 

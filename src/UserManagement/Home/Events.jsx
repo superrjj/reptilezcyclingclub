@@ -59,6 +59,10 @@ const Events = ({ refreshFunctionsRef }) => {
 
   const formatTime = (timeString) => {
     if (!timeString) return '';
+    // TBA when time is 00:00 / 00:00:00
+    if (timeString === '00:00' || timeString === '00:00:00' || timeString.startsWith('00:00')) {
+      return 'TBA';
+    }
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -78,17 +82,28 @@ const Events = ({ refreshFunctionsRef }) => {
 
   return (
     <>
-      <section className="flex flex-col items-center gap-6 px-4 py-8">
-        <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] sm:text-3xl">Upcoming Events</h2>
-        <div className="w-full max-w-2xl flex flex-col gap-4">
+      <section className="w-full flex flex-col items-center gap-6 px-4 py-10 bg-gradient-to-b from-black/40 to-black/10">
+        <div className="w-full max-w-5xl flex flex-col gap-3">
+          <h2 className="text-white text-2xl sm:text-3xl font-black leading-tight tracking-[-0.03em]">
+            Upcoming Events
+          </h2>
+          <p className="text-primary/70 text-sm sm:text-base max-w-2xl">
+            Join us on our next rides, races, and community gatherings. Tap an event to see full details.
+          </p>
+        </div>
+
+        <div className="w-full max-w-5xl flex flex-col gap-4">
           {loading ? (
             Array.from({ length: 2 }).map((_, index) => (
-              <div key={index} className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border border-primary/30 rounded-lg bg-black/40 backdrop-blur-sm">
-                <div className="text-center sm:text-left flex-1 space-y-2">
+              <div
+                key={index}
+                className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border border-primary/30 rounded-xl bg-black/40 backdrop-blur-sm shadow-md"
+              >
+                <div className="text-left flex-1 space-y-2">
                   <div className="h-5 w-32 bg-primary/20 rounded shimmer-bg mx-auto sm:mx-0" />
                   <div className="h-4 w-48 bg-primary/10 rounded shimmer-bg mx-auto sm:mx-0" />
                 </div>
-                <div className="h-10 w-24 bg-primary/20 rounded shimmer-bg" />
+                <div className="h-10 w-28 bg-primary/20 rounded shimmer-bg" />
               </div>
             ))
           ) : events.length === 0 ? (
@@ -97,14 +112,19 @@ const Events = ({ refreshFunctionsRef }) => {
             </div>
           ) : (
             events.map((event) => (
-              <div key={event.id} className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border border-primary/30 rounded-lg bg-black/40 backdrop-blur-sm">
-                <div className="text-center sm:text-left">
-                  <p className="text-white font-semibold">{event.title}</p>
-                  <p className="text-white/60 text-sm">{formatEventDate(event)}</p>
+              <div
+                key={event.id}
+                className="group flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border border-primary/40 rounded-xl bg-black/50 backdrop-blur-sm hover:border-primary hover:bg-black/70 transition-all shadow-md hover:shadow-lg"
+              >
+                <div className="w-full sm:flex-1 text-left">
+                  <p className="text-white font-semibold text-base sm:text-lg group-hover:text-primary transition-colors line-clamp-2">
+                    {event.title}
+                  </p>
+                  <p className="text-white/60 text-sm mt-1">{formatEventDate(event)}</p>
                 </div>
                 <button 
                   onClick={() => setSelectedEvent(event)}
-                  className="flex-shrink-0 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 text-primary border border-primary/50 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary hover:text-white transition-colors"
+                  className="flex-shrink-0 w-full sm:w-auto min-w-[120px] cursor-pointer inline-flex items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-primary/15 text-primary border border-primary/60 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary hover:text-white transition-colors"
                 >
                   <span className="truncate">View Details</span>
                 </button>
@@ -114,7 +134,7 @@ const Events = ({ refreshFunctionsRef }) => {
         </div>
         <button 
           onClick={() => navigate('/events')}
-          className="mt-4 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-green-700 transition-colors"
+          className="mt-2 flex min-w-[160px] max-w-xs cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-green-700 transition-colors"
         >
           <span className="truncate">View All Events</span>
         </button>

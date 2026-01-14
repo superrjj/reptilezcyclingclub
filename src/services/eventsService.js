@@ -140,6 +140,7 @@ export const createEvent = async (eventData) => {
       .insert([{
         title: eventData.title,
         event_date: eventData.event_date,
+        event_end_date: eventData.event_end_date || null,
         event_time: eventData.event_time || null,
         location: eventData.location,
         image_url: eventData.image_url || null,
@@ -177,6 +178,7 @@ export const updateEvent = async (id, eventData) => {
       .update({
         title: eventData.title,
         event_date: eventData.event_date,
+        event_end_date: eventData.event_end_date || null, 
         event_time: eventData.event_time || null,
         location: eventData.location,
         image_url: eventData.image_url !== undefined ? eventData.image_url : null,

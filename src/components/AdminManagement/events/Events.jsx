@@ -16,7 +16,9 @@ const Events = () => {
   const [formData, setFormData] = useState({
     title: '',
     eventDate: '',
+    eventEndDate: '',  
     eventTime: '',
+    isTimeTBA: false, 
     location: '',
     picture: null,
     picturePreview: null,
@@ -105,7 +107,10 @@ const Events = () => {
 
   const formatTime = (timeString) => {
     if (!timeString) return '';
-    // Convert 24h format to 12h format
+    // Check for TBA time (00:00 or 00:00:00)
+    if (timeString === '00:00' || timeString === '00:00:00' || timeString.startsWith('00:00')) {
+      return 'TBA';
+    }
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -132,13 +137,26 @@ const Events = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       selectedDate.setHours(0, 0, 0, 0);
-      
+    
       if (selectedDate < today) {
         showToast('error', 'Please select a future date. Past dates are not allowed for new events.');
         return;
       }
     }
-
+    
+    // Validate date range kung may end date
+    if (formData.eventEndDate) {
+      const start = new Date(formData.eventDate);
+      const end = new Date(formData.eventEndDate);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+    
+      if (end < start) {
+        showToast('error', 'End date cannot be before start date.');
+        return;
+      }
+    }
+    
     if (!formData.location.trim()) {
       showToast('error', 'Please enter a location');
       return;
@@ -164,7 +182,8 @@ const Events = () => {
       const eventData = {
         title: formData.title.trim(),
         event_date: formData.eventDate,
-        event_time: formData.eventTime || null,
+        event_end_date: formData.eventEndDate || null,                           
+        event_time: formData.isTimeTBA ? '00:00' : (formData.eventTime || null),  
         location: formData.location.trim(),
         image_url: imageUrl,
         description: formData.description.trim() || null
@@ -203,7 +222,9 @@ const Events = () => {
     setFormData({
       title: '',
       eventDate: '',
+      eventEndDate: '', 
       eventTime: '',
+      isTimeTBA: false,
       location: '',
       picture: null,
       picturePreview: null,
@@ -213,10 +234,16 @@ const Events = () => {
 
   const handleEdit = (event) => {
     setEditingEvent(event);
+    // Check if time is TBA (00:00 or 00:00:00)
+    const isTBA = event.event_time === '00:00' || event.event_time === '00:00:00' || 
+                  (event.event_time && event.event_time.startsWith('00:00'));
+    
     setFormData({
       title: event.title || '',
       eventDate: event.event_date || '',
-      eventTime: event.event_time || '',
+      eventEndDate: event.event_end_date || '',                        
+      eventTime: isTBA ? '' : (event.event_time || ''),                                                          
+      isTimeTBA: isTBA,                        
       location: event.location || '',
       picture: null,
       picturePreview: event.image_url || null,
@@ -385,11 +412,13 @@ const Events = () => {
                           <span className="material-symbols-outlined text-primary text-base mt-0.5">calendar_today</span>
                           <div className="flex-1">
                             <p className="text-gray-600 dark:text-gray-400 font-medium">
-                              {formatDate(event.event_date)}
+                              {event.event_end_date
+                                ? `${formatDate(event.event_date)} - ${formatDate(event.event_end_date)}`
+                                : formatDate(event.event_date)}
                             </p>
                             {event.event_time && (
                               <p className="text-gray-500 dark:text-gray-500 text-xs mt-0.5">
-                                {formatTime(event.event_time)}
+                                Time: {formatTime(event.event_time)}
                               </p>
                             )}
                           </div>
@@ -478,7 +507,7 @@ const Events = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventDate">
-                    Event Date
+                    Start Date
                   </label>
                   <input
                     className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white"
@@ -490,22 +519,66 @@ const Events = () => {
                     min={editingEvent ? undefined : new Date().toISOString().split('T')[0]}
                     required
                   />
-                  {!editingEvent && formData.eventDate && new Date(formData.eventDate) < new Date().setHours(0, 0, 0, 0) && (
-                    <p className="text-red-500 text-xs mt-1">Please select a future date</p>
-                  )}
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventEndDate">
+                    End Date (Optional)
+                  </label>
+                  <input
+                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white"
+                    id="eventEndDate"
+                    name="eventEndDate"
+                    type="date"
+                    value={formData.eventEndDate}
+                    onChange={handleInputChange}
+                    min={formData.eventDate || undefined}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventTime">
                     Event Time (Optional)
                   </label>
                   <input
-                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white"
+                    className={`w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white ${formData.isTimeTBA ? 'opacity-50 cursor-not-allowed' : ''}`}
                     id="eventTime"
                     name="eventTime"
                     type="time"
                     value={formData.eventTime}
                     onChange={handleInputChange}
+                    disabled={formData.isTimeTBA}
+                    placeholder={formData.isTimeTBA ? 'TBA' : ''}
                   />
+                </div>
+                <div className="flex items-end">
+                  <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary transition-colors">
+                    <div className="relative flex items-center">
+                      <input
+                        type="checkbox"
+                        className="sr-only"
+                        checked={formData.isTimeTBA}
+                        onChange={(e) =>
+                          setFormData(prev => ({
+                            ...prev,
+                            isTimeTBA: e.target.checked,
+                            eventTime: e.target.checked ? '' : prev.eventTime
+                          }))
+                        }
+                      />
+                      <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
+                        formData.isTimeTBA 
+                          ? 'bg-primary border-primary' 
+                          : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                      }`}>
+                        {formData.isTimeTBA && (
+                          <span className="material-symbols-outlined text-white text-sm">check</span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="select-none">Time TBA (To Be Announced)</span>
+                  </label>
                 </div>
               </div>
 
