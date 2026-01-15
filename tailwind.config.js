@@ -13,7 +13,7 @@ module.exports = {
         "background-dark": "#0a0a0a", // near black
       },
       fontFamily: {
-        "display": ["Roboto", "sans-serif"]
+        "display": ["Poppins", "sans-serif"]
       },
       borderRadius: {
         "DEFAULT": "0.75rem", // 12px

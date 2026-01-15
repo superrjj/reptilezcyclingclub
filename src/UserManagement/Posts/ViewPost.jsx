@@ -694,10 +694,6 @@ const ViewPost = ({ singleView = false }) => {
                           </span>
                           <span>{heartCopy(likeCounts[post.id] ?? 0, !!likedPosts[post.id])}</span>
                         </span>
-                        <span className="flex items-center gap-1">
-                          <span className="material-symbols-outlined text-base text-primary">share</span>
-                          Share-ready post
-                        </span>
                       </div>
                       <div className="flex divide-x divide-white/5 border-t border-white/5 bg-black/20">
                         {[

@@ -71,13 +71,14 @@ const Events = ({ refreshFunctionsRef }) => {
   };
 
   const formatEventDate = (event) => {
-    const formattedDate = formatDate(event.event_date);
-    const location = event.location || '';
-    
-    if (location) {
-      return `${formattedDate} - ${location}`;
+    const start = formatDate(event.event_date);
+    const end = event.event_end_date ? formatDate(event.event_end_date) : null;
+
+    if (end) {
+      return `${start} - ${end}`;
     }
-    return formattedDate;
+
+    return start;
   };
 
   return (
@@ -181,7 +182,11 @@ const Events = ({ refreshFunctionsRef }) => {
                   <span className="material-symbols-outlined text-primary text-xl mt-0.5">calendar_today</span>
                   <div>
                     <p className="text-white/60 text-sm">Date</p>
-                    <p className="text-white font-medium">{formatDate(selectedEvent.event_date)}</p>
+                    <p className="text-white font-medium">
+                      {selectedEvent.event_end_date
+                        ? `${formatDate(selectedEvent.event_date)} - ${formatDate(selectedEvent.event_end_date)}`
+                        : formatDate(selectedEvent.event_date)}
+                    </p>
                   </div>
                 </div>
 
