@@ -73,7 +73,7 @@ const Events = ({ refreshFunctionsRef }) => {
   const formatEventDate = (event) => {
     const start = formatDate(event.event_date);
     const end = event.event_end_date ? formatDate(event.event_end_date) : null;
-
+    
     if (end) {
       return `${start} - ${end}`;
     }

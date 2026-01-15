@@ -23,7 +23,13 @@ export const AuthProvider = ({ children }) => {
     }
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error);
+        setUser(null);
+        setLoading(false);
+        return;
+      }
       if (session?.user) {
         // Check if user is admin
         const isAdmin = session.user.email === 'admin@reptilez.com';
@@ -34,6 +40,10 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
       }
+      setLoading(false);
+    }).catch((error) => {
+      console.error('Error in getSession:', error);
+      setUser(null);
       setLoading(false);
     });
 

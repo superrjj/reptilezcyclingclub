@@ -35,13 +35,13 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Fetch all data in parallel
-      const [members, posts, events, upcomingEvents] = await Promise.all([
+      // Fetch all data in parallel with error handling
+      const [members, posts, events, upcomingEvents] = await Promise.allSettled([
         getMembers(),
         getPosts(),
         getEvents(),
         getUpcomingEvents(),
-      ]);
+      ]).then(results => results.map(result => result.status === 'fulfilled' ? result.value : []));
 
       // Calculate stats
       setStats({
@@ -132,6 +132,15 @@ const Dashboard = () => {
       setMemberGrowth(growthData);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      // Set defaults on error
+      setStats({
+        totalMembers: 0,
+        upcomingEvents: 0,
+        totalPosts: 0,
+        totalEvents: 0,
+      });
+      setRecentActivities([]);
+      setMemberGrowth([]);
     } finally {
       setLoading(false);
     }
@@ -193,10 +202,10 @@ const Dashboard = () => {
             ) : (
               <>
                 {/* Total Members */}
-                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
-                      <span className="material-symbols-outlined text-primary text-2xl">people</span>
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">people</span>
                     </div>
                     <div className="px-2 py-1 rounded-md bg-primary/10 border border-primary/20">
                       <span className="text-primary text-xs font-semibold">
@@ -204,44 +213,44 @@ const Dashboard = () => {
                       </span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-sm font-medium mb-1">Total Members</p>
-                  <p className="text-white text-3xl font-bold mb-1">{stats.totalMembers.toLocaleString()}</p>
+                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Total Members</p>
+                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.totalMembers.toLocaleString()}</p>
                   <p className="text-primary/70 text-xs">Active club members</p>
                 </div>
 
                 {/* Upcoming Events */}
-                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
-                      <span className="material-symbols-outlined text-primary text-2xl">event</span>
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">event</span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-sm font-medium mb-1">Upcoming Events</p>
-                  <p className="text-white text-3xl font-bold mb-1">{stats.upcomingEvents}</p>
+                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Upcoming Events</p>
+                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.upcomingEvents}</p>
                   <p className="text-primary/70 text-xs">Scheduled events</p>
                 </div>
 
                 {/* Total Posts */}
-                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
-                      <span className="material-symbols-outlined text-primary text-2xl">article</span>
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">article</span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-sm font-medium mb-1">Total Posts</p>
-                  <p className="text-white text-3xl font-bold mb-1">{stats.totalPosts.toLocaleString()}</p>
+                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Total Posts</p>
+                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.totalPosts.toLocaleString()}</p>
                   <p className="text-primary/70 text-xs">Published posts</p>
                 </div>
 
                 {/* Total Events */}
-                <div className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
-                      <span className="material-symbols-outlined text-primary text-2xl">calendar_month</span>
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">calendar_month</span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-sm font-medium mb-1">Total Events</p>
-                  <p className="text-white text-3xl font-bold mb-1">{stats.totalEvents.toLocaleString()}</p>
+                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Total Events</p>
+                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.totalEvents.toLocaleString()}</p>
                   <p className="text-primary/70 text-xs">All time events</p>
                 </div>
               </>
@@ -254,24 +263,24 @@ const Dashboard = () => {
             {loading ? (
               <div className="xl:col-span-2 rounded-xl shimmer-bg h-80" />
             ) : (
-              <div className="flex flex-col gap-4 rounded-xl border border-primary/30 p-6 xl:col-span-2 bg-gradient-to-br from-background-dark to-background-dark/80">
+              <div className="flex flex-col gap-3 sm:gap-4 rounded-xl border border-primary/30 p-4 sm:p-6 xl:col-span-2 bg-gradient-to-br from-background-dark to-background-dark/80">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-white text-lg font-semibold mb-1">Member Growth</p>
+                    <p className="text-white text-base sm:text-lg font-semibold mb-1">Member Growth</p>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-white text-3xl font-bold">{stats.totalMembers.toLocaleString()}</p>
+                      <p className="text-white text-2xl sm:text-3xl font-bold">{stats.totalMembers.toLocaleString()}</p>
                       {memberGrowthPercent !== 0 && (
-                        <p className={`text-sm font-medium ${memberGrowthPercent > 0 ? 'text-primary' : 'text-red-400'}`}>
+                        <p className={`text-xs sm:text-sm font-medium ${memberGrowthPercent > 0 ? 'text-primary' : 'text-red-400'}`}>
                           {memberGrowthPercent > 0 ? '+' : ''}{memberGrowthPercent}%
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                    <span className="material-symbols-outlined text-primary text-2xl">trending_up</span>
+                  <div className="p-2 sm:p-3 rounded-lg bg-primary/10 border border-primary/20">
+                    <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">trending_up</span>
                   </div>
                 </div>
-                <p className="text-primary/70 text-sm mb-4">Last 6 months</p>
+                <p className="text-primary/70 text-xs sm:text-sm mb-3 sm:mb-4">Last 6 months</p>
                 
                 <div className="flex-1 min-h-[200px] relative">
                   {memberGrowth.length > 0 ? (
@@ -352,11 +361,11 @@ const Dashboard = () => {
             {loading ? (
               <div className="rounded-xl shimmer-bg h-80" />
             ) : (
-              <div className="flex flex-col gap-4 rounded-xl border border-primary/30 p-6 bg-gradient-to-br from-background-dark to-background-dark/80">
+              <div className="flex flex-col gap-3 sm:gap-4 rounded-xl border border-primary/30 p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-white text-lg font-semibold">Recent Activity</h3>
+                  <h3 className="text-white text-base sm:text-lg font-semibold">Recent Activity</h3>
                   <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                    <span className="material-symbols-outlined text-primary text-xl">notifications</span>
+                    <span className="material-symbols-outlined text-primary text-lg sm:text-xl">notifications</span>
                   </div>
                 </div>
                 

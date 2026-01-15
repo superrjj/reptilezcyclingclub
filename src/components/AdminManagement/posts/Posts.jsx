@@ -123,9 +123,15 @@ const Posts = () => {
     setSelectedFiles(prev => [...prev, ...validFiles]);
     validFiles.forEach(file => {
       const reader = new FileReader();
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+        showToast('error', `Error reading ${file.name}. Please try again.`);
+      };
       reader.onloadend = () => {
-        const type = file.type.startsWith('video/') ? 'video' : 'image';
-        setMediaPreviews(prev => [...prev, { url: reader.result, type, file }]);
+        if (reader.result) {
+          const type = file.type.startsWith('video/') ? 'video' : 'image';
+          setMediaPreviews(prev => [...prev, { url: reader.result, type, file }]);
+        }
       };
       reader.readAsDataURL(file);
     });
@@ -262,25 +268,25 @@ const Posts = () => {
         )}
 
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 overflow-y-auto">
-            <div className="w-full max-w-2xl rounded-2xl border border-primary/30 bg-gray-900 text-white shadow-[0_0_60px_rgba(34,197,94,0.3)] max-h-[90vh] overflow-y-auto my-8 scrollbar-hide">
-              <div className="sticky top-0 bg-gray-900 border-b border-primary/20 p-6 flex items-center justify-between z-10">
-                <div>
-                  <h2 className="text-2xl font-black text-white">{editingPost ? 'Update Post' : 'Create New Post'}</h2>
-                  <p className="text-sm text-gray-400 mt-1">{editingPost ? 'Editing announcement' : 'Draft new announcement'}</p>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+            <div className="w-full max-w-2xl rounded-xl sm:rounded-2xl border border-primary/30 bg-gray-900 text-white shadow-[0_0_60px_rgba(34,197,94,0.3)] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto my-4 sm:my-8 scrollbar-hide">
+              <div className="sticky top-0 bg-gray-900 border-b border-primary/20 p-4 sm:p-6 flex items-start sm:items-center justify-between z-10 gap-3">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white break-words">{editingPost ? 'Update Post' : 'Create New Post'}</h2>
+                  <p className="text-xs sm:text-sm text-gray-400 mt-1">{editingPost ? 'Editing announcement' : 'Draft new announcement'}</p>
                 </div>
-                <button onClick={() => { setShowModal(false); resetForm(); }} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20">
-                  <span className="material-symbols-outlined">close</span>
+                <button onClick={() => { setShowModal(false); resetForm(); }} className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 flex-shrink-0" aria-label="Close dialog">
+                  <span className="material-symbols-outlined text-lg sm:text-xl">close</span>
                 </button>
               </div>
-              <form className="p-6 space-y-6" onSubmit={handleSubmit}>
+              <form className="p-4 sm:p-6 space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">Post Title</label>
-                  <input className="w-full bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary px-4 py-3 text-white" name="title" placeholder="Annual Club Championship" value={formData.title} onChange={handleInputChange} required />
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-300 mb-2">Post Title</label>
+                  <input className="w-full bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-white" name="title" placeholder="Annual Club Championship" value={formData.title} onChange={handleInputChange} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">Content</label>
-                  <textarea className="w-full bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary px-4 py-3 text-white" name="content" placeholder="Write your post..." rows="6" value={formData.content} onChange={handleInputChange} required></textarea>
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-300 mb-2">Content</label>
+                  <textarea className="w-full bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-white" name="content" placeholder="Write your post..." rows="6" value={formData.content} onChange={handleInputChange} required></textarea>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-300 mb-2">Media</label>
@@ -307,19 +313,19 @@ const Posts = () => {
                   )}
                   <input ref={fileInputRef} className="hidden" type="file" accept="image/*,video/*" multiple onChange={handleMediaUpload} />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-2">Category</label>
-                    <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white" name="category" value={formData.category} onChange={handleInputChange}>
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-300 mb-2">Category</label>
+                    <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-white" name="category" value={formData.category} onChange={handleInputChange}>
                       <option>Announcements</option>
                       <option>Events</option>
                       <option>News</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-2">Status</label>
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-300 mb-2">Status</label>
                     <div className="flex items-center gap-3 mt-3">
-                      <span className="text-sm text-gray-400">Draft</span>
+                      <span className="text-xs sm:text-sm text-gray-400">Draft</span>
                       <label className="cursor-pointer">
                         <input className="sr-only" type="checkbox" checked={formData.status === 'Published'} onChange={handleStatusToggle} />
                         <div className={`w-14 h-7 rounded-full ${formData.status === 'Published' ? 'bg-primary' : 'bg-gray-700'}`}>
@@ -330,9 +336,9 @@ const Posts = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-3 pt-4">
-                  <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="flex-1 bg-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-700 border border-gray-700">Cancel</button>
-                  <button className="flex-1 bg-primary font-bold py-3 rounded-lg hover:bg-green-700 shadow-lg shadow-primary/30 disabled:opacity-60" type="submit" disabled={uploading}>{uploading ? 'Saving...' : editingPost ? 'Update' : 'Create'}</button>
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="flex-1 bg-gray-800 font-semibold py-2.5 sm:py-3 rounded-lg hover:bg-gray-700 border border-gray-700 text-sm sm:text-base">Cancel</button>
+                  <button className="flex-1 bg-primary font-bold py-2.5 sm:py-3 rounded-lg hover:bg-green-700 shadow-lg shadow-primary/30 disabled:opacity-60 text-sm sm:text-base" type="submit" disabled={uploading}>{uploading ? 'Saving...' : editingPost ? 'Update' : 'Create'}</button>
                 </div>
               </form>
             </div>

@@ -85,18 +85,18 @@ const EventsPage = () => {
 
   return (
     <>
-      <div className="w-full max-w-6xl mx-auto flex flex-col gap-8">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-4 sm:gap-6 md:gap-8 px-3 sm:px-4 md:px-6">
         {/* Header */}
-        <div className="flex flex-col gap-3">
-          <h1 className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Upcoming Events</h1>
-          <p className="text-primary/70 text-base font-normal leading-normal">
+        <div className="flex flex-col gap-2 sm:gap-3">
+          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Upcoming Events</h1>
+          <p className="text-primary/70 text-sm sm:text-base font-normal leading-normal">
             Join us for our next cycling adventures and community gatherings.
           </p>
         </div>
 
         {/* Upcoming Events */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="bg-black/40 border border-primary/30 rounded-xl overflow-hidden">
                 <div className="h-48 bg-primary/20 shimmer-bg" />

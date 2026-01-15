@@ -107,24 +107,24 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200">
       {confirmLogoutOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-background-dark/95 px-6 py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-full border border-primary/40 bg-primary/20 text-primary">
-                <span className="material-symbols-outlined text-2xl">logout</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-3 sm:px-4">
+          <div className="w-full max-w-sm rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 px-4 sm:px-6 py-5 sm:py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="flex size-10 sm:size-12 items-center justify-center rounded-full border border-primary/40 bg-primary/20 text-primary flex-shrink-0">
+                <span className="material-symbols-outlined text-xl sm:text-2xl">logout</span>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-white">Sign out from Admin Panel?</p>
-                <p className="text-xs text-white/60">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm sm:text-base font-semibold text-white">Sign out from Admin Panel?</p>
+                <p className="text-xs sm:text-sm text-white/60 mt-1">
                   You will be redirected back to the public site after confirming.
                 </p>
               </div>
             </div>
-            <div className="mt-6 flex justify-end gap-3 text-sm">
+            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 text-sm">
               <button
                 type="button"
                 onClick={cancelLogout}
-                className="rounded-lg border border-white/20 px-4 py-2 text-white/80 hover:bg-white/5 transition-colors"
+                className="rounded-lg border border-white/20 px-4 py-2 text-white/80 hover:bg-white/5 transition-colors order-2 sm:order-1"
                 disabled={logoutProcessing}
               >
                 Cancel
@@ -132,11 +132,11 @@ const AdminLayout = ({ children }) => {
               <button
                 type="button"
                 onClick={confirmLogout}
-                className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2 font-semibold text-white hover:bg-green-700 transition-colors disabled:opacity-60"
+                className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 sm:px-5 py-2 font-semibold text-white hover:bg-green-700 transition-colors disabled:opacity-60 order-1 sm:order-2"
                 disabled={logoutProcessing}
               >
                 {logoutProcessing && (
-                  <span className="material-symbols-outlined animate-spin text-base">progress_activity</span>
+                  <span className="material-symbols-outlined animate-spin text-sm sm:text-base">progress_activity</span>
                 )}
                 {logoutProcessing ? 'Signing out...' : 'Confirm'}
               </button>

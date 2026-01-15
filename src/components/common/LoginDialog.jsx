@@ -91,32 +91,33 @@ const LoginDialog = ({ open, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md px-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-background-dark/95 p-8 shadow-[0_40px_140px_rgba(0,0,0,0.85)]">
-        <div className="flex items-start justify-between mb-6">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md px-3 sm:px-4">
+      <div className="w-full max-w-md rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 p-4 sm:p-6 md:p-8 shadow-[0_40px_140px_rgba(0,0,0,0.85)]">
+        <div className="flex items-start justify-between mb-4 sm:mb-6 gap-2">
           <div className="flex-1"></div>
-          <div className="flex-1 flex flex-col items-center gap-3">
+          <div className="flex-1 flex flex-col items-center gap-2 sm:gap-3">
             <img
               src="/rcc2.png"
               alt="Reptilez Cycling Club logo"
-              className="h-12 w-12 object-contain"
+              className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
             />
-            <h3 className="text-xl font-black tracking-tight text-white text-center whitespace-nowrap">Admin Login</h3>
+            <h3 className="text-lg sm:text-xl font-black tracking-tight text-white text-center whitespace-nowrap">Admin Login</h3>
           </div>
           <div className="flex-1 flex justify-end">
             <button
               className="text-white/60 hover:text-white transition-colors -mt-1"
               onClick={onClose}
               type="button"
+              aria-label="Close dialog"
             >
-              <span className="material-symbols-outlined">close</span>
+              <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
             </button>
           </div>
         </div>
         
         {(error || info) && (
           <div
-            className={`mb-6 rounded-lg px-4 py-3 text-sm ${
+            className={`mb-4 sm:mb-6 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm ${
               error
                 ? 'bg-accent/20 border border-accent/50 text-white'
                 : 'bg-emerald-500/10 border border-emerald-400/40 text-emerald-100'
@@ -126,9 +127,9 @@ const LoginDialog = ({ open, onClose }) => {
           </div>
         )}
         
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-white/80">
+        <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <label className="text-xs sm:text-sm font-medium text-white/80">
               Username or Email
             </label>
             <input
@@ -137,12 +138,12 @@ const LoginDialog = ({ open, onClose }) => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="rounded-lg border border-primary/30 bg-black/40 px-4 py-3 text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              className="rounded-lg border border-primary/30 bg-black/40 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
             />
           </div>
           
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-white/80">
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <label className="text-xs sm:text-sm font-medium text-white/80">
               Password
             </label>
             <div className="relative">
@@ -152,33 +153,34 @@ const LoginDialog = ({ open, onClose }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full rounded-lg border border-primary/30 bg-black/40 px-4 py-3 pr-12 text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+                className="w-full rounded-lg border border-primary/30 bg-black/40 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-3 flex items-center text-white/60 hover:text-white"
+                className="absolute inset-y-0 right-2 sm:right-3 flex items-center text-white/60 hover:text-white"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                <span className="material-symbols-outlined">
+                <span className="material-symbols-outlined text-lg sm:text-xl">
                   {showPassword ? 'visibility_off' : 'visibility'}
                 </span>
               </button>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-            <label className="flex items-center gap-2 text-white/80">
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
+            <label className="flex items-center gap-1.5 sm:gap-2 text-white/80">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="size-4 rounded border-primary/40 bg-transparent text-primary focus:ring-primary"
+                className="size-3.5 sm:size-4 rounded border-primary/40 bg-transparent text-primary focus:ring-primary"
               />
-              Remember me
+              <span className="whitespace-nowrap">Remember me</span>
             </label>
             <button
               type="button"
-              className="text-primary hover:text-white font-semibold"
+              className="text-primary hover:text-white font-semibold text-xs sm:text-sm whitespace-nowrap"
               onClick={handleForgotPassword}
             >
               Forgot password?
@@ -188,7 +190,7 @@ const LoginDialog = ({ open, onClose }) => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 rounded-lg bg-primary px-6 py-3 text-center text-sm font-bold uppercase tracking-wide text-black transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-1 sm:mt-2 rounded-lg bg-primary px-4 sm:px-6 py-2.5 sm:py-3 text-center text-xs sm:text-sm font-bold uppercase tracking-wide text-black transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>

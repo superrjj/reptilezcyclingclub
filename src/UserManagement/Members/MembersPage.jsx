@@ -112,25 +112,25 @@ const MembersPage = () => {
       }}
     >
       <div className="layout-container flex h-full grow flex-col">
-        <div className="px-4 md:px-6 lg:px-8 flex flex-1 justify-center">
+        <div className="px-3 sm:px-4 md:px-6 lg:px-8 flex flex-1 justify-center">
           <div className="layout-content-container flex flex-col w-full max-w-[1400px] flex-1">
-            <main className="flex flex-col gap-6 pt-4">
-              <div className="flex flex-wrap justify-between gap-3">
-                <div className="flex min-w-72 flex-col gap-3">
-                  <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Meet the Reptilez</p>
-                  <p className="text-primary/70 text-base font-normal leading-normal">The dedicated riders who make our club a community.</p>
+            <main className="flex flex-col gap-4 sm:gap-5 md:gap-6 pt-3 sm:pt-4">
+              <div className="flex flex-wrap justify-between gap-2 sm:gap-3">
+                <div className="flex min-w-0 sm:min-w-72 flex-col gap-2 sm:gap-3">
+                  <p className="text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Meet the Reptilez</p>
+                  <p className="text-primary/70 text-sm sm:text-base font-normal leading-normal">The dedicated riders who make our club a community.</p>
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-4 py-3 items-center">
-                <div className="w-full md:flex-1">
-                  <label className="flex flex-col min-w-40 h-12 w-full">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 py-2 sm:py-3 items-center">
+                <div className="w-full sm:flex-1">
+                  <label className="flex flex-col min-w-0 sm:min-w-40 h-10 sm:h-12 w-full">
                     <div className="flex w-full flex-1 items-stretch rounded-lg h-full">
-                      <div className="text-primary/70 flex border-none bg-black/40 items-center justify-center pl-4 rounded-l-lg border-r-0">
-                        <span className="material-symbols-outlined">search</span>
+                      <div className="text-primary/70 flex border-none bg-black/40 items-center justify-center pl-3 sm:pl-4 rounded-l-lg border-r-0">
+                        <span className="material-symbols-outlined text-lg sm:text-xl">search</span>
                       </div>
                       <input
-                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-white focus:outline-0 focus:ring-0 border-none bg-black/40 focus:border-none h-full placeholder:text-primary/70 px-4 pl-2 text-base font-normal leading-normal"
+                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-white focus:outline-0 focus:ring-0 border-none bg-black/40 focus:border-none h-full placeholder:text-primary/70 px-3 sm:px-4 pl-2 text-sm sm:text-base font-normal leading-normal"
                         placeholder="Search by name"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -138,7 +138,7 @@ const MembersPage = () => {
                     </div>
                   </label>
                 </div>
-                <div className="flex gap-3 p-3 overflow-x-auto w-full md:w-auto">
+                <div className="flex gap-2 sm:gap-3 p-2 sm:p-3 overflow-x-auto w-full sm:w-auto">
                   {filters.map((filter) => (
                     <button
                       key={filter}

@@ -73,13 +73,34 @@ const Events = () => {
   };
 
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast('error', 'Please select an image file (JPG, PNG, etc.)');
+      if (e.target) e.target.value = '';
+      return;
+    }
+
+    // Validate file size (max 30MB)
+    const maxSize = 30 * 1024 * 1024; // 30MB
+    if (file.size > maxSize) {
+      showToast('error', 'Image size must be less than 30MB');
+      if (e.target) e.target.value = '';
+      return;
+    }
+
+    try {
       setFormData(prev => ({
         ...prev,
         picture: file,
         picturePreview: URL.createObjectURL(file)
       }));
+    } catch (error) {
+      console.error('Error creating preview:', error);
+      showToast('error', 'Error processing image. Please try again.');
+      if (e.target) e.target.value = '';
     }
   };
 
@@ -220,6 +241,14 @@ const Events = () => {
   };
 
   const handleCloseDialog = () => {
+    // Cleanup object URL to prevent memory leaks
+    if (formData.picturePreview && formData.picturePreview.startsWith('blob:')) {
+      try {
+        URL.revokeObjectURL(formData.picturePreview);
+      } catch (error) {
+        console.error('Error revoking object URL:', error);
+      }
+    }
     setDialogOpen(false);
     setEditingEvent(null);
     setFormData({
@@ -469,34 +498,35 @@ const Events = () => {
 
       {/* Add New Event Dialog */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4 py-4">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-background-dark/95 p-4 md:p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <p className="text-sm font-medium text-primary mb-1">EVENT MANAGEMENT</p>
-                <h2 className="text-2xl font-bold text-white mb-1">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-3 sm:px-4 py-3 sm:py-4">
+          <div className="w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 p-3 sm:p-4 md:p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-primary mb-1">EVENT MANAGEMENT</p>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-1 break-words">
                   {editingEvent ? 'Edit Event' : 'Add New Event'}
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-white/60 text-xs sm:text-sm">
                   {editingEvent ? 'Update event information.' : 'Create a new cycling event for the club.'}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleCloseDialog}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-white/60 hover:text-white transition-colors flex-shrink-0"
+                aria-label="Close dialog"
               >
-                <span className="material-symbols-outlined text-2xl">close</span>
+                <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
               </button>
             </div>
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="title">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="title">
                   Event Title
                 </label>
                 <input
-                  className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white"
+                  className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-900 dark:text-white"
                   id="title"
                   name="title"
                   placeholder="e.g., Larga Pilipinas"
@@ -507,7 +537,7 @@ const Events = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventDate">
                     Start Date
@@ -686,24 +716,24 @@ const Events = () => {
 
       {/* Delete Confirmation Dialog */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4">
-          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-background-dark/95 px-6 py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-full border border-red-400/60 bg-red-500/15 text-red-400">
-                <span className="material-symbols-outlined text-2xl">warning</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-3 sm:px-4">
+          <div className="w-full max-w-sm rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 px-4 sm:px-6 py-5 sm:py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="flex size-10 sm:size-12 items-center justify-center rounded-full border border-red-400/60 bg-red-500/15 text-red-400 flex-shrink-0">
+                <span className="material-symbols-outlined text-xl sm:text-2xl">warning</span>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-white">Delete event?</p>
-                <p className="text-xs text-white/60">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm sm:text-base font-semibold text-white">Delete event?</p>
+                <p className="text-xs sm:text-sm text-white/60 mt-1">
                   This action cannot be undone. The event will be permanently removed.
                 </p>
               </div>
             </div>
-            <div className="mt-6 flex justify-end gap-3 text-sm">
+            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 text-sm">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="rounded-lg border border-white/20 px-4 py-2 text-white/80 hover:bg-white/5 transition-colors"
+                className="rounded-lg border border-white/20 px-4 py-2 text-white/80 hover:bg-white/5 transition-colors order-2 sm:order-1"
               >
                 Cancel
               </button>

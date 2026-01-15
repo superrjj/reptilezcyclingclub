@@ -388,17 +388,17 @@ const ViewPost = ({ singleView = false }) => {
       }}
     >
       <div className="layout-container flex grow flex-col">
-        <div className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-2">
-          <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 pt-3 md:pt-2 pb-8">
-            <section className="space-y-3">
+        <div className="px-3 sm:px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-2">
+          <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 pt-3 md:pt-2 pb-6 sm:pb-8">
+            <section className="space-y-2 sm:space-y-3">
               {/* Only show search bar if not in single view mode */}
               {!singleView && (
-                <label className="flex min-w-40 h-12 w-full rounded-full border border-primary/40 bg-black/70 px-4 text-white backdrop-blur focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
-                  <span className="flex items-center pr-3 text-primary/70">
-                    <span className="material-symbols-outlined text-base">search</span>
+                <label className="flex min-w-0 sm:min-w-40 h-10 sm:h-12 w-full rounded-full border border-primary/40 bg-black/70 px-3 sm:px-4 text-white backdrop-blur focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
+                  <span className="flex items-center pr-2 sm:pr-3 text-primary/70">
+                    <span className="material-symbols-outlined text-sm sm:text-base">search</span>
                   </span>
                   <input
-                    className="w-full flex-1 bg-transparent text-sm text-white placeholder:text-primary/70 focus:outline-none"
+                    className="w-full flex-1 bg-transparent text-xs sm:text-sm text-white placeholder:text-primary/70 focus:outline-none"
                     placeholder="Search posts..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}

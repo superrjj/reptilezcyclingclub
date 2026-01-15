@@ -24,7 +24,7 @@ const HomePage = () => {
 
   return (
     <>
-      <main className="flex flex-col gap-10 md:gap-16 mt-5">
+      <main className="flex flex-col gap-6 sm:gap-8 md:gap-10 lg:gap-16 mt-3 sm:mt-5 px-3 sm:px-4 md:px-6">
         <Hero refreshFunctionsRef={refreshFunctionsRef} />
         <Welcome />
         <Cards refreshFunctionsRef={refreshFunctionsRef} />

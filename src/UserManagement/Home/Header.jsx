@@ -82,26 +82,27 @@ const Header = ({ onLoginClick }) => {
         </div>
       )}
       
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-5 sm:px-12">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-3 sm:px-6 py-4 sm:py-5 md:px-12">
         <Link
           to="/"
           onClick={(e) => handleLinkClick(e, '/')}
-          className="group flex items-center gap-4 transition-all duration-300 hover:scale-105"
+          className="group flex items-center gap-2 sm:gap-4 transition-all duration-300 hover:scale-105"
         >
-          <div className="flex items-center gap-2 relative">
+          <div className="flex items-center gap-1 sm:gap-2 relative">
             {['/rcc1.png', '/rcc3.png'].map((src, idx) => (
               <img
                 key={src}
                 src={src}
                 alt="Reptilez Cycling Club logo"
-                className="h-10 w-10 rounded-full object-contain transition-transform duration-300 group-hover:scale-110"
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-contain transition-transform duration-300 group-hover:scale-110"
                 style={{ transitionDelay: `${idx * 50}ms` }}
               />
             ))}
           </div>
           
-          <h2 className="relative text-white text-xl font-black leading-tight tracking-tight bg-clip-text bg-gradient-to-r from-white via-primary to-white group-hover:from-primary group-hover:via-white group-hover:to-primary transition-all duration-500">
-            D&R Reptilez Sports
+          <h2 className="relative text-white text-base sm:text-lg md:text-xl font-black leading-tight tracking-tight bg-clip-text bg-gradient-to-r from-white via-primary to-white group-hover:from-primary group-hover:via-white group-hover:to-primary transition-all duration-500">
+            <span className="hidden xs:inline">D&R Reptilez Sports</span>
+            <span className="xs:hidden">D&R Reptilez</span>
             <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-transparent via-primary to-transparent group-hover:w-full transition-all duration-500"></span>
           </h2>
         </Link>
@@ -136,14 +137,14 @@ const Header = ({ onLoginClick }) => {
           </nav>
 
           {isAdmin ? (
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <span className="text-primary text-sm font-black tracking-widest uppercase">Admin</span>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="relative hidden sm:block">
+                <span className="text-primary text-xs sm:text-sm font-black tracking-widest uppercase">Admin</span>
                 <div className="absolute -inset-1 bg-primary/20 blur-sm rounded -z-10 animate-pulse"></div>
               </div>
               <button
                 onClick={handleLogout}
-                className="group relative overflow-hidden rounded-xl px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(220,38,38,0.5)]"
+                className="group relative overflow-hidden rounded-lg sm:rounded-xl px-3 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(220,38,38,0.5)]"
               >
                 <span className="relative z-10">LOGOUT</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -152,7 +153,7 @@ const Header = ({ onLoginClick }) => {
           ) : (
             <button
               onClick={onLoginClick}
-              className="group relative overflow-hidden rounded-xl px-6 py-2.5 bg-gradient-to-r from-primary to-green-600 text-white text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(0,255,0,0.5)]"
+              className="group relative overflow-hidden rounded-lg sm:rounded-xl px-3 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-primary to-green-600 text-white text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(0,255,0,0.5)]"
             >
               <span className="relative z-10">LOGIN</span>
               <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -164,11 +165,11 @@ const Header = ({ onLoginClick }) => {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="relative rounded-xl border-2 border-primary/40 bg-gradient-to-br from-black/60 to-gray-900/60 p-2.5 text-white transition-all duration-300 hover:border-primary hover:shadow-[0_0_20px_rgba(0,255,0,0.3)] focus:outline-none focus:ring-2 focus:ring-primary/60"
+            className="relative rounded-lg sm:rounded-xl border-2 border-primary/40 bg-gradient-to-br from-black/60 to-gray-900/60 p-2 sm:p-2.5 text-white transition-all duration-300 hover:border-primary hover:shadow-[0_0_20px_rgba(0,255,0,0.3)] focus:outline-none focus:ring-2 focus:ring-primary/60"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
           >
-            <span className="material-symbols-outlined text-3xl transition-transform duration-300" style={{ transform: mobileMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+            <span className="material-symbols-outlined text-2xl sm:text-3xl transition-transform duration-300" style={{ transform: mobileMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
               {mobileMenuOpen ? 'close' : 'menu'}
             </span>
           </button>
@@ -182,8 +183,8 @@ const Header = ({ onLoginClick }) => {
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed inset-x-4 top-24 z-50 animate-[slideDown_0.3s_ease-out] origin-top rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-black via-gray-900 to-black p-8 shadow-[0_0_60px_rgba(0,255,0,0.2),0_30px_90px_rgba(0,0,0,0.95)]">
-            <nav className="flex flex-col gap-2">
+          <div className="fixed inset-x-3 sm:inset-x-4 top-20 sm:top-24 z-50 animate-[slideDown_0.3s_ease-out] origin-top rounded-2xl sm:rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-black via-gray-900 to-black p-4 sm:p-6 md:p-8 shadow-[0_0_60px_rgba(0,255,0,0.2),0_30px_90px_rgba(0,0,0,0.95)]">
+            <nav className="flex flex-col gap-1.5 sm:gap-2">
               {[
                 { label: 'Home', path: '/' },
                 { label: 'Posts', path: '/posts' },
@@ -195,7 +196,7 @@ const Header = ({ onLoginClick }) => {
                   key={item.path}
                   to={item.path}
                   onClick={(e) => handleLinkClick(e, item.path)}
-                  className={`group relative overflow-hidden rounded-2xl px-5 py-4 text-lg font-bold transition-all duration-300 ${
+                  className={`group relative overflow-hidden rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3 sm:py-4 text-base sm:text-lg font-bold transition-all duration-300 ${
                     location.pathname === item.path
                       ? 'bg-gradient-to-r from-primary/20 to-green-600/20 text-primary shadow-[inset_0_0_20px_rgba(0,255,0,0.2)]'
                       : 'text-white/90 hover:bg-white/5 hover:text-primary'

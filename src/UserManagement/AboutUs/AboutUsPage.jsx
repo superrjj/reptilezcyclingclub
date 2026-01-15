@@ -121,8 +121,8 @@ const AboutUsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-12 pb-12">
-        <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 sm:gap-8 md:gap-12 pb-6 sm:pb-8 md:pb-12 px-3 sm:px-4 md:px-6">
+        <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
           <div className="relative w-full h-80 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden border border-primary/30 shimmer-bg" />
         </div>
 
@@ -155,7 +155,7 @@ const AboutUsPage = () => {
           visibleSections['hero'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}
       >
-        <div className="relative w-full h-80 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden border border-primary/30 group shadow-[0_20px_80px_rgba(34,197,94,0.15)] hover:shadow-[0_20px_100px_rgba(34,197,94,0.25)] transition-all duration-700">
+        <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl sm:rounded-2xl overflow-hidden border border-primary/30 group shadow-[0_20px_80px_rgba(34,197,94,0.15)] hover:shadow-[0_20px_100px_rgba(34,197,94,0.25)] transition-all duration-700">
           <div 
             className="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-700 group-hover:scale-110"
             style={{ backgroundImage: 'url("/rcc_bg.jpg")' }}
@@ -163,7 +163,7 @@ const AboutUsPage = () => {
             aria-label="Reptilez Cycling Club team photo"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+          <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6 md:p-8">
            
           </div>
         </div>
@@ -173,39 +173,39 @@ const AboutUsPage = () => {
       <div 
         id="mission-vision" 
         data-animate
-        className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-1000 ${
+        className={`grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6 transition-all duration-1000 ${
           visibleSections['mission-vision'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}
       >
-        <div className="bg-black/40 border border-primary/30 rounded-2xl p-8 backdrop-blur-sm hover:border-primary/70 transition-all duration-500 group perspective-1000 hover:shadow-[0_0_40px_rgba(34,197,94,0.2)] hover:-translate-y-2">
-          <div className="flex items-center gap-3 mb-4 group-hover:scale-110 transition-transform duration-500">
-            <span className="material-symbols-outlined text-primary text-4xl drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">flag</span>
-            <h2 className="text-white text-2xl font-bold">Our Mission</h2>
+        <div className="bg-black/40 border border-primary/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 backdrop-blur-sm hover:border-primary/70 transition-all duration-500 group perspective-1000 hover:shadow-[0_0_40px_rgba(34,197,94,0.2)] hover:-translate-y-2">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-500">
+            <span className="material-symbols-outlined text-primary text-3xl sm:text-4xl drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">flag</span>
+            <h2 className="text-white text-xl sm:text-2xl font-bold">Our Mission</h2>
           </div>
-          <p className="text-white/80 text-base leading-relaxed mb-4 group-hover:text-white/90 transition-colors duration-300">
+          <p className="text-white/80 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 group-hover:text-white/90 transition-colors duration-300">
             To nurture and develop young and youth riders into competitive athletes who will become 
             a source of pride for Tarlac and Pangasinan. We are committed to providing comprehensive 
             training that develops not just athletic prowess, but also instills good manners and right 
             conduct in every rider.
           </p>
-          <p className="text-white/80 text-base leading-relaxed group-hover:text-white/90 transition-colors duration-300">
+          <p className="text-white/80 text-sm sm:text-base leading-relaxed group-hover:text-white/90 transition-colors duration-300">
             Through dedicated coaching, structured programs, and a supportive community, we transform 
             promising young cyclists into disciplined athletes who excel both on and off the bike, 
             representing our provinces with honor and integrity.
           </p>
         </div>
 
-        <div className="bg-black/40 border border-primary/30 rounded-2xl p-8 backdrop-blur-sm hover:border-primary/70 transition-all duration-500 group perspective-1000 hover:shadow-[0_0_40px_rgba(34,197,94,0.2)] hover:-translate-y-2">
-          <div className="flex items-center gap-3 mb-4 group-hover:scale-110 transition-transform duration-500">
-            <span className="material-symbols-outlined text-primary text-4xl drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">visibility</span>
-            <h2 className="text-white text-2xl font-bold">Our Vision</h2>
+        <div className="bg-black/40 border border-primary/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 backdrop-blur-sm hover:border-primary/70 transition-all duration-500 group perspective-1000 hover:shadow-[0_0_40px_rgba(34,197,94,0.2)] hover:-translate-y-2">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-500">
+            <span className="material-symbols-outlined text-primary text-3xl sm:text-4xl drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">visibility</span>
+            <h2 className="text-white text-xl sm:text-2xl font-bold">Our Vision</h2>
           </div>
-          <p className="text-white/80 text-base leading-relaxed mb-4 group-hover:text-white/90 transition-colors duration-300">
+          <p className="text-white/80 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 group-hover:text-white/90 transition-colors duration-300">
             To establish a premier Amateur cycling team in Tarlac Province that competes at the highest 
             national level races. We envision RCC as a model club and team that serves as an inspiration 
             and blueprint for upcoming amateur teams across the country.
           </p>
-          <p className="text-white/80 text-base leading-relaxed group-hover:text-white/90 transition-colors duration-300">
+          <p className="text-white/80 text-sm sm:text-base leading-relaxed group-hover:text-white/90 transition-colors duration-300">
             We strive to be recognized not only for our competitive achievements but also for our 
             commitment to youth development, character building, and excellence in sportsmanship. 
             Our goal is to create a legacy that inspires future generations of cyclists.

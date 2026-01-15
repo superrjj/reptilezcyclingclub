@@ -69,13 +69,34 @@ const Members = () => {
   };
 
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast('error', 'Please select an image file (JPG, PNG, etc.)');
+      if (e.target) e.target.value = '';
+      return;
+    }
+
+    // Validate file size (max 30MB)
+    const maxSize = 30 * 1024 * 1024; // 30MB
+    if (file.size > maxSize) {
+      showToast('error', 'Image size must be less than 30MB');
+      if (e.target) e.target.value = '';
+      return;
+    }
+
+    try {
       setFormData(prev => ({
         ...prev,
         picture: file,
         picturePreview: URL.createObjectURL(file)
       }));
+    } catch (error) {
+      console.error('Error creating preview:', error);
+      showToast('error', 'Error processing image. Please try again.');
+      if (e.target) e.target.value = '';
     }
   };
 
@@ -156,6 +177,14 @@ const Members = () => {
   };
 
   const handleCloseDialog = () => {
+    // Cleanup object URL to prevent memory leaks
+    if (formData.picturePreview && formData.picturePreview.startsWith('blob:')) {
+      try {
+        URL.revokeObjectURL(formData.picturePreview);
+      } catch (error) {
+        console.error('Error revoking object URL:', error);
+      }
+    }
     setDialogOpen(false);
     setEditingMember(null);
     setFormData({
@@ -341,24 +370,25 @@ const Members = () => {
 
       {/* Add New Member Dialog */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4 py-4">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-background-dark/95 p-4 md:p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <p className="text-sm font-medium text-primary mb-1">MEMBER MANAGEMENT</p>
-                <h2 className="text-2xl font-bold text-white mb-1">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-3 sm:px-4 py-3 sm:py-4">
+          <div className="w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 p-3 sm:p-4 md:p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-primary mb-1">MEMBER MANAGEMENT</p>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-1 break-words">
                   {editingMember ? 'Edit Member' : 'Add New Member'}
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-white/60 text-xs sm:text-sm">
                   {editingMember ? 'Update member information.' : 'Add a new member to the club.'}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleCloseDialog}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-white/60 hover:text-white transition-colors flex-shrink-0"
+                aria-label="Close dialog"
               >
-                <span className="material-symbols-outlined text-2xl">close</span>
+                <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
               </button>
             </div>
 
