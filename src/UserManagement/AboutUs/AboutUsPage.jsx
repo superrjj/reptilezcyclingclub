@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const AboutUsPage = () => {
   const [loading, setLoading] = useState(true);
   const [visibleSections, setVisibleSections] = useState({});
+
+  usePageMeta('About Us');
 
   useEffect(() => {
     const checkConnection = async () => {

@@ -4,8 +4,10 @@ import { getMembers } from '../../../services/membersService';
 import { getPosts } from '../../../services/postsService';
 import { getEvents, getUpcomingEvents } from '../../../services/eventsService';
 import { useTabVisibility } from '../../../hooks/useTabVisibility';
+import { usePageMeta } from '../../../hooks/usePageMeta';
 
 const Dashboard = () => {
+  usePageMeta('Admin Dashboard');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalMembers: 0,

@@ -3,6 +3,7 @@ import AdminLayout from '../AdminLayout';
 import { getEvents, searchEvents, createEvent, updateEvent, deleteEvent } from '../../../services/eventsService';
 import { uploadImage } from '../../../services/imageUploadService';
 import { useTabVisibility } from '../../../hooks/useTabVisibility';
+import { usePageMeta } from '../../../hooks/usePageMeta';
 
 const Events = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,6 +25,8 @@ const Events = () => {
     picturePreview: null,
     description: ''
   });
+
+  usePageMeta('Admin Events');
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';

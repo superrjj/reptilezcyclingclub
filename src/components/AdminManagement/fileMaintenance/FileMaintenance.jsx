@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getMaintenanceByType, createMaintenance, deleteMaintenance } from '../../../services/maintenanceService';
 import { uploadImage, deleteImage } from '../../../services/imageUploadService';
 import AdminLayout from '../AdminLayout';
+import { usePageMeta } from '../../../hooks/usePageMeta';
 
 const FileMaintenance = () => {
   const [heroImages, setHeroImages] = useState([]);
@@ -18,6 +19,8 @@ const FileMaintenance = () => {
     type: 'success',
     message: '',
   });
+
+  usePageMeta('File Maintenance');
 
   useEffect(() => {
     fetchImages();

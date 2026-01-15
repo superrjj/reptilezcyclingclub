@@ -6,6 +6,7 @@ import Events from './Events.jsx';
 import Gallery from './Gallery.jsx';
 import Footer from './Footer.jsx';
 import { useTabVisibility } from '../../hooks/useTabVisibility';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const HomePage = () => {
   const refreshFunctionsRef = useRef([]);
@@ -19,6 +20,7 @@ const HomePage = () => {
   };
 
   useTabVisibility(refreshAll);
+  usePageMeta(''); // base title only: "D&R Reptilez Sports"
 
   return (
     <>

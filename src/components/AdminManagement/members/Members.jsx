@@ -3,6 +3,7 @@ import AdminLayout from '../AdminLayout';
 import { getMembers, searchMembers, createMember, updateMember, deleteMember } from '../../../services/membersService';
 import { uploadImage } from '../../../services/imageUploadService';
 import { useTabVisibility } from '../../../hooks/useTabVisibility';
+import { usePageMeta } from '../../../hooks/usePageMeta';
 
 const Members = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,6 +21,8 @@ const Members = () => {
     role: 'Rider',
     bikeType: 'Road Bike'
   });
+
+  usePageMeta('Admin Members');
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';

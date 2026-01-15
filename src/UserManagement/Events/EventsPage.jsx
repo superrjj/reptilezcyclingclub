@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getEvents } from '../../services/eventsService';
 import { useTabVisibility } from '../../hooks/useTabVisibility';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
@@ -26,6 +27,7 @@ const EventsPage = () => {
 
   // Auto-refresh when tab becomes visible
   useTabVisibility(fetchEvents);
+  usePageMeta('Events');
 
   useEffect(() => {
     if (selectedEvent) {

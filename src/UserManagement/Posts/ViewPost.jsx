@@ -4,6 +4,7 @@ import { getPosts } from '../../services/postsService';
 import { fetchPostLikeSummary, removePostLike, upsertPostLike } from '../../services/postLikesService';
 import { isSupabaseConfigured } from '../../lib/supabase';
 import { useTabVisibility } from '../../hooks/useTabVisibility';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 
 const fallbackPosts = [
@@ -71,6 +72,8 @@ const ViewPost = ({ singleView = false }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [allMediaForViewer, setAllMediaForViewer] = useState([]);
   const [shareState, setShareState] = useState({ postId: null, message: '' });
+
+  usePageMeta('Posts');
 
   const fetchPosts = async () => {
     setLoading(true);

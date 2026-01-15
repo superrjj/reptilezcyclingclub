@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getMembers, searchMembers, getMembersByRole } from '../../services/membersService';
 import { useTabVisibility } from '../../hooks/useTabVisibility';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const MembersPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,6 +46,7 @@ const MembersPage = () => {
 
   // Auto-refresh when tab becomes visible
   useTabVisibility(fetchMembers);
+  usePageMeta('Members');
 
   // Filter members (client-side filtering for search when filter is active)
   const filteredMembers = members.filter(member => {

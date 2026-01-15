@@ -5,6 +5,7 @@ import { uploadImage } from '../../../services/imageUploadService';
 import AdminLayout from '../AdminLayout';
 import { supabase, isSupabaseConfigured } from '../../../lib/supabase';
 import { useTabVisibility } from '../../../hooks/useTabVisibility';
+import { usePageMeta } from '../../../hooks/usePageMeta';
 
 const Posts = () => {
   const { user } = useAuth();
@@ -18,6 +19,8 @@ const Posts = () => {
   const fileInputRef = useRef(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [authorProfiles, setAuthorProfiles] = useState({});
+
+  usePageMeta('Admin Posts');
   const [authorLoading, setAuthorLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState({ visible: false, type: 'success', message: '' });
