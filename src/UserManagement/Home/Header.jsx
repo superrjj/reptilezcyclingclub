@@ -102,7 +102,7 @@ const Header = ({ onLoginClick }) => {
           
           <h2 className="relative text-white text-base sm:text-lg md:text-xl font-black leading-tight tracking-tight bg-clip-text bg-gradient-to-r from-white via-primary to-white group-hover:from-primary group-hover:via-white group-hover:to-primary transition-all duration-500">
             <span className="hidden xs:inline">D&R Reptilez Sports</span>
-            <span className="xs:hidden">D&R Reptilez</span>
+            <span className="xs:hidden">D&R Reptilez Sports</span>
             <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-transparent via-primary to-transparent group-hover:w-full transition-all duration-500"></span>
           </h2>
         </Link>
