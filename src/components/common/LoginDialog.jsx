@@ -21,6 +21,24 @@ const LoginDialog = ({ open, onClose }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const handleChange = (e) => {
@@ -91,110 +109,168 @@ const LoginDialog = ({ open, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md px-3 sm:px-4">
-      <div className="w-full max-w-md rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 p-4 sm:p-6 md:p-8 shadow-[0_40px_140px_rgba(0,0,0,0.85)]">
-        <div className="flex items-start justify-between mb-4 sm:mb-6 gap-2">
-          <div className="flex-1"></div>
-          <div className="flex-1 flex flex-col items-center gap-2 sm:gap-3">
-            <img
-              src="/rcc2.png"
-              alt="Reptilez Cycling Club logo"
-              className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
-            />
-            <h3 className="text-lg sm:text-xl font-black tracking-tight text-white text-center whitespace-nowrap">Admin Login</h3>
-          </div>
-          <div className="flex-1 flex justify-end">
-            <button
-              className="text-white/60 hover:text-white transition-colors -mt-1"
-              onClick={onClose}
-              type="button"
-              aria-label="Close dialog"
-            >
-              <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
-            </button>
-          </div>
-        </div>
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl px-3 sm:px-4 animate-[fadeIn_0.3s_ease-out]"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="w-full max-w-md rounded-2xl sm:rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-black via-gray-900/95 to-black p-5 sm:p-6 md:p-8 shadow-[0_0_80px_rgba(0,255,0,0.15),0_40px_140px_rgba(0,0,0,0.9)] animate-[slideUp_0.4s_ease-out] relative overflow-hidden">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 animate-pulse"></div>
+        <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         
-        {(error || info) && (
-          <div
-            className={`mb-4 sm:mb-6 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm ${
-              error
-                ? 'bg-accent/20 border border-accent/50 text-white'
-                : 'bg-emerald-500/10 border border-emerald-400/40 text-emerald-100'
-            }`}
-          >
-            {error || info}
-          </div>
-        )}
-        
-        <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-1.5 sm:gap-2">
-            <label className="text-xs sm:text-sm font-medium text-white/80">
-              Username or Email
-            </label>
-            <input
-              type="text"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="rounded-lg border border-primary/30 bg-black/40 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-            />
-          </div>
-          
-          <div className="flex flex-col gap-1.5 sm:gap-2">
-            <label className="text-xs sm:text-sm font-medium text-white/80">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full rounded-lg border border-primary/30 bg-black/40 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base text-white placeholder:text-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-              />
+        <div className="relative z-10">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-5 sm:mb-6 gap-3">
+            <div className="flex-1"></div>
+            <div className="flex-1 flex flex-col items-center gap-3 sm:gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full animate-pulse"></div>
+                <img
+                  src="/rcc2.png"
+                  alt="Reptilez Cycling Club logo"
+                  className="h-12 w-12 sm:h-14 sm:w-14 object-contain relative z-10 drop-shadow-[0_0_20px_rgba(0,255,0,0.4)]"
+                />
+              </div>
+              <div className="text-center">
+              </div>
+            </div>
+            <div className="flex-1 flex justify-end">
               <button
+                className="text-white/60 hover:text-white transition-all duration-300 hover:rotate-90 hover:scale-110 rounded-lg p-1 hover:bg-white/10"
+                onClick={onClose}
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-2 sm:right-3 flex items-center text-white/60 hover:text-white"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label="Close dialog"
               >
-                <span className="material-symbols-outlined text-lg sm:text-xl">
-                  {showPassword ? 'visibility_off' : 'visibility'}
-                </span>
+                <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
               </button>
             </div>
           </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
-            <label className="flex items-center gap-1.5 sm:gap-2 text-white/80">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="size-3.5 sm:size-4 rounded border-primary/40 bg-transparent text-primary focus:ring-primary"
-              />
-              <span className="whitespace-nowrap">Remember me</span>
-            </label>
-            <button
-              type="button"
-              className="text-primary hover:text-white font-semibold text-xs sm:text-sm whitespace-nowrap"
-              onClick={handleForgotPassword}
-            >
-              Forgot password?
-            </button>
-          </div>
           
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-1 sm:mt-2 rounded-lg bg-primary px-4 sm:px-6 py-2.5 sm:py-3 text-center text-xs sm:text-sm font-bold uppercase tracking-wide text-black transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+          {/* Error/Info Messages */}
+          {(error || info) && (
+            <div
+              className={`mb-4 sm:mb-6 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm font-medium backdrop-blur-sm border-2 animate-[slideDown_0.3s_ease-out] ${
+                error
+                  ? 'bg-red-500/10 border-red-400/50 text-red-200 shadow-[0_0_20px_rgba(239,68,68,0.2)]'
+                  : 'bg-emerald-500/10 border-emerald-400/50 text-emerald-200 shadow-[0_0_20px_rgba(34,197,94,0.2)]'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-base sm:text-lg">
+                  {error ? 'error' : 'check_circle'}
+                </span>
+                <span>{error || info}</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Form */}
+          <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
+            {/* Email Input */}
+            <div className="flex flex-col gap-2 sm:gap-2.5">
+              <label className="text-xs sm:text-sm font-semibold text-white/90 flex items-center gap-2">
+                <span className="material-symbols-outlined text-base sm:text-lg text-primary">person</span>
+                Username or Email
+              </label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-xl border-2 border-primary/30 bg-black/50 backdrop-blur-sm px-4 sm:px-5 py-3 sm:py-3.5 text-sm sm:text-base text-white placeholder:text-white/40 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none transition-all duration-300 hover:border-primary/50 focus:bg-black/60"
+                  placeholder="Enter your email"
+                />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/0 to-primary/0 group-focus-within:from-primary/5 group-focus-within:via-primary/10 group-focus-within:to-primary/5 transition-all duration-300 pointer-events-none"></div>
+              </div>
+            </div>
+            
+            {/* Password Input */}
+            <div className="flex flex-col gap-2 sm:gap-2.5">
+              <label className="text-xs sm:text-sm font-semibold text-white/90 flex items-center gap-2">
+                <span className="material-symbols-outlined text-base sm:text-lg text-primary">lock</span>
+                Password
+              </label>
+              <div className="relative group">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-xl border-2 border-primary/30 bg-black/50 backdrop-blur-sm px-4 sm:px-5 py-3 sm:py-3.5 pr-12 sm:pr-14 text-sm sm:text-base text-white placeholder:text-white/40 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none transition-all duration-300 hover:border-primary/50 focus:bg-black/60"
+                  placeholder="Enter your password"
+                />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/0 to-primary/0 group-focus-within:from-primary/5 group-focus-within:via-primary/10 group-focus-within:to-primary/5 transition-all duration-300 pointer-events-none"></div>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-3 sm:right-4 flex items-center text-white/50 hover:text-primary transition-colors duration-300 rounded-lg hover:bg-white/5 p-1"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  <span className="material-symbols-outlined text-lg sm:text-xl">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 text-xs sm:text-sm">
+              <label className="flex items-center gap-2 sm:gap-2.5 text-white/80 cursor-pointer group">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div className={`size-4 sm:size-5 rounded border-2 flex items-center justify-center transition-all duration-300 ${
+                    rememberMe 
+                      ? 'bg-primary border-primary shadow-[0_0_15px_rgba(0,255,0,0.4)]' 
+                      : 'border-primary/40 bg-transparent group-hover:border-primary/70'
+                  }`}>
+                    {rememberMe && (
+                      <span className="material-symbols-outlined text-white text-sm sm:text-base">check</span>
+                    )}
+                  </div>
+                </div>
+                <span className="whitespace-nowrap group-hover:text-white transition-colors">Remember me</span>
+              </label>
+              <button
+                type="button"
+                className="text-primary hover:text-white font-semibold text-xs sm:text-sm whitespace-nowrap transition-colors duration-300 hover:underline"
+                onClick={handleForgotPassword}
+              >
+                Forgot password?
+              </button>
+            </div>
+            
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative mt-2 sm:mt-3 rounded-xl bg-gradient-to-r from-primary via-green-500 to-primary px-5 sm:px-6 py-3 sm:py-3.5 text-center text-sm sm:text-base font-black uppercase tracking-wider text-black transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,255,0,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                {loading ? (
+                  <>
+                    <span className="material-symbols-outlined animate-spin text-lg">sync</span>
+                    <span>Logging in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Login</span>
+                    <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                  </>
+                )}
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

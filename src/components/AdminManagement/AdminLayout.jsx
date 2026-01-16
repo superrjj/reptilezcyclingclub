@@ -104,42 +104,103 @@ const AdminLayout = ({ children }) => {
     };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    if (!confirmLogoutOpen) {
+      document.body.style.overflow = '';
+      return undefined;
+    }
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && !logoutProcessing) {
+        cancelLogout();
+      }
+    };
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [confirmLogoutOpen, logoutProcessing]);
+
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200">
       {confirmLogoutOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-3 sm:px-4">
-          <div className="w-full max-w-sm rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 px-4 sm:px-6 py-5 sm:py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
-            <div className="flex items-start sm:items-center gap-3">
-              <div className="flex size-10 sm:size-12 items-center justify-center rounded-full border border-primary/40 bg-primary/20 text-primary flex-shrink-0">
-                <span className="material-symbols-outlined text-xl sm:text-2xl">logout</span>
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl px-3 sm:px-4 animate-[fadeIn_0.3s_ease-out]"
+          onClick={(e) => e.target === e.currentTarget && !logoutProcessing && cancelLogout()}
+        >
+          <div className="w-full max-w-md rounded-2xl sm:rounded-3xl border-2 border-red-500/40 bg-gradient-to-br from-black via-gray-900/95 to-black p-4 sm:p-5 md:p-6 shadow-[0_0_80px_rgba(220,38,38,0.15),0_40px_140px_rgba(0,0,0,0.9)] animate-[slideUp_0.4s_ease-out] relative overflow-hidden">
+            {/* Animated background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-red-500/5 animate-pulse"></div>
+            <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-red-500/5 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-red-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            
+            <div className="relative z-10">
+              {/* Close Button */}
+              <div className="flex justify-end mb-3">
+                <button
+                  className="text-white/60 hover:text-white transition-all duration-300 hover:rotate-90 hover:scale-110 rounded-lg p-1 hover:bg-white/10"
+                  onClick={cancelLogout}
+                  type="button"
+                  disabled={logoutProcessing}
+                  aria-label="Close dialog"
+                >
+                  <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
+                </button>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm sm:text-base font-semibold text-white">Sign out from Admin Panel?</p>
-                <p className="text-xs sm:text-sm text-white/60 mt-1">
-                  You will be redirected back to the public site after confirming.
-                </p>
+
+              {/* Header */}
+              <div className="flex flex-col items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-red-500/30 blur-xl rounded-full animate-pulse"></div>
+                  <div className="relative flex size-14 sm:size-16 items-center justify-center rounded-full border-2 border-red-500/50 bg-gradient-to-br from-red-600/20 to-red-700/20 backdrop-blur-sm">
+                    <span className="material-symbols-outlined text-2xl sm:text-3xl text-red-400 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]">logout</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h3 className="text-lg sm:text-xl font-black tracking-tight text-white mb-1 bg-clip-text bg-gradient-to-r from-white via-red-400 to-white">
+                    Sign Out?
+                  </h3>
+                  <p className="text-xs sm:text-sm text-white/70 font-medium">
+                    You will be redirected back to the public site
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 text-sm">
-              <button
-                type="button"
-                onClick={cancelLogout}
-                className="rounded-lg border border-white/20 px-4 py-2 text-white/80 hover:bg-white/5 transition-colors order-2 sm:order-1"
-                disabled={logoutProcessing}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={confirmLogout}
-                className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 sm:px-5 py-2 font-semibold text-white hover:bg-green-700 transition-colors disabled:opacity-60 order-1 sm:order-2"
-                disabled={logoutProcessing}
-              >
-                {logoutProcessing && (
-                  <span className="material-symbols-outlined animate-spin text-sm sm:text-base">progress_activity</span>
-                )}
-                {logoutProcessing ? 'Signing out...' : 'Confirm'}
-              </button>
+
+              {/* Warning Message */}
+              <div className="mb-4 sm:mb-5 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 bg-red-500/10 border-2 border-red-400/30 backdrop-blur-sm">
+                <div className="flex items-start gap-2.5 sm:gap-3">
+                  <span className="material-symbols-outlined text-red-400 text-base sm:text-lg flex-shrink-0 mt-0.5">info</span>
+                  <p className="text-xs sm:text-sm text-white/90 font-medium leading-relaxed">
+                    Are you sure you want to sign out from the Admin Panel? All unsaved changes will be lost.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Button - Centered */}
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={confirmLogout}
+                  className="group relative rounded-xl bg-gradient-to-r from-red-600 via-red-500 to-red-600 px-8 sm:px-10 py-2.5 sm:py-3 text-sm sm:text-base font-black uppercase tracking-wider text-white transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
+                  disabled={logoutProcessing}
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {logoutProcessing ? (
+                      <>
+                        <span className="material-symbols-outlined animate-spin text-lg">sync</span>
+                        <span>Signing out...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Confirm</span>
+                        <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                      </>
+                    )}
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </button>
+              </div>
             </div>
           </div>
         </div>
