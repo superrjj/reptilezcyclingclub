@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPosts } from '../../services/postsService';
 import { getMembers } from '../../services/membersService';
@@ -87,13 +87,14 @@ const Cards = ({ refreshFunctionsRef }) => {
     }
   };
 
-  const refreshAll = async () => {
+  const refreshAll = useCallback(async () => {
     await Promise.all([
       fetchLatestPost(),
       fetchMemberImages(),
       fetchUpcomingEvent()
     ]);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetchLatestPost();
