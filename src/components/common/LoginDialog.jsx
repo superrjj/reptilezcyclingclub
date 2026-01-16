@@ -165,7 +165,7 @@ const LoginDialog = ({ open, onClose }) => {
             </div>
           )}
           
-          {/* Form */}
+          {/* Form Login */}
           <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
             {/* Email Input */}
             <div className="flex flex-col gap-2 sm:gap-2.5">
