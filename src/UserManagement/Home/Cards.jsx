@@ -110,7 +110,7 @@ const Cards = ({ refreshFunctionsRef }) => {
         refreshFunctionsRef.current = refreshFunctionsRef.current.filter((_, i) => i !== index);
       };
     }
-  }, [refreshFunctionsRef]);
+  }, [refreshFunctionsRef, refreshAll]);
 
   // Cycle through member images with fade animation
   useEffect(() => {

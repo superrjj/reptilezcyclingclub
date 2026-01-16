@@ -120,6 +120,7 @@ const AdminLayout = ({ children }) => {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleEscape);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [confirmLogoutOpen, logoutProcessing]);
 
   return (
@@ -342,9 +343,8 @@ const AdminLayout = ({ children }) => {
             </div>
             
             <div className="flex flex-col gap-2">
-              <a 
-                className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" 
-                href="#"
+              <button 
+                className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-left w-full" 
                 onClick={(e) => {
                   e.preventDefault();
                   setMobileMenuOpen(false);
@@ -352,7 +352,7 @@ const AdminLayout = ({ children }) => {
               >
                 <span className="material-symbols-outlined">settings</span>
                 <p className="text-sm font-medium leading-normal">Settings</p>
-              </a>
+              </button>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);

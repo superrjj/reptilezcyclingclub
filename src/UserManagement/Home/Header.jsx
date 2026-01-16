@@ -35,11 +35,6 @@ const Header = ({ onLoginClick }) => {
     window.location.reload();
   };
 
-  const handleMaintenanceClick = (e) => {
-    e.preventDefault();
-    setMaintenanceVisible(true);
-  };
-
   useEffect(() => {
     if (!mobileMenuOpen) {
       document.body.style.overflow = '';

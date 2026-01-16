@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useEffect, useState, forwardRef } from 'react';
 import { getMaintenanceByType } from '../../services/maintenanceService';
 
 const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {

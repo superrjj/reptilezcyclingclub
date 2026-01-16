@@ -103,6 +103,7 @@ const ViewPost = ({ singleView = false }) => {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-refresh when tab becomes visible
@@ -190,13 +191,7 @@ const ViewPost = ({ singleView = false }) => {
     return `${datePart} at ${timePart}`;
   };
 
-  const getInitials = (name = '') => {
-    const fallback = 'RCC';
-    if (!name) return fallback;
-    const trimmed = name.trim();
-    if (!trimmed) return fallback;
-    const parts = trimmed.split(' ').filter(Boolean);
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  // Removed unused getInitials function
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
   };
 
@@ -376,6 +371,7 @@ const ViewPost = ({ singleView = false }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeMedia, currentMediaIndex, allMediaForViewer]);
 
   return (

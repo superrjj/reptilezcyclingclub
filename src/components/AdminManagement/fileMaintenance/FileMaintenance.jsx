@@ -273,7 +273,7 @@ const FileMaintenance = () => {
                 <div className="overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 aspect-video">
                   <img
                     src={image.image_url}
-                    alt={`${title} image`}
+                    alt={title}
                     className="w-full h-full object-cover"
                   />
                 </div>

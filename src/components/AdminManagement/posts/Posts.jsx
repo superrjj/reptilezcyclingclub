@@ -21,7 +21,6 @@ const Posts = () => {
   const [authorProfiles, setAuthorProfiles] = useState({});
 
   usePageMeta('Admin Posts');
-  const [authorLoading, setAuthorLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState({ visible: false, type: 'success', message: '' });
   const [expandedAdminPosts, setExpandedAdminPosts] = useState({});
@@ -62,7 +61,10 @@ const Posts = () => {
     }
   };
 
-  useEffect(() => { fetchPosts(); }, []);
+  useEffect(() => { 
+    fetchPosts(); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     if (searchQuery.trim()) {
       const searchPostsData = async () => {
@@ -78,6 +80,7 @@ const Posts = () => {
     } else {
       fetchPosts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   useTabVisibility(refreshPosts);
@@ -295,7 +298,7 @@ const Posts = () => {
                       <div className="grid grid-cols-3 gap-3">
                         {(mediaPreviews.length > 0 ? mediaPreviews : formData.media).map((preview, index) => (
                           <div key={index} className="relative group">
-                            {preview.type === 'video' ? <video src={preview.url} className="h-32 w-full object-cover rounded-lg border border-gray-700" /> : <img src={preview.url} className="h-32 w-full object-cover rounded-lg border border-gray-700" />}
+                            {preview.type === 'video' ? <video src={preview.url} className="h-32 w-full object-cover rounded-lg border border-gray-700" /> : <img src={preview.url} alt="Media preview" className="h-32 w-full object-cover rounded-lg border border-gray-700" />}
                             <button type="button" onClick={() => removeMedia(index)} className="absolute right-2 top-2 rounded-full bg-red-500 p-1.5 text-white opacity-0 group-hover:opacity-100"><span className="material-symbols-outlined text-sm">close</span></button>
                           </div>
                         ))}
@@ -396,7 +399,7 @@ const Posts = () => {
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex gap-3">
-                        <img className="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE" />
+                        <img className="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE" alt="Author" />
                         <div>
                           <p className="font-semibold text-white">{post.author_id ? (authorProfiles[post.author_id] || 'Admin') : 'Admin'}</p>
                           <p className="text-sm text-gray-400">{formatDate(post.created_at)}</p>
@@ -423,13 +426,13 @@ const Posts = () => {
                     const media = post.media?.length > 0 ? post.media : (post.featured_image ? [{ url: post.featured_image, type: 'image' }] : []);
                     if (media.length === 0) return null;
                     if (media.length === 1) {
-                      return media[0].type === 'video' ? <video className="w-full h-64 object-cover" src={media[0].url} controls /> : <img className="w-full h-64 object-cover" src={media[0].url} />;
+                      return media[0].type === 'video' ? <video className="w-full h-64 object-cover" src={media[0].url} controls /> : <img className="w-full h-64 object-cover" src={media[0].url} alt="Post media" />;
                     }
                     return (
                       <div className="grid grid-cols-2 gap-1 bg-gray-800 p-1">
                         {media.slice(0, 4).map((item, i) => (
                           <div key={i} className="relative">
-                            {item.type === 'video' ? <video className="w-full h-32 object-cover" src={item.url} controls /> : <img className="w-full h-32 object-cover" src={item.url} />}
+                            {item.type === 'video' ? <video className="w-full h-32 object-cover" src={item.url} controls /> : <img className="w-full h-32 object-cover" src={item.url} alt="Post media" />}
                             {media.length > 4 && i === 3 && (
                               <div className="absolute inset-0 bg-black/60 flex items-center justify-center"><span className="text-white font-bold">+{media.length - 4}</span></div>
                             )}
