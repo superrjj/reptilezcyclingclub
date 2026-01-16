@@ -191,10 +191,6 @@ const ViewPost = ({ singleView = false }) => {
     return `${datePart} at ${timePart}`;
   };
 
-  // Removed unused getInitials function
-    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-  };
-
   const getCategoryTheme = (category) => {
     if (!category) return categoryThemes.default;
     return categoryThemes[category] || categoryThemes.default;

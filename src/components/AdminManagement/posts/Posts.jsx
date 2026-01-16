@@ -87,7 +87,6 @@ const Posts = () => {
 
   const fetchAuthorProfiles = async (postsData) => {
     if (!isSupabaseConfigured || !supabase || !Array.isArray(postsData)) return;
-    setAuthorLoading(true);
     const uniqueIds = Array.from(new Set(postsData.map((post) => post.author_id).filter((id) => typeof id === 'string' && id.length > 0)));
     if (uniqueIds.length === 0) { setAuthorProfiles({}); return; }
     try {
@@ -103,8 +102,6 @@ const Posts = () => {
       setAuthorProfiles(map);
     } catch (err) {
       console.error('Unexpected error fetching author profiles:', err);
-    } finally {
-      setAuthorLoading(false);
     }
   };
 
