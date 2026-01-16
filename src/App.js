@@ -9,7 +9,6 @@ import ViewPost from './UserManagement/Posts/ViewPost.jsx';
 import EventsPage from './UserManagement/Events/EventsPage.jsx';
 import AboutUsPage from './UserManagement/AboutUs/AboutUsPage.jsx';
 import LoginDialog from './components/common/LoginDialog.jsx';
-import FloatingSupportButton from './components/common/FloatingSupportButton.jsx';
 import Dashboard from './components/AdminManagement/dashboard/Dashboard.jsx';
 import Posts from './components/AdminManagement/posts/Posts.jsx';
 import AdminEvents from './components/AdminManagement/events/Events.jsx';
@@ -52,7 +51,6 @@ const MainLayout = ({ children, onLoginClick, loginOpen, setLoginOpen }) => {
         </div>
       </div>
       <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
-      <FloatingSupportButton />
     </div>
   );
 };

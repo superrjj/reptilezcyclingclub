@@ -6,7 +6,6 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
   const [heroImages, setHeroImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
-  const [showModal, setShowModal] = useState(false);
 
   const fetchHeroImages = async () => {
     setLoading(true);
@@ -116,20 +115,11 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
               </div>
             ))}
 
-            {/* Static Button - Outside the slides */}
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20">
-              <button 
-                onClick={() => setShowModal(true)}
-                className="relative flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-8 @[480px]:h-14 @[480px]:px-10 bg-gradient-to-r from-primary via-green-600 to-primary bg-[length:200%_100%] bg-[position:0%_0%] hover:bg-[position:100%_0%] text-white text-base font-black leading-normal tracking-wide @[480px]:text-lg uppercase transition-all duration-500 shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_35px_rgba(34,197,94,0.7),0_0_50px_rgba(34,197,94,0.3)] hover:scale-110 transform border-2 border-green-400/30 hover:border-green-400/70 group/btn hover:brightness-110"
-              >
-                {/* Shine effect */}
-                <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent"></div>
-                
-                {/* Single pulse ring for subtle glow */}
-                <div className="absolute inset-0 rounded-full animate-ping-slow opacity-0 group-hover/btn:opacity-20 bg-primary blur-sm"></div>
-                
-                <span className="relative truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] group-hover/btn:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Join Our Team</span>
-              </button>
+            {/* Support our Team Text - Not clickable */}
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20">
+              <div className="relative flex min-w-[140px] items-center justify-center rounded-full h-10 px-6 @[480px]:h-11 @[480px]:px-8 bg-gradient-to-r from-primary via-green-600 to-primary text-white text-sm font-black leading-normal tracking-wide @[480px]:text-base uppercase border-2 border-green-400/30">
+                <span className="relative truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">Support our Team</span>
+              </div>
             </div>
 
             {/* Progress indicators */}
@@ -257,55 +247,6 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
           }
         `}</style>
       </div>
-
-      {/* Available Soon Modal */}
-      {showModal && (
-        <div 
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setShowModal(false)}
-        >
-          <div 
-            className="bg-[#0a0a0a] border-2 border-primary/40 rounded-2xl max-w-md w-full p-8 text-center relative overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Animated background glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 animate-pulse-slow"></div>
-            
-            {/* Close button */}
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {/* Content */}
-            <div className="relative z-10">
-              <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6 animate-pulse">
-                <span className="text-6xl">🚴</span>
-              </div>
-              
-              <h2 className="text-3xl font-black text-white mb-3">Coming Soon!</h2>
-              <p className="text-primary text-xl font-bold mb-4">Recruitment Opening Soon</p>
-              <p className="text-white/60 text-base leading-relaxed mb-6">
-                We're preparing to welcome new riders to the Reptilez family. Stay tuned for updates on our recruitment process!
-              </p>
-
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="w-full py-3 px-6 bg-gradient-to-r from-primary to-green-600 hover:from-green-600 hover:to-primary text-white font-bold rounded-lg transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105"
-                >
-                  Got It!
-                </button>
-                <p className="text-white/40 text-sm">Check back soon for updates</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 });
