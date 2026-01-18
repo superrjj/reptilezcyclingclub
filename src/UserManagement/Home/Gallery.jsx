@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getMaintenanceByType } from '../../services/maintenanceService';
+import GradientText from '../../components/ui/gradient-text';
 
 const Gallery = ({ refreshFunctionsRef }) => {
   const [images, setImages] = useState([]);
@@ -8,7 +9,16 @@ const Gallery = ({ refreshFunctionsRef }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
   const [isVisible, setIsVisible] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchGalleryImages = async () => {
     setLoading(true);
@@ -46,14 +56,26 @@ const Gallery = ({ refreshFunctionsRef }) => {
     }
   }, [refreshFunctionsRef]);
 
-  const displayedImages = images.slice(0, 6);
-  const hasMoreImages = images.length > 6;
-
-  const handleImageClick = (image, index) => {
-    const actualIndex = images.findIndex(img => img.src === image.src);
-    setSelectedImageIndex(actualIndex);
-    setSelectedImage(image);
+  const handlePrev = () => {
+    if (activeIndex > 0) {
+      setActiveIndex(activeIndex - 1);
+    }
   };
+
+  const handleNext = () => {
+    if (activeIndex < images.length - 1) {
+      setActiveIndex(activeIndex + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      const cardElement = carouselRef.current.querySelector(`[data-index="${activeIndex}"]`);
+      if (cardElement) {
+        cardElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [activeIndex]);
 
   const handleCloseModal = () => {
     setSelectedImage(null);
@@ -131,22 +153,41 @@ const Gallery = ({ refreshFunctionsRef }) => {
       <div className={`text-center space-y-2 transition-all duration-1000 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
       }`}>
-        <h2 className="text-white text-3xl sm:text-4xl font-black leading-tight tracking-tight bg-gradient-to-r from-primary via-green-400 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+        <GradientText
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight drop-shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+          animationDuration={2}
+        >
           Photos of D&R Reptilez Sports
-        </h2>
+        </GradientText>
         <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="relative w-full aspect-square rounded-2xl overflow-hidden">
-              <div className="w-full h-full bg-zinc-900 shimmer-bg"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="relative">
+            <div className="flex gap-3 md:gap-5 overflow-x-hidden px-4 py-2">
+              <div className="flex items-center gap-3 md:gap-5">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div 
+                    key={i} 
+                    className={`relative rounded-xl overflow-hidden h-[350px] md:h-[450px] bg-black/20 ${
+                      i === 1 ? 'w-[320px] md:w-[450px]' : 'w-[100px] md:w-[160px]'
+                    }`}
+                  >
+                    <div className="absolute inset-0 bg-zinc-900 shimmer-bg rounded-lg" style={{
+                      top: i === 1 ? '12px' : '8px',
+                      left: i === 1 ? '12px' : '8px',
+                      right: i === 1 ? '12px' : '8px',
+                      bottom: i === 1 ? '12px' : '8px',
+                    }}></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          </div>
         </div>
       ) : images.length === 0 ? (
         <div className="w-full py-16 text-center">
@@ -162,70 +203,103 @@ const Gallery = ({ refreshFunctionsRef }) => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
-            {displayedImages.map((image, index) => (
+          <div className={`w-full max-w-7xl mx-auto transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
+          }`}>
+            <div className="relative">
+              {/* Previous Arrow */}
+              {activeIndex > 0 && (
+                <button
+                  onClick={handlePrev}
+                  className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-primary/80 backdrop-blur-sm border border-white/10 hover:border-primary/50 text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+                  aria-label="Previous"
+                >
+                  <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_left</span>
+                </button>
+              )}
+
+              {/* Carousel Container */}
               <div 
-                key={`${image.src}-${index}`}
-                onClick={() => handleImageClick(image, index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                className={`relative w-full aspect-square rounded-2xl overflow-hidden group cursor-pointer transition-all duration-500 border-2 border-primary/20 hover:border-primary/60 ${
-                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-                }`}
-                style={{ 
-                  transitionDelay: `${index * 100}ms`,
-                  transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)'
-                }}
+                ref={carouselRef}
+                className="gallery-carousel flex gap-3 md:gap-5 overflow-x-auto scroll-smooth px-4 py-2"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {/* Gradient glow background */}
-                <div className={`absolute inset-0 bg-gradient-to-br from-primary/30 via-emerald-500/30 to-green-500/30 blur-xl transition-opacity duration-500 ${
-                  hoveredIndex === index ? 'opacity-100' : 'opacity-0'
-                }`}></div>
+                <style>{`
+                  .gallery-carousel::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                <div className="flex items-center gap-3 md:gap-5">
+                  {images.map((image, index) => {
+                    const isActive = activeIndex === index;
+                    // Responsive widths: smaller on mobile, larger on desktop - increased for better face visibility
+                    const cardWidth = isActive 
+                      ? (windowWidth <= 640 ? 320 : windowWidth <= 768 ? 400 : 450)
+                      : (windowWidth <= 640 ? 100 : windowWidth <= 768 ? 140 : 160);
+                    const cardHeight = 'h-[350px] md:h-[450px]';
+                    const padding = isActive ? 12 : 8;
 
-                {/* Image */}
-                <img 
-                  className="relative w-full h-full object-cover transition-all duration-700 group-hover:scale-110" 
-                  alt={image.alt}
-                  src={image.src}
-                  loading="lazy"
-                />
-
-                {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                {/* Zoom icon */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-50 group-hover:scale-100">
-                  <div className="w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.6)]">
-                    <span className="material-symbols-outlined text-white text-3xl">zoom_in</span>
-                  </div>
+                    return (
+                      <div
+                        key={`${image.src}-${index}`}
+                        data-index={index}
+                        onClick={() => setActiveIndex(index)}
+                        className={`relative cursor-pointer transition-all duration-400 ease-out rounded-xl overflow-hidden ${cardHeight} bg-black/20`}
+                        style={{
+                          width: `${cardWidth}px`,
+                          minWidth: `${cardWidth}px`,
+                          transitionDuration: '0.4s',
+                        }}
+                      >
+                        {/* Image with padding */}
+                        <div
+                          className="absolute bg-cover bg-center rounded-lg"
+                          style={{
+                            backgroundImage: `url(${image.src})`,
+                            top: `${padding}px`,
+                            left: `${padding}px`,
+                            right: `${padding}px`,
+                            bottom: `${padding}px`,
+                            transform: isActive ? 'scale(1)' : 'scale(1.1)',
+                            transition: 'all 0.4s ease-out',
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-
-                {/* Corner accent */}
-                <div className="absolute top-0 right-0 w-16 h-16 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-primary to-transparent"></div>
-                  <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-primary to-transparent"></div>
-                </div>
-
-                {/* Bottom shine */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent transform translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
               </div>
-            ))}
-          </div>
 
-          {hasMoreImages && (
-            <button
-              onClick={() => setShowGalleryDialog(true)}
-              className="relative mt-4 px-10 py-4 bg-gradient-to-r from-primary via-green-600 to-primary bg-[length:200%_100%] bg-[position:0%_0%] hover:bg-[position:100%_0%] text-white text-base font-black rounded-full transition-all duration-500 shadow-[0_0_30px_rgba(34,197,94,0.4)] hover:shadow-[0_0_50px_rgba(34,197,94,0.6)] hover:scale-110 border-2 border-green-400/30 hover:border-green-400/60 group/btn overflow-hidden"
-            >
-              {/* Shine effect */}
-              <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-              
-              <span className="relative flex items-center gap-2">
-                <span>See More</span>
-                <span className="material-symbols-outlined text-xl transition-transform duration-300 group-hover/btn:translate-x-1">arrow_forward</span>
-              </span>
-            </button>
-          )}
+              {/* Next Arrow */}
+              {activeIndex < images.length - 1 && (
+                <button
+                  onClick={handleNext}
+                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-primary/80 backdrop-blur-sm border border-white/10 hover:border-primary/50 text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+                  aria-label="Next"
+                >
+                  <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_right</span>
+                </button>
+              )}
+
+              {/* Scroll Slider Dots at Bottom */}
+              {images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-sm rounded-full border border-white/10">
+                  {images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setActiveIndex(index)}
+                      className={`transition-all duration-300 rounded-full ${
+                        activeIndex === index
+                          ? 'bg-primary w-8 h-2'
+                          : 'bg-white/30 hover:bg-white/50 w-2 h-2'
+                      }`}
+                      aria-label={`Go to image ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </>
       )}
 
