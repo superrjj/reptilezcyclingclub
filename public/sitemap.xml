@@ -3,7 +3,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://reptilezcyclingclub.com/</loc>
-    <lastmod>2024-01-01</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- Posts Page -->
   <url>
     <loc>https://reptilezcyclingclub.com/posts</loc>
-    <lastmod>2024-01-01</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -19,7 +19,7 @@
   <!-- Events Page -->
   <url>
     <loc>https://reptilezcyclingclub.com/events</loc>
-    <lastmod>2024-01-01</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -27,7 +27,7 @@
   <!-- Members Page -->
   <url>
     <loc>https://reptilezcyclingclub.com/members</loc>
-    <lastmod>2024-01-01</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -35,7 +35,7 @@
   <!-- About Us Page -->
   <url>
     <loc>https://reptilezcyclingclub.com/about-us</loc>
-    <lastmod>2024-01-01</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
