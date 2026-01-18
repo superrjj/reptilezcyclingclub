@@ -221,21 +221,47 @@ const Gallery = ({ refreshFunctionsRef }) => {
               {/* Carousel Container */}
               <div 
                 ref={carouselRef}
-                className="gallery-carousel flex gap-3 md:gap-5 overflow-x-auto scroll-smooth px-4 py-2"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="gallery-carousel flex gap-3 md:gap-5 overflow-x-auto scroll-smooth py-2"
+                style={{ 
+                  scrollbarWidth: 'none', 
+                  msOverflowStyle: 'none',
+                  paddingLeft: windowWidth < 768 ? '1rem' : '1rem',
+                  paddingRight: windowWidth < 768 ? '1rem' : '1rem',
+                }}
               >
                 <style>{`
                   .gallery-carousel::-webkit-scrollbar {
                     display: none;
                   }
                 `}</style>
-                <div className="flex items-center gap-3 md:gap-5">
+                <div className="flex items-center justify-center gap-2 md:gap-5">
                   {images.map((image, index) => {
                     const isActive = activeIndex === index;
-                    // Responsive widths: smaller on mobile, larger on desktop - increased for better face visibility
-                    const cardWidth = isActive 
-                      ? (windowWidth <= 640 ? 320 : windowWidth <= 768 ? 400 : 450)
-                      : (windowWidth <= 640 ? 100 : windowWidth <= 768 ? 140 : 160);
+                    const isMobile = windowWidth < 768;
+                    const isPrev = isMobile && index === activeIndex - 1;
+                    const isNext = isMobile && index === activeIndex + 1;
+                    
+                    // On mobile: show active, prev, and next only
+                    if (isMobile && !isActive && !isPrev && !isNext) {
+                      return null;
+                    }
+                    
+                    // Responsive widths: mobile shows 3 cards (prev peek, active expanded, next peek)
+                    let cardWidth;
+                    if (isMobile) {
+                      if (isActive) {
+                        cardWidth = windowWidth <= 375 ? 280 : windowWidth <= 640 ? 300 : 320;
+                      } else {
+                        // Prev or Next: show peek (50px for both)
+                        cardWidth = 50;
+                      }
+                    } else {
+                      // Desktop: same as before
+                      cardWidth = isActive 
+                        ? (windowWidth <= 768 ? 400 : 450)
+                        : (windowWidth <= 768 ? 140 : 160);
+                    }
+                    
                     const cardHeight = 'h-[350px] md:h-[450px]';
                     const padding = isActive ? 12 : 8;
 
@@ -244,11 +270,15 @@ const Gallery = ({ refreshFunctionsRef }) => {
                         key={`${image.src}-${index}`}
                         data-index={index}
                         onClick={() => setActiveIndex(index)}
-                        className={`relative cursor-pointer transition-all duration-400 ease-out rounded-xl overflow-hidden ${cardHeight} bg-black/20`}
+                        className={`relative cursor-pointer transition-all duration-400 ease-out rounded-xl overflow-hidden ${cardHeight} bg-black/20 ${
+                          isMobile && isActive ? 'z-10' : 'z-0'
+                        }`}
                         style={{
                           width: `${cardWidth}px`,
                           minWidth: `${cardWidth}px`,
                           transitionDuration: '0.4s',
+                          marginLeft: isMobile && isPrev ? 'auto' : '0',
+                          marginRight: isMobile && isNext ? 'auto' : '0',
                         }}
                       >
                         {/* Image with padding */}
