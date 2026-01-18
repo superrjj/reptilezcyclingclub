@@ -40,25 +40,7 @@ export const ExpandingCards = ({
     return { active: largestBp?.activeWidth || 300, inactive: largestBp?.inactiveWidth || 120 };
   };
 
-  const getTitleSizes = () => {
-    if (breakpoints.length === 0) {
-      return { active: '24px', inactive: '18px' };
-    }
-
-    const sortedBreakpoints = [...breakpoints].sort((a, b) => b.maxWidth - a.maxWidth);
-    
-    for (const bp of sortedBreakpoints) {
-      if (windowWidth <= bp.maxWidth) {
-        return { active: bp.titleActive, inactive: bp.titleInactive };
-      }
-    }
-
-    const largestBp = sortedBreakpoints[0];
-    return { active: largestBp?.titleActive || '24px', inactive: largestBp?.titleInactive || '18px' };
-  };
-
   const { active: activeWidth, inactive: inactiveWidth } = getCardWidths();
-  const { active: activeTitleSize, inactive: inactiveTitleSize } = getTitleSizes();
 
   if (!cards || cards.length === 0) {
     return null;
@@ -103,7 +85,6 @@ export const ExpandingCards = ({
             {cards.map((card, index) => {
               const isActive = activeIndex === index;
               const cardWidth = isActive ? activeWidth : inactiveWidth;
-              const titleSize = isActive ? activeTitleSize : inactiveTitleSize;
 
               return (
                 <div

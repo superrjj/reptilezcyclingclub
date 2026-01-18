@@ -11,8 +11,6 @@ const GradientText = ({
     '#34d399', // emerald-400
   ]
 }) => {
-  const gradientId = `gradient-${Math.random().toString(36).substr(2, 9)}`;
-
   return (
     <>
       <style>{`
