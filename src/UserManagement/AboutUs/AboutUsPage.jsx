@@ -300,13 +300,20 @@ const AboutUsPage = () => {
       <div 
         id="footer" 
         data-animate
-        className={`flex justify-center items-center pt-8 border-t border-primary/20 transition-all duration-1000 ${
+        className={`flex justify-center items-center pt-12 pb-6 border-t border-primary/30 transition-all duration-1000 ${
           visibleSections['footer'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
         }`}
       >
-        <p className="text-white/50 text-sm font-normal">
-          Developed by <span className="text-primary/70 font-semibold hover:text-primary transition-colors duration-300 cursor-pointer">John Harvee Quirido</span>
-        </p>
+        <div className="text-center space-y-2">
+          <p className="text-white/60 text-sm font-normal">
+            Developed with passion by
+          </p>
+          <p className="text-white/80 text-base font-semibold">
+            <span className="text-primary/80 hover:text-primary transition-colors duration-300 cursor-pointer">
+              John Harvee Quirido
+            </span>
+          </p>
+        </div>
       </div>
 
       <style jsx>{`
