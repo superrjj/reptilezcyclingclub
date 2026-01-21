@@ -6,7 +6,7 @@ import AdminHeader from './AdminHeader';
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const [logoutProcessing, setLogoutProcessing] = useState(false);
   const logoutTimerRef = useRef(null);
