@@ -173,7 +173,7 @@ const AdminLayout = ({ children }) => {
                 <div className="flex items-start gap-2.5 sm:gap-3">
                   <span className="material-symbols-outlined text-red-400 text-base sm:text-lg flex-shrink-0 mt-0.5">info</span>
                   <p className="text-xs sm:text-sm text-white/90 font-medium leading-relaxed">
-                    Are you sure you want to sign out from the Admin Panel? All unsaved changes will be lost.
+                    Are you sure you want to sign out from the Admin?.
                   </p>
                 </div>
               </div>
@@ -194,7 +194,7 @@ const AdminLayout = ({ children }) => {
                       </>
                     ) : (
                       <>
-                        <span>Confirm</span>
+                        <span>Yes, Logout</span>
                         <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
                       </>
                     )}
