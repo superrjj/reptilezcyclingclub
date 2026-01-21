@@ -1,17 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/posts/:postId",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(facebookexternalhit|Facebot|Twitterbot|Slackbot|Discordbot|LinkedInBot|WhatsApp|TelegramBot|Pinterest|Googlebot|bingbot|DuckDuckBot).*"
-        }
-      ],
-      "destination": "/api/og/post/:postId"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

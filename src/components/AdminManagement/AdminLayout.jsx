@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import AdminHeader from './AdminHeader';
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -10,8 +10,6 @@ const AdminLayout = ({ children }) => {
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const [logoutProcessing, setLogoutProcessing] = useState(false);
   const logoutTimerRef = useRef(null);
-  const [profile, setProfile] = useState(null);
-  const [profileLoading, setProfileLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -21,30 +19,6 @@ const AdminLayout = ({ children }) => {
       }
     };
   }, []);
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (!user || !isSupabaseConfigured || !supabase) return;
-      setProfileLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('id', user.id)
-          .single();
-
-        if (!error && data) {
-          setProfile(data);
-        }
-      } catch (e) {
-        console.error('Error loading profile:', e);
-      } finally {
-        setProfileLoading(false);
-      }
-    };
-
-    loadProfile();
-  }, [user]);
 
   const handleLogout = () => {
     setConfirmLogoutOpen(true);
@@ -68,22 +42,6 @@ const AdminLayout = ({ children }) => {
 
   const isActive = (path) => {
     return location.pathname === path;
-  };
-
-  const getDisplayName = () => {
-    if (!profile) return 'Admin';
-
-    const first = profile.first_name?.trim() || '';
-    const last = profile.last_name?.trim() || '';
-    const full = `${first}${last ? ` ${last}` : ''}`.trim();
-
-    if (!full) return 'Admin';
-
-    // If name is short enough, show full
-    if (full.length <= 18) return full;
-
-    // Otherwise, truncate and add ellipsis
-    return `${full.slice(0, 18).trim()}...`;
   };
 
   useEffect(() => {
@@ -234,28 +192,13 @@ const AdminLayout = ({ children }) => {
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}>
           <div className="flex h-full flex-col justify-between p-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-3 items-center px-2 py-2">
+              <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-center px-2 py-3">
                 <img
                   src="/rcc2.png"
                   alt="Reptilez Cycling Club logo"
-                  className="size-10 rounded-full object-contain"
+                  className="size-16 rounded-full object-contain"
                 />
-                <div className="flex flex-col">
-                  {profileLoading && !profile ? (
-                    <>
-                      <div className="h-4 w-28 rounded-full shimmer-bg" />
-                      <div className="mt-1 h-3 w-16 rounded-full shimmer-bg" />
-                    </>
-                  ) : (
-                    <>
-                      <h1 className="text-gray-900 dark:text-white text-base font-bold leading-normal">
-                        {getDisplayName()}
-                      </h1>
-                      <p className="text-primary text-sm font-normal leading-normal">Admin</p>
-                    </>
-                  )}
-                </div>
               </div>
               
               <nav className="flex flex-col gap-2 mt-4">
@@ -342,33 +285,22 @@ const AdminLayout = ({ children }) => {
               </nav>
             </div>
             
-            <div className="flex flex-col gap-2">
-              <button 
-                className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-left w-full" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="material-symbols-outlined">settings</span>
-                <p className="text-sm font-medium leading-normal">Settings</p>
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  handleLogout();
-                }}
-                className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-left w-full"
-              >
-                <span className="material-symbols-outlined">logout</span>
-                <p className="text-sm font-medium leading-normal">Logout</p>
-              </button>
-            </div>
+            {/* Bottom actions removed per user request */}
           </div>
         </aside>
 
         {/* Main Content */}
-        {children}
+        <main className="flex-1 flex flex-col bg-background-light dark:bg-background-dark">
+          <AdminHeader
+            mobileMenuOpen={mobileMenuOpen}
+            setMobileMenuOpen={setMobileMenuOpen}
+            onLogout={handleLogout}
+          />
+
+          <div className="flex-1 overflow-y-auto">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
