@@ -14,6 +14,7 @@ import Posts from './components/AdminManagement/posts/Posts.jsx';
 import AdminEvents from './components/AdminManagement/events/Events.jsx';
 import AdminMembers from './components/AdminManagement/members/Members.jsx';
 import FileMaintenance from './components/AdminManagement/fileMaintenance/FileMaintenance.jsx';
+import MaintenanceScreen from './components/common/MaintenanceScreen.jsx';
 
 // Generic protected route (any authenticated user)
 const RequireAuth = ({ children }) => {
@@ -57,9 +58,14 @@ const MainLayout = ({ children, onLoginClick, loginOpen, setLoginOpen }) => {
 
 function App() {
   const [loginOpen, setLoginOpen] = useState(false);
+  
+  // TEMPORARY: Set to false to disable maintenance screen
+  const MAINTENANCE_MODE = true;
 
   return (
     <AuthProvider>
+      {MAINTENANCE_MODE && <MaintenanceScreen />}
+      {!MAINTENANCE_MODE && (
       <Router>
         <Routes>
             <Route
@@ -177,6 +183,7 @@ function App() {
             />
         </Routes>
       </Router>
+      )}
     </AuthProvider>
   );
 }
