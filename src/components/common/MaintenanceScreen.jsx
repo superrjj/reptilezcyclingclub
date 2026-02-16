@@ -26,7 +26,7 @@ const MaintenanceScreen = () => {
         
         <div className="mt-12 pt-8 border-t border-gray-200">
           <p className="text-gray-500 text-sm sm:text-base">
-            Developer by <span className="font-semibold text-gray-700">John Harvee Quirido</span>
+            Developer: <span className="font-semibold text-gray-700">John Harvee Quirido</span>
           </p>
         </div>
       </div>
