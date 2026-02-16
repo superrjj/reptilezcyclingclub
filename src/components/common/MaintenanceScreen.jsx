@@ -14,10 +14,10 @@ const MaintenanceScreen = () => {
             Under Maintenance
           </h1>
           <p className="text-gray-600 text-lg sm:text-xl md:text-2xl font-medium">
-            We're currently working on improving the site.
+            Site will be available soon.
           </p>
           <p className="text-gray-500 text-base sm:text-lg mt-4">
-            Please check back soon!
+            Thank you for your patience!
           </p>
           <p className="text-gray-400 text-sm sm:text-base mt-6 font-medium">
             From February 15 to February 28, 2026
