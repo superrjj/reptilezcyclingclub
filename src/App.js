@@ -60,7 +60,7 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   
   // TEMPORARY: Set to false to disable maintenance screen
-  const MAINTENANCE_MODE = false;
+  const MAINTENANCE_MODE = true;
 
   return (
     <AuthProvider>
