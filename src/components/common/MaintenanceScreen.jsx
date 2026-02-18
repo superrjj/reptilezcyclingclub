@@ -106,7 +106,7 @@ const MaintenanceScreen = () => {
             </span>
           </p>
           <p className="text-gray-400 text-xs font-medium">
-            Senior Developer
+            IT Student
           </p>
         </div>
       </div>
