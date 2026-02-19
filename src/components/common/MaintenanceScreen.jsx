@@ -10,7 +10,7 @@ const MaintenanceScreen = () => {
     // Calculate progress based on date range
     const calculateProgress = () => {
       const startDate = new Date('2026-02-15T00:00:00');
-      const endDate = new Date('2026-02-22T23:59:59');
+      const endDate = new Date('2026-02-20T23:59:59');
       const now = new Date();
       
       const totalDuration = endDate.getTime() - startDate.getTime();
@@ -80,7 +80,7 @@ const MaintenanceScreen = () => {
         <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-full border border-gray-200 shadow-sm mb-6 hover:shadow-md transition-shadow duration-300">
           <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
           <span className="text-gray-700 text-xs sm:text-sm font-semibold">
-            February 15 - February 22, 2026
+            February 15 - February 20, 2026
           </span>
         </div>
 
