@@ -3,14 +3,16 @@ import React, { useState, useEffect } from 'react';
 const MaintenanceScreen = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
     setIsVisible(true);
     
+    const endDate = new Date('2026-02-20T23:59:59');
+    
     // Calculate progress based on date range
     const calculateProgress = () => {
       const startDate = new Date('2026-02-15T00:00:00');
-      const endDate = new Date('2026-02-20T23:59:59');
       const now = new Date();
       
       const totalDuration = endDate.getTime() - startDate.getTime();
@@ -24,13 +26,36 @@ const MaintenanceScreen = () => {
       setProgress(progressPercent);
     };
     
+    // Calculate time remaining
+    const calculateTimeRemaining = () => {
+      const now = new Date();
+      const difference = endDate.getTime() - now.getTime();
+      
+      if (difference > 0) {
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        
+        setTimeRemaining({ hours, minutes, seconds });
+      } else {
+        setTimeRemaining({ hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+    
     // Calculate immediately
     calculateProgress();
+    calculateTimeRemaining();
     
-    // Update every minute
-    const interval = setInterval(calculateProgress, 60000);
+    // Update progress every minute
+    const progressInterval = setInterval(calculateProgress, 60000);
     
-    return () => clearInterval(interval);
+    // Update timer every second
+    const timerInterval = setInterval(calculateTimeRemaining, 1000);
+    
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(timerInterval);
+    };
   }, []);
 
   return (
@@ -85,7 +110,7 @@ const MaintenanceScreen = () => {
         </div>
 
         {/* Progress Indicator */}
-        <div className="mb-8 max-w-md mx-auto">
+        <div className="mb-6 max-w-md mx-auto">
           <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden shadow-inner">
             <div 
               className="h-full bg-gradient-to-r from-primary via-green-500 to-primary rounded-full transition-all duration-1000 ease-out"
@@ -94,6 +119,41 @@ const MaintenanceScreen = () => {
           </div>
           <p className="text-gray-400 text-xs mt-3 font-medium tracking-wide uppercase">
             Work in progress... {progress.toFixed(1)}%
+          </p>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="mb-8 max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-4 sm:gap-6 px-6 py-4 bg-white rounded-2xl border border-gray-200 shadow-lg">
+            <div className="flex flex-col items-center">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-none mb-1">
+                {String(timeRemaining.hours).padStart(2, '0')}
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                Hours
+              </div>
+            </div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-400">:</div>
+            <div className="flex flex-col items-center">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-none mb-1">
+                {String(timeRemaining.minutes).padStart(2, '0')}
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                Minutes
+              </div>
+            </div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-400">:</div>
+            <div className="flex flex-col items-center">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-none mb-1">
+                {String(timeRemaining.seconds).padStart(2, '0')}
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                Seconds
+              </div>
+            </div>
+          </div>
+          <p className="text-gray-400 text-xs mt-3 font-medium tracking-wide">
+            Time remaining until maintenance ends
           </p>
         </div>
 
