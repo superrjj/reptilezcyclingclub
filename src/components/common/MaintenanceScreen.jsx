@@ -8,7 +8,7 @@ const MaintenanceScreen = () => {
   useEffect(() => {
     setIsVisible(true);
     
-    const endDate = new Date('2026-02-20T23:59:59');
+    const endDate = new Date('2026-02-19T23:59:59');
     
     // Calculate progress based on date range
     const calculateProgress = () => {
@@ -59,7 +59,7 @@ const MaintenanceScreen = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center overflow-y-auto overflow-x-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
@@ -68,98 +68,98 @@ const MaintenanceScreen = () => {
       </div>
 
       {/* Main Content */}
-      <div className={`relative text-center px-4 sm:px-6 md:px-8 max-w-4xl mx-auto transition-all duration-1000 ease-out ${
+      <div className={`relative text-center px-4 sm:px-6 max-w-3xl mx-auto py-4 sm:py-6 transition-all duration-1000 ease-out ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         {/* Logo Container with subtle animation */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-4 sm:mb-5">
           <div className="relative inline-block">
             <div className="absolute inset-0 bg-primary/10 rounded-full blur-2xl animate-pulse"></div>
             <div className="relative transform transition-transform duration-300 hover:scale-105">
               <img 
                 src="/rcc1.png" 
                 alt="RCC Logo" 
-                className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 object-contain drop-shadow-lg"
+                className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 object-contain drop-shadow-lg"
               />
             </div>
           </div>
         </div>
 
         {/* Heading */}
-        <h1 className="text-gray-900 text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tight mb-4">
+        <h1 className="text-gray-900 text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight mb-3 sm:mb-4">
           Under Maintenance
         </h1>
 
         {/* Subheading */}
-        <p className="text-gray-600 text-lg sm:text-xl md:text-2xl font-semibold mb-3 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-600 text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 max-w-2xl mx-auto leading-relaxed">
           We're currently working on improving the site
         </p>
 
         {/* Description */}
-        <p className="text-gray-500 text-sm sm:text-base md:text-lg mb-6 max-w-xl mx-auto leading-relaxed">
+        <p className="text-gray-500 text-xs sm:text-sm md:text-base mb-4 sm:mb-5 max-w-xl mx-auto leading-relaxed px-2">
           Our team is implementing exciting updates to enhance your experience. 
           We'll be back online shortly with a better, faster, and more intuitive platform.
         </p>
 
         {/* Date Range Badge */}
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-full border border-gray-200 shadow-sm mb-6 hover:shadow-md transition-shadow duration-300">
-          <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm mb-4 sm:mb-5 hover:shadow-md transition-shadow duration-300">
+          <span className="material-symbols-outlined text-primary text-base">calendar_today</span>
           <span className="text-gray-700 text-xs sm:text-sm font-semibold">
-            February 15 - February 20, 2026
+            February 15 - February 19, 2026
           </span>
         </div>
 
         {/* Progress Indicator */}
-        <div className="mb-6 max-w-md mx-auto">
+        <div className="mb-4 sm:mb-5 max-w-md mx-auto px-4">
           <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden shadow-inner">
             <div 
               className="h-full bg-gradient-to-r from-primary via-green-500 to-primary rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
-          <p className="text-gray-400 text-xs mt-3 font-medium tracking-wide uppercase">
+          <p className="text-gray-400 text-xs mt-2 font-medium tracking-wide uppercase">
             Work in progress... {progress.toFixed(1)}%
           </p>
         </div>
 
         {/* Countdown Timer */}
-        <div className="mb-8 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-4 sm:gap-6 px-6 py-4 bg-white rounded-2xl border border-gray-200 shadow-lg">
+        <div className="mb-5 sm:mb-6 max-w-xl mx-auto px-4">
+          <div className="inline-flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 bg-white rounded-xl border border-gray-200 shadow-lg">
             <div className="flex flex-col items-center">
-              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-none mb-1">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 leading-none mb-1">
                 {String(timeRemaining.hours).padStart(2, '0')}
               </div>
-              <div className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 Hours
               </div>
             </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-400">:</div>
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-400">:</div>
             <div className="flex flex-col items-center">
-              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-none mb-1">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 leading-none mb-1">
                 {String(timeRemaining.minutes).padStart(2, '0')}
               </div>
-              <div className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 Minutes
               </div>
             </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-400">:</div>
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-400">:</div>
             <div className="flex flex-col items-center">
-              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-none mb-1">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 leading-none mb-1">
                 {String(timeRemaining.seconds).padStart(2, '0')}
               </div>
-              <div className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 Seconds
               </div>
             </div>
           </div>
-          <p className="text-gray-400 text-xs mt-3 font-medium tracking-wide">
+          <p className="text-gray-400 text-xs mt-2 font-medium tracking-wide">
             Time remaining until maintenance ends
           </p>
         </div>
 
         {/* Footer */}
-        <div className="pt-6 border-t border-gray-200/80">
-          <p className="text-gray-500 text-xs sm:text-sm mb-1">
+        <div className="pt-4 sm:pt-5 border-t border-gray-200/80 mt-4 sm:mt-5">
+          <p className="text-gray-500 text-xs mb-1">
             Developed by{' '}
             <span className="font-bold text-gray-800 bg-gradient-to-r from-primary to-green-600 bg-clip-text text-transparent">
               John Harvee Quirido
