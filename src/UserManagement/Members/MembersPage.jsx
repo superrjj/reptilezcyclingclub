@@ -104,33 +104,28 @@ const MembersPage = () => {
 
   return (
     <div 
-      className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden text-white"
-      style={{
-        backgroundImage:
-          'linear-gradient(135deg, #020202 0%, #0a2b0a 35%, #0b0b0b 65%, #2b0000 100%)',
-        backgroundAttachment: 'fixed',
-      }}
+      className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-reptilez-white-50 via-reptilez-white-100 to-reptilez-green-50"
     >
       <div className="layout-container flex h-full grow flex-col">
-        <div className="px-3 sm:px-4 md:px-6 lg:px-8 flex flex-1 justify-center">
+        <div className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex flex-1 justify-center">
           <div className="layout-content-container flex flex-col w-full max-w-[1400px] flex-1">
-            <main className="flex flex-col gap-4 sm:gap-5 md:gap-6 pt-3 sm:pt-4">
+            <main className="flex flex-col gap-4 sm:gap-5 md:gap-6 pt-3 sm:pt-4 pb-8 sm:pb-12">
               <div className="flex flex-wrap justify-between gap-2 sm:gap-3">
                 <div className="flex min-w-0 sm:min-w-72 flex-col gap-2 sm:gap-3">
-                  <p className="text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Meet the Reptilez</p>
-                  <p className="text-primary/70 text-sm sm:text-base font-normal leading-normal">The dedicated riders who make our club a community.</p>
+                  <p className="text-gray-900 text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Meet the Reptilez</p>
+                  <p className="text-gray-600 text-sm sm:text-base font-normal leading-normal">The dedicated riders who make our club a community.</p>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 py-2 sm:py-3 items-center">
                 <div className="w-full sm:flex-1">
                   <label className="flex flex-col min-w-0 sm:min-w-40 h-10 sm:h-12 w-full">
-                    <div className="flex w-full flex-1 items-stretch rounded-lg h-full">
-                      <div className="text-primary/70 flex border-none bg-black/40 items-center justify-center pl-3 sm:pl-4 rounded-l-lg border-r-0">
+                    <div className="flex w-full flex-1 items-stretch rounded-lg h-full border border-reptilez-green-200 bg-white shadow-sm">
+                      <div className="text-reptilez-green-600 flex border-none bg-reptilez-green-50 items-center justify-center pl-3 sm:pl-4 rounded-l-lg border-r-0">
                         <span className="material-symbols-outlined text-lg sm:text-xl">search</span>
                       </div>
                       <input
-                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-white focus:outline-0 focus:ring-0 border-none bg-black/40 focus:border-none h-full placeholder:text-primary/70 px-3 sm:px-4 pl-2 text-sm sm:text-base font-normal leading-normal"
+                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-reptilez-green-500/50 border-none bg-white focus:border-none h-full placeholder:text-gray-400 px-3 sm:px-4 pl-2 text-sm sm:text-base font-normal leading-normal"
                         placeholder="Search by name"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -143,13 +138,13 @@ const MembersPage = () => {
                     <button
                       key={filter}
                       onClick={() => setSelectedFilter(filter)}
-                      className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg transition-colors px-4 ${
+                      className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg transition-colors px-4 border ${
                         selectedFilter === filter
-                          ? 'bg-primary/20 border border-primary/50'
-                          : 'bg-black/40 hover:bg-primary/20'
+                          ? 'bg-reptilez-green-600 text-white border-reptilez-green-600 shadow-sm'
+                          : 'bg-white text-gray-700 border-reptilez-green-200 hover:bg-reptilez-green-50 hover:border-reptilez-green-300'
                       }`}
                     >
-                      <p className="text-white text-sm font-medium leading-normal">{filter}</p>
+                      <p className="text-sm font-medium leading-normal">{filter}</p>
                     </button>
                   ))}
                 </div>
@@ -169,42 +164,12 @@ const MembersPage = () => {
                     </div>
                   ))
                 ) : sortedMembers.length === 0 ? (
-                  <div className="col-span-full text-center text-white/60 py-8">
+                  <div className="col-span-full text-center text-gray-600 py-8 bg-white rounded-xl border border-reptilez-green-100 p-8">
                     No members found.
                   </div>
                 ) : (
-                  sortedMembers.map((member) => (
-                    <div key={member.id} className="flex flex-col gap-3 text-center pb-3 group">
-                      <div className="px-4 flex justify-center">
-                        <div
-                          className="w-full max-w-[240px] bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-                          style={{ 
-                            backgroundImage: `url("${member.image_url || '/rcc1.png'}")`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                          }}
-                          role="img"
-                          aria-label={member.name || 'Member'}
-                          onClick={() => setSelectedMember(member)}
-                        ></div>
-                      </div>
-                      <div>
-                        <p className="text-white text-base font-medium leading-normal">{member.name || 'Unknown'}</p>
-                        <p className={`text-sm font-bold leading-normal ${
-                          (member.role_type === 'Captain' || member.role_type === 'Founder')
-                            ? 'text-primary'
-                            : 'text-primary/70'
-                        }`}>
-                          {member.role_type || member.role || 'Member'}
-                        </p>
-                        {member.description && (
-                          <p className="text-primary/70 text-sm font-normal leading-normal">{member.description}</p>
-                        )}
-                        {member.bio && !member.description && (
-                          <p className="text-primary/70 text-sm font-normal leading-normal">{member.bio}</p>
-                        )}
-                      </div>
-                    </div>
+                  sortedMembers.map((member, index) => (
+                    <MemberCard key={member.id} member={member} index={index} onSelect={setSelectedMember} />
                   ))
                 )}
               </div>
@@ -216,13 +181,13 @@ const MembersPage = () => {
       {/* Image Modal */}
       {selectedMember && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
           onClick={() => setSelectedMember(null)}
         >
           {/* Close button - positioned absolutely to viewport */}
           <button
             onClick={() => setSelectedMember(null)}
-            className="fixed top-4 right-4 text-white hover:text-primary transition-colors z-[60] bg-black/50 rounded-full p-2 hover:bg-black/70"
+            className="fixed top-4 right-4 text-gray-700 hover:text-gray-900 transition-colors z-[60] bg-white/90 rounded-full p-2 hover:bg-white border border-reptilez-green-200 shadow-lg"
             aria-label="Close modal"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,28 +201,28 @@ const MembersPage = () => {
           >
 
             {/* Image container */}
-            <div className="flex items-center justify-center mb-6">
+            <div className="flex items-center justify-center mb-6 bg-white rounded-lg p-4 border border-reptilez-green-200">
               <img
                 src={selectedMember.image_url || '/rcc1.png'}
                 alt={selectedMember.name || 'Member'}
-                className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
+                className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg"
               />
             </div>
 
             {/* Member info */}
-            <div className="bg-black/60 backdrop-blur-md rounded-lg p-6 text-center">
-              <h2 className="text-white text-2xl font-bold mb-2">
+            <div className="bg-white backdrop-blur-md rounded-lg p-6 text-center border border-reptilez-green-200 shadow-xl">
+              <h2 className="text-gray-900 text-2xl font-bold mb-2">
                 {selectedMember.name || 'Unknown'}
               </h2>
               <p className={`text-lg font-bold mb-3 ${
                 (selectedMember.role_type === 'Captain' || selectedMember.role_type === 'Founder')
-                  ? 'text-primary'
-                  : 'text-primary/70'
+                  ? 'text-reptilez-green-700'
+                  : 'text-reptilez-green-600'
               }`}>
                 {selectedMember.role_type || selectedMember.role || 'Member'}
               </p>
               {(selectedMember.description || selectedMember.bio) && (
-                <p className="text-primary/70 text-base leading-relaxed">
+                <p className="text-gray-600 text-base leading-relaxed">
                   {selectedMember.description || selectedMember.bio}
                 </p>
               )}
@@ -265,6 +230,75 @@ const MembersPage = () => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+// Member Card Component with Animation
+const MemberCard = ({ member, index, onSelect }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <div 
+      ref={cardRef}
+      data-animate
+      className={`flex flex-col gap-3 text-center pb-3 group bg-white rounded-xl p-4 border border-reptilez-green-100 hover:shadow-md transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+      style={{ transitionDelay: `${index * 100}ms` }}
+    >
+      <div className="px-4 flex justify-center">
+        <div
+          className="w-full max-w-[240px] bg-center bg-no-repeat aspect-square bg-cover rounded-full group-hover:scale-105 transition-transform duration-300 cursor-pointer border-2 border-reptilez-green-200"
+          style={{ 
+            backgroundImage: `url("${member.image_url || '/rcc1.png'}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+          role="img"
+          aria-label={member.name || 'Member'}
+          onClick={() => onSelect(member)}
+        ></div>
+      </div>
+      <div>
+        <p className="text-gray-900 text-base font-semibold leading-normal">{member.name || 'Unknown'}</p>
+        <p className={`text-sm font-bold leading-normal ${
+          (member.role_type === 'Captain' || member.role_type === 'Founder')
+            ? 'text-reptilez-green-700'
+            : 'text-reptilez-green-600'
+        }`}>
+          {member.role_type || member.role || 'Member'}
+        </p>
+        {member.description && (
+          <p className="text-gray-600 text-sm font-normal leading-normal">{member.description}</p>
+        )}
+        {member.bio && !member.description && (
+          <p className="text-gray-600 text-sm font-normal leading-normal">{member.bio}</p>
+        )}
+      </div>
     </div>
   );
 };

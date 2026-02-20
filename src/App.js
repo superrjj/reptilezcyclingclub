@@ -36,16 +36,14 @@ const RequireAuth = ({ children }) => {
 const MainLayout = ({ children, onLoginClick, loginOpen, setLoginOpen }) => {
   return (
     <div
-      className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden text-white"
+      className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-reptilez-white-50 via-reptilez-white-100 to-reptilez-green-50"
       style={{
-        backgroundImage:
-          'linear-gradient(135deg, #020202 0%, #0a2b0a 35%, #0b0b0b 65%, #2b0000 100%)',
         backgroundAttachment: 'fixed',
       }}
     >
       <div className="layout-container flex h-full grow flex-col">
-        <div className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 pt-24">
+        <div className="w-full flex flex-1 justify-center">
+          <div className="layout-content-container flex flex-col w-full flex-1 pt-24">
             <Header onLoginClick={onLoginClick} />
             {children}
           </div>
@@ -60,7 +58,7 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   
   // TEMPORARY: Set to false to disable maintenance screen
-  const MAINTENANCE_MODE = true;
+  const MAINTENANCE_MODE = false;
 
   return (
     <AuthProvider>

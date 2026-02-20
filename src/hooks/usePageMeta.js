@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const BASE_TITLE = 'D&R Reptilez Sports';
+const BASE_TITLE = 'Reptilez Cycling Club';
 
 // Simple helper to update only the document title.
 // Description meta tag stays managed by public/index.html.

@@ -9,9 +9,11 @@ const Gallery = ({ refreshFunctionsRef }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
   const [isVisible, setIsVisible] = useState(false);
+  const [isSectionVisible, setIsSectionVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const carouselRef = useRef(null);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -44,6 +46,29 @@ const Gallery = ({ refreshFunctionsRef }) => {
   useEffect(() => {
     fetchGalleryImages();
     setTimeout(() => setIsVisible(true), 300);
+  }, []);
+
+  // Scroll-based animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsSectionVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+      observer.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -148,18 +173,24 @@ const Gallery = ({ refreshFunctionsRef }) => {
   }, [showGalleryDialog]);
 
   return (
-    <section className="flex flex-col items-center gap-8 py-12 px-4">
+    <section 
+      ref={sectionRef}
+      data-animate
+      className={`flex flex-col items-center gap-8 py-12 transition-all duration-700 ease-out ${
+        isSectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+    >
       {/* Animated Title with Gradient */}
       <div className={`text-center space-y-2 transition-all duration-1000 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
       }`}>
         <GradientText
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight drop-shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight"
           animationDuration={2}
         >
           Photos of D&R Reptilez Sports
         </GradientText>
-        <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
+        <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-reptilez-green-600 to-transparent rounded-full"></div>
       </div>
 
       {loading ? (
@@ -191,13 +222,13 @@ const Gallery = ({ refreshFunctionsRef }) => {
         </div>
       ) : images.length === 0 ? (
         <div className="w-full py-16 text-center">
-          <div className="inline-flex flex-col items-center gap-4 p-8 rounded-2xl bg-black/40 border border-primary/20 backdrop-blur-sm">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
-              <span className="material-symbols-outlined text-primary text-4xl">photo_library</span>
+          <div className="inline-flex flex-col items-center gap-4 p-8 rounded-2xl bg-white border border-reptilez-green-200 shadow-sm">
+            <div className="w-20 h-20 rounded-full bg-reptilez-green-100 flex items-center justify-center animate-pulse">
+              <span className="material-symbols-outlined text-reptilez-green-600 text-4xl">photo_library</span>
             </div>
             <div>
-              <p className="text-lg font-semibold text-white/80">No gallery images uploaded yet</p>
-              <p className="text-sm mt-2 text-white/50">Please upload images in the admin panel</p>
+              <p className="text-lg font-semibold text-gray-900">No gallery images uploaded yet</p>
+              <p className="text-sm mt-2 text-gray-600">Please upload images in the admin panel</p>
             </div>
           </div>
         </div>
@@ -211,7 +242,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
               {activeIndex > 0 && (
                 <button
                   onClick={handlePrev}
-                  className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-primary/80 backdrop-blur-sm border border-white/10 hover:border-primary/50 text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+                  className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
                   aria-label="Previous"
                 >
                   <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_left</span>
@@ -304,7 +335,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
               {activeIndex < images.length - 1 && (
                 <button
                   onClick={handleNext}
-                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-primary/80 backdrop-blur-sm border border-white/10 hover:border-primary/50 text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
                   aria-label="Next"
                 >
                   <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_right</span>
@@ -313,15 +344,15 @@ const Gallery = ({ refreshFunctionsRef }) => {
 
               {/* Scroll Slider Dots at Bottom */}
               {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-sm rounded-full border border-white/10">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-full border border-reptilez-green-200 shadow-lg">
                   {images.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveIndex(index)}
                       className={`transition-all duration-300 rounded-full ${
                         activeIndex === index
-                          ? 'bg-primary w-8 h-2'
-                          : 'bg-white/30 hover:bg-white/50 w-2 h-2'
+                          ? 'bg-reptilez-green-600 w-8 h-2'
+                          : 'bg-reptilez-green-200 hover:bg-reptilez-green-300 w-2 h-2'
                       }`}
                       aria-label={`Go to image ${index + 1}`}
                     />
@@ -336,25 +367,25 @@ const Gallery = ({ refreshFunctionsRef }) => {
       {/* Gallery Dialog - Enhanced */}
       {showGalleryDialog && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-lg px-4 animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 animate-fadeIn"
           onClick={() => setShowGalleryDialog(false)}
         >
           <div 
-            className="w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-3xl border-2 border-primary/30 bg-black/90 backdrop-blur-xl p-8 shadow-[0_0_60px_rgba(34,197,94,0.3)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-primary/50 [&::-webkit-scrollbar-thumb]:rounded-full animate-scaleIn"
+            className="w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-3xl border-2 border-reptilez-green-200 bg-white backdrop-blur-xl p-8 shadow-2xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-reptilez-green-300 [&::-webkit-scrollbar-thumb]:rounded-full animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-primary/20">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-reptilez-green-200">
               <div>
-                <h2 className="text-3xl font-black text-white bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent">
+                <h2 className="text-3xl font-black text-gray-900">
                   Full Gallery
                 </h2>
-                <p className="text-white/60 text-sm mt-1">{images.length} images</p>
+                <p className="text-gray-600 text-sm mt-1">{images.length} images</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowGalleryDialog(false)}
-                className="w-12 h-12 rounded-full bg-white/5 hover:bg-primary/20 border border-white/10 hover:border-primary/50 text-white/60 hover:text-white transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110"
+                className="w-12 h-12 rounded-full bg-reptilez-green-50 hover:bg-reptilez-green-100 border border-reptilez-green-200 hover:border-reptilez-green-300 text-gray-700 hover:text-gray-900 transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110"
               >
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
@@ -370,7 +401,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
                     setSelectedImage(image);
                     setShowGalleryDialog(false);
                   }}
-                  className="relative w-full aspect-square rounded-2xl overflow-hidden group cursor-pointer border-2 border-primary/20 hover:border-primary/60 transition-all duration-500 hover:scale-105 hover:rotate-1"
+                  className="relative w-full aspect-square rounded-2xl overflow-hidden group cursor-pointer border-2 border-reptilez-green-200 hover:border-reptilez-green-400 transition-all duration-500 hover:scale-105 hover:rotate-1"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <img 
@@ -382,7 +413,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
                   {/* Number badge */}
-                  <div className="absolute top-3 left-3 w-10 h-10 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
+                  <div className="absolute top-3 left-3 w-10 h-10 rounded-full bg-reptilez-green-600 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
                     {index + 1}
                   </div>
                 </div>
@@ -407,13 +438,13 @@ const Gallery = ({ refreshFunctionsRef }) => {
               transform: 'scale(1.1)',
             }}
           />
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/80" />
+          {/* Light overlay */}
+          <div className="absolute inset-0 bg-white/80" />
 
           {/* Close Button */}
           <button
             onClick={handleCloseModal}
-            className="absolute top-6 right-6 z-10 w-14 h-14 rounded-full bg-black/60 hover:bg-primary/80 backdrop-blur-sm border border-white/10 hover:border-primary/50 text-white transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110 shadow-lg"
+            className="absolute top-6 right-6 z-10 w-14 h-14 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110 shadow-lg"
             aria-label="Close"
           >
             <span className="material-symbols-outlined text-3xl">close</span>
@@ -423,7 +454,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
           {selectedImageIndex > 0 && (
             <button
               onClick={handlePrevImage}
-              className="absolute left-6 z-10 w-14 h-14 rounded-full bg-black/60 hover:bg-primary/80 backdrop-blur-sm border border-white/10 hover:border-primary/50 text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+              className="absolute left-6 z-10 w-14 h-14 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
               aria-label="Previous image"
             >
               <span className="material-symbols-outlined text-3xl">chevron_left</span>
@@ -434,7 +465,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
           {selectedImageIndex < images.length - 1 && (
             <button
               onClick={handleNextImage}
-              className="absolute right-6 z-10 w-14 h-14 rounded-full bg-black/60 hover:bg-primary/80 backdrop-blur-sm border border-white/10 hover:border-primary/50 text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+              className="absolute right-6 z-10 w-14 h-14 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
               aria-label="Next image"
             >
               <span className="material-symbols-outlined text-3xl">chevron_right</span>
@@ -449,12 +480,12 @@ const Gallery = ({ refreshFunctionsRef }) => {
             <img
               src={selectedImage.src}
               alt={selectedImage.alt}
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_80px_rgba(34,197,94,0.4)] border border-primary/20"
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-reptilez-green-200"
             />
           </div>
 
           {/* Image Counter */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full bg-black/70 backdrop-blur-md border border-primary/30 text-white text-base font-bold shadow-lg">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full bg-white/90 backdrop-blur-md border border-reptilez-green-200 text-gray-900 text-base font-bold shadow-lg">
             {selectedImageIndex + 1} / {images.length}
           </div>
         </div>
@@ -482,9 +513,9 @@ const Gallery = ({ refreshFunctionsRef }) => {
         .shimmer-bg {
           background: linear-gradient(
             90deg,
-            rgba(24, 24, 27, 1) 0%,
+            rgba(250, 250, 250, 1) 0%,
             rgba(34, 197, 94, 0.1) 50%,
-            rgba(24, 24, 27, 1) 100%
+            rgba(250, 250, 250, 1) 100%
           );
           background-size: 200% 100%;
           animation: shimmer 2s infinite;

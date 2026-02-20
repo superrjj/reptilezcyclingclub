@@ -392,20 +392,20 @@ const Posts = () => {
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
-                <article key={post.id} className="rounded-xl border border-gray-800 bg-gray-900/50 overflow-hidden hover:border-primary/30">
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
+                <article key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-3">
                       <div className="flex gap-3">
-                        <img className="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE" alt="Author" />
+                        <img className="h-10 w-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE" alt="Author" />
                         <div>
-                          <p className="font-semibold text-white">{post.author_id ? (authorProfiles[post.author_id] || 'Admin') : 'Admin'}</p>
-                          <p className="text-sm text-gray-400">{formatDate(post.created_at)}</p>
+                          <p className="font-semibold text-gray-900">{post.author_id ? (authorProfiles[post.author_id] || 'Admin') : 'Admin'}</p>
+                          <p className="text-xs text-gray-500">{formatDate(post.created_at)}</p>
                         </div>
                       </div>
-                      <span className="bg-primary/20 text-primary text-xs font-bold px-3 py-1.5 rounded-full">{post.status}</span>
+                      <span className="bg-reptilez-green-100 text-reptilez-green-700 text-xs font-semibold px-2 py-1 rounded-full">{post.status}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">{post.title}</h3>
-                    <p className="whitespace-pre-line text-gray-300">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{post.title}</h3>
+                    <p className="whitespace-pre-line text-gray-700 text-sm">
                       {(() => {
                         const content = post.content || '';
                         const isExpanded = expandedAdminPosts[post.id];
@@ -414,7 +414,7 @@ const Posts = () => {
                       })()}
                     </p>
                     {(post.content || '').length > 160 && (
-                      <button className="mt-1 text-sm font-semibold text-primary hover:text-green-700" onClick={() => setExpandedAdminPosts(prev => ({ ...prev, [post.id]: !prev[post.id] }))}>
+                      <button className="mt-1 text-sm font-semibold text-reptilez-green-600 hover:text-reptilez-green-700" onClick={() => setExpandedAdminPosts(prev => ({ ...prev, [post.id]: !prev[post.id] }))}>
                         {expandedAdminPosts[post.id] ? 'See less' : 'See more'}
                       </button>
                     )}
@@ -426,7 +426,7 @@ const Posts = () => {
                       return media[0].type === 'video' ? <video className="w-full h-64 object-cover" src={media[0].url} controls /> : <img className="w-full h-64 object-cover" src={media[0].url} alt="Post media" />;
                     }
                     return (
-                      <div className="grid grid-cols-2 gap-1 bg-gray-800 p-1">
+                      <div className="grid grid-cols-2 gap-1 bg-gray-100 p-1">
                         {media.slice(0, 4).map((item, i) => (
                           <div key={i} className="relative">
                             {item.type === 'video' ? <video className="w-full h-32 object-cover" src={item.url} controls /> : <img className="w-full h-32 object-cover" src={item.url} alt="Post media" />}

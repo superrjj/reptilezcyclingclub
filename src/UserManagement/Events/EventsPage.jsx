@@ -85,11 +85,11 @@ const EventsPage = () => {
 
   return (
     <>
-      <div className="w-full max-w-6xl mx-auto flex flex-col gap-4 sm:gap-6 md:gap-8 px-3 sm:px-4 md:px-6">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-4 sm:gap-6 md:gap-8 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-12">
         {/* Header */}
         <div className="flex flex-col gap-2 sm:gap-3">
-          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Upcoming Events</h1>
-          <p className="text-primary/70 text-sm sm:text-base font-normal leading-normal">
+          <h1 className="text-gray-900 text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Upcoming Events</h1>
+          <p className="text-gray-600 text-sm sm:text-base font-normal leading-normal">
             Join us for our next cycling adventures and community gatherings.
           </p>
         </div>
@@ -98,8 +98,8 @@ const EventsPage = () => {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="bg-black/40 border border-primary/30 rounded-xl overflow-hidden">
-                <div className="h-48 bg-primary/20 shimmer-bg" />
+              <div key={index} className="bg-white border border-reptilez-green-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="h-48 bg-reptilez-green-50 shimmer-bg" />
                 <div className="p-4 space-y-3">
                   <div className="h-5 w-3/4 rounded-full shimmer-bg" />
                   <div className="h-4 w-1/2 rounded-full shimmer-bg" />
@@ -109,8 +109,8 @@ const EventsPage = () => {
             ))}
           </div>
         ) : upcomingEvents.length === 0 ? (
-          <div className="text-center py-12 text-white/60">
-            <span className="material-symbols-outlined text-6xl text-primary/30 mb-4 block">event_busy</span>
+          <div className="text-center py-12 text-gray-600 bg-white rounded-xl border border-reptilez-green-100 p-8">
+            <span className="material-symbols-outlined text-6xl text-reptilez-green-300 mb-4 block">event_busy</span>
             <p className="text-lg">No upcoming events scheduled.</p>
             <p className="text-sm mt-2">Check back soon for new events!</p>
           </div>
@@ -119,11 +119,11 @@ const EventsPage = () => {
             {upcomingEvents.map((event) => (
               <div
                 key={event.id}
-                className="bg-black/40 border border-primary/30 rounded-xl overflow-hidden hover:border-primary/50 transition-all cursor-pointer group"
+                className="bg-white border border-reptilez-green-200 rounded-xl overflow-hidden hover:border-reptilez-green-400 transition-all cursor-pointer group shadow-sm hover:shadow-md"
                 onClick={() => setSelectedEvent(event)}
               >
                 {/* Event Image */}
-                <div className="relative h-60 bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
+                <div className="relative h-60 bg-gradient-to-br from-reptilez-green-50 to-reptilez-green-100 overflow-hidden">
                   {event.image_url ? (
                     <img
                       src={event.image_url}
@@ -132,11 +132,11 @@ const EventsPage = () => {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="material-symbols-outlined text-6xl text-primary/30">event</span>
+                      <span className="material-symbols-outlined text-6xl text-reptilez-green-300">event</span>
                     </div>
                   )}
                   <div className="absolute top-3 right-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/90 text-gray-900">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-reptilez-green-600 text-white">
                       Upcoming
                     </span>
                   </div>
@@ -144,14 +144,14 @@ const EventsPage = () => {
 
                 {/* Event Details */}
                 <div className="p-4 flex flex-col gap-3">
-                  <h3 className="text-white text-lg font-bold line-clamp-2 group-hover:text-primary transition-colors">
+                  <h3 className="text-gray-900 text-lg font-bold line-clamp-2 group-hover:text-reptilez-green-700 transition-colors">
                     {event.title}
                   </h3>
                   
                   <div className="flex flex-col gap-2 text-sm">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-primary text-base">calendar_today</span>
-                      <p className="text-white/70">
+                      <span className="material-symbols-outlined text-reptilez-green-600 text-base">calendar_today</span>
+                      <p className="text-gray-600">
                         {event.event_end_date
                           ? `${formatDate(event.event_date)} - ${formatDate(event.event_end_date)}`
                           : formatDate(event.event_date)}
@@ -159,23 +159,23 @@ const EventsPage = () => {
                     </div>
                     {event.event_time && (
                       <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary text-base">schedule</span>
-                        <p className="text-white/70">{formatTime(event.event_time)}</p>
+                        <span className="material-symbols-outlined text-reptilez-green-600 text-base">schedule</span>
+                        <p className="text-gray-600">{formatTime(event.event_time)}</p>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-primary text-base">location_on</span>
-                      <p className="text-white/70 line-clamp-1">{event.location}</p>
+                      <span className="material-symbols-outlined text-reptilez-green-600 text-base">location_on</span>
+                      <p className="text-gray-600 line-clamp-1">{event.location}</p>
                     </div>
                   </div>
 
                   {event.description && (
-                    <p className="text-white/60 text-sm line-clamp-2 mt-1">
+                    <p className="text-gray-600 text-sm line-clamp-2 mt-1">
                       {event.description}
                     </p>
                   )}
 
-                  <button className="mt-2 w-full py-2 px-4 bg-primary/20 text-primary border border-primary/50 rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition-colors">
+                  <button className="mt-2 w-full py-2 px-4 bg-reptilez-green-600 text-white border border-reptilez-green-600 rounded-lg text-sm font-semibold hover:bg-reptilez-green-700 hover:border-reptilez-green-700 transition-colors">
                     View Details
                   </button>
                 </div>
@@ -187,17 +187,17 @@ const EventsPage = () => {
         {/* Past Events Section */}
         {!loading && pastEvents.length > 0 && (
           <>
-            <div className="mt-12 pt-8 border-t border-primary/20">
-              <h2 className="text-white text-3xl font-black leading-tight tracking-[-0.033em] mb-6">Past Events</h2>
+            <div className="mt-12 pt-8 border-t border-reptilez-green-200">
+              <h2 className="text-gray-900 text-3xl font-black leading-tight tracking-[-0.033em] mb-6">Past Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                 {pastEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="bg-black/20 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all cursor-pointer group opacity-75"
+                    className="bg-white border border-reptilez-green-100 rounded-xl overflow-hidden hover:border-reptilez-green-300 transition-all cursor-pointer group opacity-75 shadow-sm"
                     onClick={() => setSelectedEvent(event)}
                   >
                     {/* Event Image */}
-                    <div className="relative h-60 bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
+                    <div className="relative h-60 bg-gradient-to-br from-reptilez-green-50 to-reptilez-green-100 overflow-hidden">
                       {event.image_url ? (
                         <img
                           src={event.image_url}
@@ -206,29 +206,29 @@ const EventsPage = () => {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="material-symbols-outlined text-6xl text-primary/20">event</span>
+                          <span className="material-symbols-outlined text-6xl text-reptilez-green-200">event</span>
                         </div>
                       )}
                     </div>
 
                     {/* Event Details */}
                     <div className="p-4 flex flex-col gap-3">
-                      <h3 className="text-white/80 text-lg font-bold line-clamp-2">
+                      <h3 className="text-gray-700 text-lg font-bold line-clamp-2">
                         {event.title}
                       </h3>
                       
                       <div className="flex flex-col gap-2 text-sm">
                         <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-primary/70 text-base">calendar_today</span>
-                          <p className="text-white/60">
+                          <span className="material-symbols-outlined text-reptilez-green-500 text-base">calendar_today</span>
+                          <p className="text-gray-500">
                             {event.event_end_date
                               ? `${formatDate(event.event_date)} - ${formatDate(event.event_end_date)}`
                               : formatDate(event.event_date)}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-primary/70 text-base">location_on</span>
-                          <p className="text-white/60 line-clamp-1">{event.location}</p>
+                          <span className="material-symbols-outlined text-reptilez-green-500 text-base">location_on</span>
+                          <p className="text-gray-500 line-clamp-1">{event.location}</p>
                         </div>
                       </div>
                     </div>
@@ -243,45 +243,45 @@ const EventsPage = () => {
       {/* Event Details Modal */}
       {selectedEvent && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm px-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
           onClick={() => setSelectedEvent(null)}
         >
           <div 
-            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-background-dark/95 p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-reptilez-green-200 bg-white p-6 shadow-2xl [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Event Details</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Event Details</h2>
               <button
                 type="button"
                 onClick={() => setSelectedEvent(null)}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
             </div>
 
             {selectedEvent.image_url && (
-              <div className="mb-6 rounded-lg overflow-hidden">
+              <div className="mb-6 rounded-lg overflow-hidden border border-reptilez-green-100">
                 <img
                   src={selectedEvent.image_url}
                   alt={selectedEvent.title}
-                  className="w-full h-96 object-contain bg-black/20"
+                  className="w-full h-96 object-contain bg-reptilez-green-50"
                 />
               </div>
             )}
 
             <div className="space-y-4">
               <div>
-                <h3 className="text-white text-xl font-bold mb-2">{selectedEvent.title}</h3>
+                <h3 className="text-gray-900 text-xl font-bold mb-2">{selectedEvent.title}</h3>
               </div>
 
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-primary text-xl mt-0.5">calendar_today</span>
+                  <span className="material-symbols-outlined text-reptilez-green-600 text-xl mt-0.5">calendar_today</span>
                   <div>
-                    <p className="text-white/60 text-sm">Date</p>
-                    <p className="text-white font-medium">
+                    <p className="text-gray-600 text-sm">Date</p>
+                    <p className="text-gray-900 font-medium">
                       {selectedEvent.event_end_date
                         ? `${formatDate(selectedEvent.event_date)} - ${formatDate(selectedEvent.event_end_date)}`
                         : formatDate(selectedEvent.event_date)}
@@ -291,28 +291,28 @@ const EventsPage = () => {
 
                 {selectedEvent.event_time && (
                   <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-primary text-xl mt-0.5">schedule</span>
+                    <span className="material-symbols-outlined text-reptilez-green-600 text-xl mt-0.5">schedule</span>
                     <div>
-                      <p className="text-white/60 text-sm">Time</p>
-                      <p className="text-white font-medium">{formatTime(selectedEvent.event_time)}</p>
+                      <p className="text-gray-600 text-sm">Time</p>
+                      <p className="text-gray-900 font-medium">{formatTime(selectedEvent.event_time)}</p>
                     </div>
                   </div>
                 )}
 
                 <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-primary text-xl mt-0.5">location_on</span>
+                  <span className="material-symbols-outlined text-reptilez-green-600 text-xl mt-0.5">location_on</span>
                   <div>
-                    <p className="text-white/60 text-sm">Location</p>
-                    <p className="text-white font-medium">{selectedEvent.location}</p>
+                    <p className="text-gray-600 text-sm">Location</p>
+                    <p className="text-gray-900 font-medium">{selectedEvent.location}</p>
                   </div>
                 </div>
 
                 {selectedEvent.description && (
                   <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-primary text-xl mt-0.5">description</span>
+                    <span className="material-symbols-outlined text-reptilez-green-600 text-xl mt-0.5">description</span>
                     <div>
-                      <p className="text-white/60 text-sm mb-1">Description</p>
-                      <p className="text-white whitespace-pre-line">{selectedEvent.description}</p>
+                      <p className="text-gray-600 text-sm mb-1">Description</p>
+                      <p className="text-gray-700 whitespace-pre-line">{selectedEvent.description}</p>
                     </div>
                   </div>
                 )}

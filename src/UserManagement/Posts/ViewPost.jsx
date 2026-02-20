@@ -32,16 +32,16 @@ const MAX_PREVIEW_LENGTH = 150;
 
 const categoryThemes = {
   Announcements: {
-    badge: 'bg-emerald-500/15 text-emerald-300 border border-emerald-400/30',
-    avatar: 'bg-emerald-600/30 text-emerald-200 border border-emerald-400/50',
+    badge: 'bg-reptilez-green-100 text-reptilez-green-700 border border-reptilez-green-300',
+    avatar: 'bg-reptilez-green-50 text-reptilez-green-700 border border-reptilez-green-300',
   },
   'Race Reports': {
-    badge: 'bg-rose-500/15 text-rose-200 border border-rose-400/30',
-    avatar: 'bg-rose-600/30 text-rose-200 border border-rose-400/40',
+    badge: 'bg-red-100 text-red-700 border border-red-300',
+    avatar: 'bg-red-50 text-red-700 border border-red-300',
   },
   default: {
-    badge: 'bg-primary/15 text-primary border border-primary/40',
-    avatar: 'bg-primary/20 text-primary border border-primary/40',
+    badge: 'bg-reptilez-green-100 text-reptilez-green-700 border border-reptilez-green-300',
+    avatar: 'bg-reptilez-green-50 text-reptilez-green-700 border border-reptilez-green-300',
   },
 };
 
@@ -372,25 +372,20 @@ const ViewPost = ({ singleView = false }) => {
 
   return (
     <div
-      className="relative flex min-h-screen w-full flex-col overflow-x-hidden text-white"
-      style={{
-        backgroundImage:
-          'linear-gradient(135deg, #020202 0%, #0a2b0a 35%, #0b0b0b 65%, #2b0000 100%)',
-        backgroundAttachment: 'fixed',
-      }}
+      className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-reptilez-white-50 via-reptilez-white-100 to-reptilez-green-50"
     >
       <div className="layout-container flex grow flex-col">
-        <div className="px-3 sm:px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-2">
+        <div className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex flex-1 justify-center py-2">
           <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 pt-3 md:pt-2 pb-6 sm:pb-8">
             <section className="space-y-2 sm:space-y-3">
               {/* Only show search bar if not in single view mode */}
               {!singleView && (
-                <label className="flex min-w-0 sm:min-w-40 h-10 sm:h-12 w-full rounded-full border border-primary/40 bg-black/70 px-3 sm:px-4 text-white backdrop-blur focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
-                  <span className="flex items-center pr-2 sm:pr-3 text-primary/70">
+                <label className="flex min-w-0 sm:min-w-40 h-10 sm:h-12 w-full rounded-full border border-reptilez-green-200 bg-white px-3 sm:px-4 text-gray-900 backdrop-blur focus-within:border-reptilez-green-600 focus-within:ring-2 focus-within:ring-reptilez-green-500/30 shadow-sm">
+                  <span className="flex items-center pr-2 sm:pr-3 text-reptilez-green-600">
                     <span className="material-symbols-outlined text-sm sm:text-base">search</span>
                   </span>
                   <input
-                    className="w-full flex-1 bg-transparent text-xs sm:text-sm text-white placeholder:text-primary/70 focus:outline-none"
+                    className="w-full flex-1 bg-transparent text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
                     placeholder="Search posts..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -402,7 +397,7 @@ const ViewPost = ({ singleView = false }) => {
               {singleView && (
                 <button
                   onClick={() => navigate('/posts')}
-                  className="flex items-center gap-2 text-primary hover:text-white transition-colors group"
+                  className="flex items-center gap-2 text-reptilez-green-700 hover:text-reptilez-green-800 transition-colors group"
                 >
                   <span className="material-symbols-outlined text-xl transition-transform group-hover:-translate-x-1">arrow_back</span>
                   <span className="font-semibold">Back to all posts</span>
@@ -410,7 +405,7 @@ const ViewPost = ({ singleView = false }) => {
               )}
               
               {error && (
-                <div className="rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-white/90">
+                <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
                   {error}
                 </div>
               )}
@@ -421,7 +416,7 @@ const ViewPost = ({ singleView = false }) => {
                   {[1, 2, 3].map((skeleton) => (
                     <div
                       key={skeleton}
-                      className="overflow-hidden rounded-3xl border border-white/5 bg-black/40 p-5 md:p-6 space-y-4"
+                      className="overflow-hidden rounded-3xl border border-reptilez-green-200 bg-white p-5 md:p-6 space-y-4 shadow-sm"
                     >
                       <div className="flex items-center gap-4">
                         <div className="size-12 rounded-full shimmer-bg" />
@@ -440,7 +435,7 @@ const ViewPost = ({ singleView = false }) => {
                   ))}
                 </div>
               ) : filteredPosts.length === 0 ? (
-                <div className="flex min-h-[280px] items-center justify-center text-white/60">
+                <div className="flex min-h-[280px] items-center justify-center text-gray-600 bg-white rounded-xl border border-reptilez-green-100 p-8">
                   No posts matched your search.
                 </div>
               ) : (
@@ -448,12 +443,12 @@ const ViewPost = ({ singleView = false }) => {
                   {filteredPosts.map((post) => (
                     <article
                       key={post.id}
-                      className="overflow-hidden rounded-3xl border border-white/5 bg-black/40 shadow-[0_30px_100px_rgba(0,0,0,0.6)] backdrop-blur-md"
+                      className="overflow-hidden rounded-3xl border border-reptilez-green-200 bg-white shadow-md backdrop-blur-md"
                     >
                       <div className="space-y-4 p-5 md:p-6">
                         <div className="flex flex-wrap items-center gap-4">
                           <div className="relative">
-                            <div className="flex size-12 items-center justify-center rounded-full border-2 border-primary/60 bg-black/40 p-[3px]">
+                            <div className="flex size-12 items-center justify-center rounded-full border-2 border-reptilez-green-300 bg-reptilez-green-50 p-[3px]">
                               <img
                                 src="/rcc1.png"
                                 alt="Reptilez Cycling Club avatar"
@@ -462,10 +457,10 @@ const ViewPost = ({ singleView = false }) => {
                             </div>
                           </div>
                           <div className="flex flex-col">
-                            <p className="text-base font-semibold text-white">
+                            <p className="text-base font-semibold text-gray-900">
                               {post.author_name || 'Reptilez Cycling Club'}
                             </p>
-                            <p className="text-xs text-white/60">{formatDate(post.created_at)}</p>
+                            <p className="text-xs text-gray-600">{formatDate(post.created_at)}</p>
                           </div>
                           <span
                             className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${getCategoryTheme(post.category).badge}`}
@@ -474,8 +469,8 @@ const ViewPost = ({ singleView = false }) => {
                           </span>
                         </div>
                         <div className="space-y-3">
-                          <h3 className="text-2xl font-bold text-white leading-snug">{post.title}</h3>
-                          <p className="whitespace-pre-line text-white/80 text-sm leading-relaxed break-words">
+                          <h3 className="text-2xl font-bold text-gray-900 leading-snug">{post.title}</h3>
+                          <p className="whitespace-pre-line text-gray-700 text-sm leading-relaxed break-words">
                             {(() => {
                               const content = post.content || '';
                               const isExpanded = expandedPosts[post.id];
@@ -489,7 +484,7 @@ const ViewPost = ({ singleView = false }) => {
                           {(post.content || '').length > MAX_PREVIEW_LENGTH && (
                             <button
                               type="button"
-                              className="text-primary font-semibold text-xs hover:text-white transition-colors"
+                              className="text-reptilez-green-700 font-semibold text-xs hover:text-reptilez-green-800 transition-colors"
                               onClick={() =>
                                 setExpandedPosts((prev) => ({
                                   ...prev,
@@ -513,7 +508,7 @@ const ViewPost = ({ singleView = false }) => {
                         if (media.length === 1) {
                           const item = media[0];
                           return (
-                            <div className="relative flex w-full overflow-hidden border-y border-white/5">
+                            <div className="relative flex w-full overflow-hidden border-y border-reptilez-green-100">
                               {item.type === 'video' ? (
                                 <video
                                   className="w-full aspect-video object-cover"
@@ -674,23 +669,23 @@ const ViewPost = ({ singleView = false }) => {
                           </div>
                         );
                       })()}
-                      <div className="flex flex-wrap items-center gap-3 border-t border-white/5 bg-black/30 px-5 py-3 text-xs text-white/70 md:px-6">
+                      <div className="flex flex-wrap items-center gap-3 border-t border-gray-200 bg-white px-5 py-3 text-xs text-gray-700 md:px-6">
                         <span className="flex items-center gap-2">
-                          <span className="flex items-center gap-1 rounded-full bg-black/50 px-2 py-1">
+                          <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1">
                             <span
-                              className={`material-symbols-outlined text-base ${likedPosts[post.id] ? 'text-rose-400' : 'text-primary'}`}
+                              className="material-symbols-outlined text-base text-red-600"
                               style={likedPosts[post.id] ? { fontVariationSettings: "'FILL' 1" } : {}}
                             >
                               favorite
                             </span>
-                            <span className="text-xs font-semibold text-white/80">
+                            <span className="text-xs font-semibold text-gray-900">
                               {likeCounts[post.id] ?? 0}
                             </span>
                           </span>
                           <span>{heartCopy(likeCounts[post.id] ?? 0, !!likedPosts[post.id])}</span>
                         </span>
                       </div>
-                      <div className="flex divide-x divide-white/5 border-t border-white/5 bg-black/20">
+                      <div className="flex divide-x divide-gray-200 border-t border-gray-200 bg-white">
                         {[
                           { label: likedPosts[post.id] ? 'Liked' : 'Heart', icon: 'favorite', onClick: () => toggleLike(post.id), active: likedPosts[post.id] },
                           { label: 'Share', icon: 'ios_share', onClick: () => handleShare(post), active: false },
@@ -699,12 +694,14 @@ const ViewPost = ({ singleView = false }) => {
                             key={action.label}
                             type="button"
                             onClick={action.onClick}
-                            className={`flex flex-1 items-center justify-center gap-2 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:bg-white/5 ${
-                              action.active ? 'text-primary' : 'text-white/70'
+                            className={`flex flex-1 items-center justify-center gap-2 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:bg-gray-50 ${
+                              action.active && action.icon === 'favorite' ? 'text-red-600' : 'text-gray-700'
                             }`}
                           >
                             <span
-                              className="material-symbols-outlined text-base"
+                              className={`material-symbols-outlined text-base ${
+                                action.icon === 'favorite' && action.active ? 'text-red-600' : ''
+                              }`}
                               style={action.icon === 'favorite' && action.active ? { fontVariationSettings: "'FILL' 1" } : {}}
                             >
                               {action.icon}
@@ -714,8 +711,8 @@ const ViewPost = ({ singleView = false }) => {
                         ))}
                       </div>
                       {shareState.postId === post.id && shareState.message && (
-                        <div className="border-t border-white/5 bg-black/30 px-5 py-3 text-sm text-center">
-                          <span className={shareState.message.startsWith('✓') ? 'text-primary' : 'text-rose-400'}>
+                        <div className="border-t border-gray-200 bg-white px-5 py-3 text-sm text-center">
+                          <span className={shareState.message.startsWith('✓') ? 'text-gray-700' : 'text-red-600'}>
                             {shareState.message}
                           </span>
                         </div>
@@ -729,11 +726,11 @@ const ViewPost = ({ singleView = false }) => {
         </div>
       </div>
       {activeMedia && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 px-4 backdrop-blur-xl">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
           {/* Close Button */}
           <button
             type="button"
-            className="absolute right-6 top-6 z-10 rounded-full border border-white/20 bg-black/60 p-3 text-white hover:bg-primary/80 focus:outline-none transition-all duration-300 hover:scale-110"
+            className="absolute right-6 top-6 z-10 rounded-full border border-reptilez-green-200 bg-white/90 p-3 text-gray-700 hover:bg-reptilez-green-600 hover:text-white focus:outline-none transition-all duration-300 hover:scale-110 shadow-lg"
             onClick={() => setActiveMedia(null)}
             aria-label="Close media viewer"
           >
@@ -744,7 +741,7 @@ const ViewPost = ({ singleView = false }) => {
           {currentMediaIndex > 0 && (
             <button
               type="button"
-              className="absolute left-6 z-10 rounded-full border border-white/20 bg-black/60 p-3 text-white hover:bg-primary/80 focus:outline-none transition-all duration-300 hover:scale-110"
+              className="absolute left-6 z-10 rounded-full border border-reptilez-green-200 bg-white/90 p-3 text-gray-700 hover:bg-reptilez-green-600 hover:text-white focus:outline-none transition-all duration-300 hover:scale-110 shadow-lg"
               onClick={handlePrevMedia}
               aria-label="Previous image"
             >
@@ -756,7 +753,7 @@ const ViewPost = ({ singleView = false }) => {
           {currentMediaIndex < allMediaForViewer.length - 1 && (
             <button
               type="button"
-              className="absolute right-6 z-10 rounded-full border border-white/20 bg-black/60 p-3 text-white hover:bg-primary/80 focus:outline-none transition-all duration-300 hover:scale-110"
+              className="absolute right-6 z-10 rounded-full border border-reptilez-green-200 bg-white/90 p-3 text-gray-700 hover:bg-reptilez-green-600 hover:text-white focus:outline-none transition-all duration-300 hover:scale-110 shadow-lg"
               onClick={handleNextMedia}
               aria-label="Next image"
             >
@@ -765,18 +762,18 @@ const ViewPost = ({ singleView = false }) => {
           )}
 
           {/* Image Container */}
-          <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-[0_40px_140px_rgba(0,0,0,0.85)]">
-            <div className="flex max-h-[80vh] items-center justify-center bg-black">
+          <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-reptilez-green-200 bg-white shadow-2xl">
+            <div className="flex max-h-[80vh] items-center justify-center bg-reptilez-green-50">
               <img
                 src={activeMedia.src}
                 alt={activeMedia.title}
                 className="max-h-[80vh] w-auto max-w-full object-contain"
               />
             </div>
-            <div className="border-t border-white/10 px-6 py-4 text-center text-white/80">
+            <div className="border-t border-reptilez-green-200 px-6 py-4 text-center text-gray-700 bg-white">
               <p className="text-lg font-semibold">{activeMedia.title}</p>
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">{activeMedia.meta}</p>
-              <p className="text-sm text-white/60 mt-2">
+              <p className="text-xs uppercase tracking-[0.3em] text-gray-500">{activeMedia.meta}</p>
+              <p className="text-sm text-gray-600 mt-2">
                 {currentMediaIndex + 1} / {allMediaForViewer.length}
               </p>
             </div>
@@ -793,9 +790,9 @@ const ViewPost = ({ singleView = false }) => {
         .shimmer-bg {
           background: linear-gradient(
             90deg,
-            rgba(24, 24, 27, 1) 0%,
+            rgba(250, 250, 250, 1) 0%,
             rgba(34, 197, 94, 0.1) 50%,
-            rgba(24, 24, 27, 1) 100%
+            rgba(250, 250, 250, 1) 100%
           );
           background-size: 1000px 100%;
           animation: shimmer 2s infinite linear;

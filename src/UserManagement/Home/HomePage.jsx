@@ -23,16 +23,14 @@ const HomePage = () => {
   usePageMeta(''); // base title only: "D&R Reptilez Sports"
 
   return (
-    <>
-      <main className="flex flex-col gap-6 sm:gap-8 md:gap-10 lg:gap-16 mt-3 sm:mt-5 px-3 sm:px-4 md:px-6">
-        <Hero refreshFunctionsRef={refreshFunctionsRef} />
-        <Welcome />
-        <Cards refreshFunctionsRef={refreshFunctionsRef} />
-        <Events refreshFunctionsRef={refreshFunctionsRef} />
-        <Gallery refreshFunctionsRef={refreshFunctionsRef} />
-      </main>
+    <div className="flex flex-col gap-12 pb-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <Hero refreshFunctionsRef={refreshFunctionsRef} />
+      <Welcome />
+      <Cards refreshFunctionsRef={refreshFunctionsRef} />
+      <Events refreshFunctionsRef={refreshFunctionsRef} />
+      <Gallery refreshFunctionsRef={refreshFunctionsRef} />
       <Footer />
-    </>
+    </div>
   );
 };
 

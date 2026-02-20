@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPosts } from '../../services/postsService';
 import { getMembers } from '../../services/membersService';
@@ -10,6 +10,8 @@ const Cards = ({ refreshFunctionsRef }) => {
   const [memberImages, setMemberImages] = useState([]);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
   const [upcomingEvent, setUpcomingEvent] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
 
   const cardData = [
     {
@@ -42,7 +44,6 @@ const Cards = ({ refreshFunctionsRef }) => {
       const posts = await getPosts();
       if (!Array.isArray(posts) || posts.length === 0) return;
 
-      // Get latest published post that has an image
       const withImage = posts.filter(
         (p) => p.featured_image && p.status === 'Published'
       );
@@ -58,7 +59,6 @@ const Cards = ({ refreshFunctionsRef }) => {
     try {
       const members = await getMembers();
       if (Array.isArray(members) && members.length > 0) {
-        // Get all member images that exist
         const images = members
           .map(member => member.image_url)
           .filter(Boolean)
@@ -77,8 +77,6 @@ const Cards = ({ refreshFunctionsRef }) => {
     try {
       const events = await getUpcomingEvents();
       if (Array.isArray(events) && events.length > 0) {
-        // Get the first upcoming event (sorted by date, earliest first)
-        // Prefer events with images
         const withImage = events.find(e => e.image_url);
         setUpcomingEvent(withImage || events[0]);
       }
@@ -93,7 +91,6 @@ const Cards = ({ refreshFunctionsRef }) => {
       fetchMemberImages(),
       fetchUpcomingEvent()
     ]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -124,13 +121,42 @@ const Cards = ({ refreshFunctionsRef }) => {
     return () => clearInterval(intervalId);
   }, [memberImages.length]);
 
+  // Scroll-based animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <section>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 p-4">
+    <section 
+      ref={sectionRef}
+      data-animate
+      className={`w-full py-8 sm:py-12 transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+    >
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 sm:gap-6">
         {cardData.map((card, index) => (
           <div
             key={index}
-            className="flex flex-col gap-3 pb-3 group cursor-pointer transition-transform hover:-translate-y-1"
+            className="flex flex-col gap-3 pb-3 group cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl bg-white rounded-xl p-4 border border-reptilez-green-100"
             onClick={() => {
               if (card.title === 'Latest Posts') {
                 navigate('/posts');
@@ -149,10 +175,9 @@ const Cards = ({ refreshFunctionsRef }) => {
               const isEventsCard = card.title === 'Upcoming Events' && upcomingEvent;
               
               if (isMembersCard) {
-                // Members card with fade animation
                 return (
                   <>
-                    <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                    <div className="relative w-full aspect-square rounded-lg overflow-hidden border border-reptilez-green-100">
                       {memberImages.length > 0 ? (
                         memberImages.map((image, index) => (
                           <div
@@ -167,55 +192,53 @@ const Cards = ({ refreshFunctionsRef }) => {
                         ))
                       ) : (
                         <div 
-                          className="w-full h-full bg-center bg-no-repeat bg-cover bg-gray-800 flex items-center justify-center"
+                          className="w-full h-full bg-center bg-no-repeat bg-cover bg-reptilez-green-50 flex items-center justify-center"
                           role="img"
                           aria-label={card.alt}
                         >
-                          <span className="material-symbols-outlined text-white/40 text-6xl">group</span>
+                          <span className="material-symbols-outlined text-reptilez-green-400 text-6xl">group</span>
                         </div>
                       )}
                     </div>
                     <div>
-                      <p className="text-white text-base font-medium leading-normal">{card.title}</p>
-                      <p className="text-white/60 text-sm font-normal leading-normal">{card.description}</p>
+                      <p className="text-gray-900 text-base font-semibold leading-normal group-hover:text-reptilez-green-700 transition-colors">{card.title}</p>
+                      <p className="text-gray-600 text-sm font-normal leading-normal">{card.description}</p>
                     </div>
                   </>
                 );
               }
               
               if (isEventsCard) {
-                // Upcoming Events card with event image
                 return (
                   <>
                     <div 
-                      className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                      className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg border border-reptilez-green-100"
                       style={{ backgroundImage: `url("${upcomingEvent.image_url || card.image}")` }}
                       role="img"
                       aria-label={card.alt}
                     ></div>
                     <div>
-                      <p className="text-white text-base font-medium leading-normal">{card.title}</p>
-                      <p className="text-white/60 text-sm font-normal leading-normal">{card.description}</p>
+                      <p className="text-gray-900 text-base font-semibold leading-normal group-hover:text-reptilez-green-700 transition-colors">{card.title}</p>
+                      <p className="text-gray-600 text-sm font-normal leading-normal">{card.description}</p>
                     </div>
                   </>
                 );
               }
               
-              // Latest Posts card or other cards
               const image = isLatestCard && latestPost?.featured_image
                 ? latestPost.featured_image
                 : card.image;
               return (
                 <>
                   <div 
-                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg border border-reptilez-green-100"
                     style={{ backgroundImage: `url("${image}")` }}
                     role="img"
                     aria-label={card.alt}
                   ></div>
                   <div>
-                    <p className="text-white text-base font-medium leading-normal">{card.title}</p>
-                    <p className="text-white/60 text-sm font-normal leading-normal">{card.description}</p>
+                    <p className="text-gray-900 text-base font-semibold leading-normal group-hover:text-reptilez-green-700 transition-colors">{card.title}</p>
+                    <p className="text-gray-600 text-sm font-normal leading-normal">{card.description}</p>
                   </div>
                 </>
               );
@@ -228,4 +251,3 @@ const Cards = ({ refreshFunctionsRef }) => {
 };
 
 export default Cards;
-

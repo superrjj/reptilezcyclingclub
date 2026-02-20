@@ -14,10 +14,10 @@
   position: relative;
   overflow: hidden;
   background-image: linear-gradient(90deg,
-      rgba(24, 36, 24, 1) 0%,
-      rgba(42, 64, 36, 1) 20%,
-      rgba(24, 36, 24, 1) 40%,
-      rgba(24, 36, 24, 1) 100%);
+      rgba(250, 250, 250, 1) 0%,
+      rgba(240, 253, 244, 1) 20%,
+      rgba(250, 250, 250, 1) 40%,
+      rgba(250, 250, 250, 1) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite linear;
 }

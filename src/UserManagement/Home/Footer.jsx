@@ -2,25 +2,37 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="mt-10 border-t border-solid border-primary/30 py-8 px-4 sm:px-10">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-4 text-white">
+    <footer 
+      className="mt-10 border-t border-solid border-reptilez-green-200 pt-8 pb-0 mb-0 bg-white/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16"
+    >
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        <div className="flex items-center gap-4 text-gray-900">
           <img
             src="/rcc1.png"
             alt="Reptilez Cycling Club logo"
-            className="h-6 w-6 rounded-full object-contain"
+            className="h-8 w-8 rounded-full object-contain"
           />
           <img
             src="/rcc2.png"
             alt="Reptilez Cycling Club logo"
-            className="h-6 w-6 rounded-full object-contain"
+            className="h-8 w-8 rounded-full object-contain"
           />
-          <h2 className="text-white text-base font-bold leading-tight">Reptilez Cycling Club</h2>
+          <img
+            src="/tarlac.png"
+            alt="Tarlac Cycling Community logo"
+            className="h-8 w-8 rounded-full object-contain"
+          />
+         <img
+            src="/dropnroll.jpg"
+            alt="Drop & Roll logo"
+            className="h-8 w-8 rounded-full object-contain"
+          />
+          <h2 className="text-gray-900 text-base font-bold leading-tight">Reptilez Cycling Club</h2>
         </div>
         <div className="flex items-center gap-4">
           <a
             aria-label="Instagram"
-            className="text-white/60 hover:text-accent transition-colors"
+            className="text-gray-600 hover:text-reptilez-green-600 transition-colors"
             href="https://www.instagram.com/reptilezcyclingclub/"
             target="_blank"
             rel="noreferrer"
@@ -33,7 +45,7 @@ const Footer = () => {
           </a>
           <a
             aria-label="Facebook"
-            className="text-white/60 hover:text-[#1877F2] transition-colors"
+            className="text-gray-600 hover:text-[#1877F2] transition-colors"
             href="https://www.facebook.com/profile.php?id=61561941841860"
             target="_blank"
             rel="noreferrer"
@@ -44,7 +56,7 @@ const Footer = () => {
           </a>
           <a
             aria-label="TikTok"
-            className="text-white/60 hover:text-white transition-colors"
+            className="text-gray-600 hover:text-reptilez-green-600 transition-colors"
             href="https://www.tiktok.com/@reptilezcyclingclub"
             target="_blank"
             rel="noreferrer"
@@ -54,11 +66,10 @@ const Footer = () => {
             </svg>
           </a>
         </div>
-        <p className="text-sm text-white/60 text-center sm:text-right">© 2021 Reptilez Cycling Club. All Rights Reserved.</p>
+        <p className="text-sm text-gray-600 text-center sm:text-right">© 2021 Reptilez Cycling Club. All Rights Reserved.</p>
       </div>
     </footer>
   );
 };
 
 export default Footer;
-
