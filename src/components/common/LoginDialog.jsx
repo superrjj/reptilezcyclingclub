@@ -266,4 +266,3 @@ const LoginDialog = ({ open, onClose }) => {
 };
 
 export default LoginDialog;
-
