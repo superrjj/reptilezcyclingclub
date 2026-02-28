@@ -8,7 +8,7 @@ const MaintenanceScreen = () => {
   useEffect(() => {
     setIsVisible(true);
     
-    const endDate = new Date('2026-03-2T10:00:00');
+    const endDate = new Date('2026-03-02T10:00:00');
     
     // Calculate progress based on date range
     const calculateProgress = () => {
