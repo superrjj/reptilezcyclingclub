@@ -108,7 +108,8 @@ const Events = ({ refreshFunctionsRef }) => {
 
   return (
     <>
-      <section 
+      <section
+        id="events"
         ref={sectionRef}
         data-animate
         className={`w-full flex flex-col items-center gap-6 py-10 sm:py-12 transition-all duration-700 ease-out ${

@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { getPosts } from '../../services/postsService';
 import { getMembers } from '../../services/membersService';
 import { getUpcomingEvents } from '../../services/eventsService';
 
 const Cards = ({ refreshFunctionsRef }) => {
-  const navigate = useNavigate();
   const [latestPost, setLatestPost] = useState(null);
   const [memberImages, setMemberImages] = useState([]);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
@@ -63,7 +61,7 @@ const Cards = ({ refreshFunctionsRef }) => {
           .map(member => member.image_url)
           .filter(Boolean)
           .filter(url => url && url.trim() !== '');
-        
+
         if (images.length > 0) {
           setMemberImages(images);
         }
@@ -113,7 +111,7 @@ const Cards = ({ refreshFunctionsRef }) => {
   // Cycle through member images with fade animation
   useEffect(() => {
     if (memberImages.length === 0) return;
-    
+
     const intervalId = setInterval(() => {
       setCurrentMemberIndex((prev) => (prev + 1) % memberImages.length);
     }, 3000);
@@ -146,12 +144,11 @@ const Cards = ({ refreshFunctionsRef }) => {
   }, []);
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       data-animate
-      className={`w-full py-8 sm:py-12 transition-all duration-700 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+      className={`w-full py-8 sm:py-12 transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}
     >
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 sm:gap-6">
         {cardData.map((card, index) => (
@@ -159,14 +156,16 @@ const Cards = ({ refreshFunctionsRef }) => {
             key={index}
             className="flex flex-col gap-3 pb-3 group cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl bg-white rounded-xl p-4 border border-reptilez-green-100"
             onClick={() => {
-              if (card.title === 'Latest Posts') {
-                navigate('/posts');
-              } else if (card.title === 'Our Members') {
-                navigate('/members');
-              } else if (card.title === 'Upcoming Events') {
-                navigate('/events');
-              } else if (card.title === 'About Us') {
-                navigate('/about-us');
+              const sectionMap = {
+                'Latest Posts': 'posts',
+                'Our Members': 'members',
+                'Upcoming Events': 'events',
+                'About Us': 'about-us',
+              };
+              const sectionId = sectionMap[card.title];
+              if (sectionId) {
+                const el = document.getElementById(sectionId);
+                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
             }}
           >
@@ -174,7 +173,7 @@ const Cards = ({ refreshFunctionsRef }) => {
               const isLatestCard = card.title === 'Latest Posts' && latestPost;
               const isMembersCard = card.title === 'Our Members' && memberImages.length > 0;
               const isEventsCard = card.title === 'Upcoming Events' && upcomingEvent;
-              
+
               if (isMembersCard) {
                 return (
                   <>
@@ -183,16 +182,15 @@ const Cards = ({ refreshFunctionsRef }) => {
                         memberImages.map((image, index) => (
                           <div
                             key={`${image}-${index}`}
-                            className={`absolute inset-0 bg-center bg-no-repeat bg-cover transition-opacity duration-700 ${
-                              index === currentMemberIndex ? 'opacity-100' : 'opacity-0'
-                            }`}
+                            className={`absolute inset-0 bg-center bg-no-repeat bg-cover transition-opacity duration-700 ${index === currentMemberIndex ? 'opacity-100' : 'opacity-0'
+                              }`}
                             style={{ backgroundImage: `url("${image}")` }}
                             role="img"
                             aria-label={card.alt}
                           ></div>
                         ))
                       ) : (
-                        <div 
+                        <div
                           className="w-full h-full bg-center bg-no-repeat bg-cover bg-reptilez-green-50 flex items-center justify-center"
                           role="img"
                           aria-label={card.alt}
@@ -208,11 +206,11 @@ const Cards = ({ refreshFunctionsRef }) => {
                   </>
                 );
               }
-              
+
               if (isEventsCard) {
                 return (
                   <>
-                    <div 
+                    <div
                       className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg border border-reptilez-green-100"
                       style={{ backgroundImage: `url("${upcomingEvent.image_url || card.image}")` }}
                       role="img"
@@ -225,13 +223,13 @@ const Cards = ({ refreshFunctionsRef }) => {
                   </>
                 );
               }
-              
+
               const image = isLatestCard && latestPost?.featured_image
                 ? latestPost.featured_image
                 : card.image;
               return (
                 <>
-                  <div 
+                  <div
                     className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg border border-reptilez-green-100"
                     style={{ backgroundImage: `url("${image}")` }}
                     role="img"

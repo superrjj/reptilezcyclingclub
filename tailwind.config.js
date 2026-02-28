@@ -32,7 +32,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        "display": ["Poppins", "sans-serif"]
+        "display": ["Poppins", "sans-serif"],
+        "sans-simple": ["DM Sans", "sans-serif"]
       },
       borderRadius: {
         "DEFAULT": "0.75rem", // 12px
