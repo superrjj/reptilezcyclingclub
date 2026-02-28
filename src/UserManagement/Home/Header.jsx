@@ -72,7 +72,7 @@ const SECTION_IDS = {
   about: 'about-us',
 };
 
-const Header = ({ onLongPressTitle }) => {
+const Header = ({ onLongPressTitle, offsetTop = 0 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -233,7 +233,10 @@ const Header = ({ onLongPressTitle }) => {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
+    <header
+      className="fixed inset-x-0 z-50 border-b border-gray-200 bg-white shadow-sm"
+      style={{ top: offsetTop }}
+    >
       <div className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-4 sm:py-5">
         <Link
           to="/"

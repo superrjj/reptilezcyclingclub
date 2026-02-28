@@ -31,6 +31,9 @@ const RequireAuth = ({ children }) => {
 
 // Main layout wrapper for public pages
 const MainLayout = ({ children, onLongPressTitle, loginOpen, setLoginOpen }) => {
+  const [showGreeting, setShowGreeting] = useState(true);
+  const headerOffset = showGreeting ? 40 : 0;
+
   return (
     <div
       className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-reptilez-white-50 via-reptilez-white-100 to-reptilez-green-50"
@@ -38,10 +41,33 @@ const MainLayout = ({ children, onLongPressTitle, loginOpen, setLoginOpen }) => 
         backgroundAttachment: 'fixed',
       }}
     >
+      {showGreeting && (
+        <div className="fixed inset-x-0 top-0 z-[60] bg-[#FEF3C7] border-b border-[#FACC15] text-[#92400E]">
+          <div className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-2 text-xs sm:text-sm">
+            <span className="font-medium tracking-wide">
+              Welcome to Reptilez Cycling Club
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowGreeting(false)}
+              className="ml-4 inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#FACC15] bg-[#FEF3C7] text-[#92400E] hover:bg-[#FACC15] hover:text-[#78350F] transition-colors"
+              aria-label="Close welcome message"
+            >
+              <span className="material-symbols-outlined text-base leading-none">
+                close
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="layout-container flex h-full grow flex-col">
         <div className="w-full flex flex-1 justify-center">
-          <div className="layout-content-container flex flex-col w-full flex-1 pt-24">
-            <Header onLongPressTitle={onLongPressTitle} />
+          <div
+            className="layout-content-container flex flex-col w-full flex-1"
+            style={{ paddingTop: `calc(6rem + ${headerOffset}px)` }}
+          >
+            <Header onLongPressTitle={onLongPressTitle} offsetTop={headerOffset} />
             {children}
           </div>
         </div>
