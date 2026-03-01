@@ -191,7 +191,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
         >
           Photos of D&R Reptilez Sports
         </GradientText>
-        <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-reptilez-green-600 to-transparent rounded-full"></div>
+        <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
       </div>
 
       {loading ? (
@@ -202,11 +202,11 @@ const Gallery = ({ refreshFunctionsRef }) => {
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div 
                     key={i} 
-                    className={`relative rounded-xl overflow-hidden h-[350px] md:h-[450px] bg-black/20 ${
+                    className={`relative rounded-xl overflow-hidden h-[350px] md:h-[450px] bg-[#F5F5F5] ${
                       i === 1 ? 'w-[320px] md:w-[450px]' : 'w-[100px] md:w-[160px]'
                     }`}
                   >
-                    <div className="absolute inset-0 bg-zinc-900 shimmer-bg rounded-lg" style={{
+                    <div className="absolute inset-0 bg-[#F5F5F5] shimmer-bg rounded-lg" style={{
                       top: i === 1 ? '12px' : '8px',
                       left: i === 1 ? '12px' : '8px',
                       right: i === 1 ? '12px' : '8px',
@@ -223,13 +223,13 @@ const Gallery = ({ refreshFunctionsRef }) => {
         </div>
       ) : images.length === 0 ? (
         <div className="w-full py-16 text-center">
-          <div className="inline-flex flex-col items-center gap-4 p-8 rounded-2xl bg-white border border-reptilez-green-200 shadow-sm">
-            <div className="w-20 h-20 rounded-full bg-reptilez-green-100 flex items-center justify-center animate-pulse">
+          <div className="inline-flex flex-col items-center gap-4 p-8 rounded-2xl bg-white border border-[#E5E5E5] shadow-sm">
+            <div className="w-20 h-20 rounded-full bg-reptilez-green-50 flex items-center justify-center animate-pulse">
               <span className="material-symbols-outlined text-reptilez-green-600 text-4xl">photo_library</span>
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900">No gallery images uploaded yet</p>
-              <p className="text-sm mt-2 text-gray-600">Please upload images in the admin panel</p>
+              <p className="text-lg font-semibold text-[#111827]">No gallery images uploaded yet</p>
+              <p className="text-sm mt-2 text-[#374151]">Please upload images in the admin panel</p>
             </div>
           </div>
         </div>
@@ -243,7 +243,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
               {activeIndex > 0 && (
                 <button
                   onClick={handlePrev}
-                  className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+                  className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-sm"
                   aria-label="Previous"
                 >
                   <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_left</span>
@@ -302,7 +302,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
                         key={`${image.src}-${index}`}
                         data-index={index}
                         onClick={() => setActiveIndex(index)}
-                        className={`relative cursor-pointer transition-all duration-400 ease-out rounded-xl overflow-hidden ${cardHeight} bg-black/20 ${
+                        className={`relative cursor-pointer transition-all duration-400 ease-out rounded-xl overflow-hidden ${cardHeight} bg-transparent ${
                           isMobile && isActive ? 'z-10' : 'z-0'
                         }`}
                         style={{
@@ -336,7 +336,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
               {activeIndex < images.length - 1 && (
                 <button
                   onClick={handleNext}
-                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-sm"
                   aria-label="Next"
                 >
                   <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_right</span>
@@ -345,15 +345,15 @@ const Gallery = ({ refreshFunctionsRef }) => {
 
               {/* Scroll Slider Dots at Bottom */}
               {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-full border border-reptilez-green-200 shadow-lg">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-white/95 backdrop-blur-sm rounded-full border border-[#E5E5E5] shadow-sm">
                   {images.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveIndex(index)}
-                      className={`transition-all duration-300 rounded-full ${
+                        className={`transition-all duration-300 rounded-full ${
                         activeIndex === index
-                          ? 'bg-reptilez-green-600 w-8 h-2'
-                          : 'bg-reptilez-green-200 hover:bg-reptilez-green-300 w-2 h-2'
+                          ? 'bg-[#111827] w-8 h-2'
+                          : 'bg-[#E5E5E5] hover:bg-[#D4D4D4] w-2 h-2'
                       }`}
                       aria-label={`Go to image ${index + 1}`}
                     />
@@ -372,21 +372,21 @@ const Gallery = ({ refreshFunctionsRef }) => {
           onClick={() => setShowGalleryDialog(false)}
         >
           <div 
-            className="w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-3xl border-2 border-reptilez-green-200 bg-white backdrop-blur-xl p-8 shadow-2xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-reptilez-green-300 [&::-webkit-scrollbar-thumb]:rounded-full animate-scaleIn"
+            className="w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-3xl border border-[#E5E5E5] bg-white p-8 shadow-xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#E5E5E5] [&::-webkit-scrollbar-thumb]:rounded-full animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-reptilez-green-200">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#E5E5E5]">
               <div>
-                <h2 className="text-3xl font-black text-gray-900">
+                <h2 className="text-3xl font-black text-[#111827]">
                   Full Gallery
                 </h2>
-                <p className="text-gray-600 text-sm mt-1">{images.length} images</p>
+                <p className="text-[#374151] text-sm mt-1">{images.length} images</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowGalleryDialog(false)}
-                className="w-12 h-12 rounded-full bg-reptilez-green-50 hover:bg-reptilez-green-100 border border-reptilez-green-200 hover:border-reptilez-green-300 text-gray-700 hover:text-gray-900 transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110"
+                className="w-12 h-12 rounded-full bg-[#F5F5F5] hover:bg-[#E5E5E5] border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110"
               >
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
@@ -402,7 +402,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
                     setSelectedImage(image);
                     setShowGalleryDialog(false);
                   }}
-                  className="relative w-full aspect-square rounded-2xl overflow-hidden group cursor-pointer border-2 border-reptilez-green-200 hover:border-reptilez-green-400 transition-all duration-500 hover:scale-105 hover:rotate-1"
+                  className="relative w-full aspect-square rounded-2xl overflow-hidden group cursor-pointer border border-[#E5E5E5] transition-all duration-500 hover:scale-105"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <img 
@@ -414,7 +414,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
                   {/* Number badge */}
-                  <div className="absolute top-3 left-3 w-10 h-10 rounded-full bg-reptilez-green-600 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
+                  <div className="absolute top-3 left-3 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-[#E5E5E5] flex items-center justify-center text-[#111827] font-bold text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
                     {index + 1}
                   </div>
                 </div>
@@ -440,12 +440,12 @@ const Gallery = ({ refreshFunctionsRef }) => {
             }}
           />
           {/* Light overlay */}
-          <div className="absolute inset-0 bg-white/80" />
+          <div className="absolute inset-0 bg-white/90" />
 
           {/* Close Button */}
           <button
             onClick={handleCloseModal}
-            className="absolute top-6 right-6 z-10 w-14 h-14 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110 shadow-lg"
+            className="absolute top-6 right-6 z-10 w-14 h-14 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110 shadow-sm"
             aria-label="Close"
           >
             <span className="material-symbols-outlined text-3xl">close</span>
@@ -455,7 +455,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
           {selectedImageIndex > 0 && (
             <button
               onClick={handlePrevImage}
-              className="absolute left-6 z-10 w-14 h-14 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+              className="absolute left-6 z-10 w-14 h-14 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-sm"
               aria-label="Previous image"
             >
               <span className="material-symbols-outlined text-3xl">chevron_left</span>
@@ -466,7 +466,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
           {selectedImageIndex < images.length - 1 && (
             <button
               onClick={handleNextImage}
-              className="absolute right-6 z-10 w-14 h-14 rounded-full bg-white/90 hover:bg-reptilez-green-600 backdrop-blur-sm border border-reptilez-green-200 hover:border-reptilez-green-600 text-gray-700 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-lg"
+              className="absolute right-6 z-10 w-14 h-14 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-sm"
               aria-label="Next image"
             >
               <span className="material-symbols-outlined text-3xl">chevron_right</span>
@@ -481,12 +481,12 @@ const Gallery = ({ refreshFunctionsRef }) => {
             <img
               src={selectedImage.src}
               alt={selectedImage.alt}
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-reptilez-green-200"
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-xl"
             />
           </div>
 
           {/* Image Counter */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full bg-white/90 backdrop-blur-md border border-reptilez-green-200 text-gray-900 text-base font-bold shadow-lg">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full bg-white/95 backdrop-blur-md border border-[#E5E5E5] text-[#111827] text-base font-bold shadow-sm">
             {selectedImageIndex + 1} / {images.length}
           </div>
         </div>
@@ -515,7 +515,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
           background: linear-gradient(
             90deg,
             rgba(250, 250, 250, 1) 0%,
-            rgba(34, 197, 94, 0.1) 50%,
+            rgba(245, 245, 245, 0.9) 50%,
             rgba(250, 250, 250, 1) 100%
           );
           background-size: 200% 100%;

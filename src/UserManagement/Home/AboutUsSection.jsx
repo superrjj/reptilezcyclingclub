@@ -119,7 +119,7 @@ const AboutUsSection = () => {
                 >
                     About Us
                 </GradientText>
-                <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-reptilez-green-600 to-transparent rounded-full"></div>
+                <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
             </div>
 
             {/* Hero Image - Full Screen */}
@@ -143,38 +143,38 @@ const AboutUsSection = () => {
             <div
                 id="about-mv"
                 data-animate-about
-                className={`grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6 transition-all duration-1000 ${visibleSections['about-mv'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 transition-all duration-1000 ${visibleSections['about-mv'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                     }`}
             >
-                <div className="bg-white border border-reptilez-green-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 backdrop-blur-sm hover:border-reptilez-green-400 transition-all duration-300">
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                         <span className="material-symbols-outlined text-reptilez-green-600 text-3xl sm:text-4xl">flag</span>
-                        <h2 className="text-gray-900 text-xl sm:text-2xl font-bold">Our Mission</h2>
+                        <h2 className="text-[#111827] text-xl sm:text-2xl font-bold">Our Mission</h2>
                     </div>
-                    <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4">
+                    <p className="text-[#374151] text-sm sm:text-base leading-relaxed">
                         To nurture and develop young and youth riders into competitive athletes who will become
                         a source of pride for Tarlac and Pangasinan. We are committed to providing comprehensive
                         training that develops not just athletic prowess, but also instills good manners and right
                         conduct in every rider.
                     </p>
-                    <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                    <p className="text-[#374151] text-sm sm:text-base leading-relaxed">
                         Through dedicated coaching, structured programs, and a supportive community, we transform
                         promising young cyclists into disciplined athletes who excel both on and off the bike,
                         representing our provinces with honor and integrity.
                     </p>
                 </div>
 
-                <div className="bg-white border border-reptilez-green-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 backdrop-blur-sm hover:border-reptilez-green-400 transition-all duration-300">
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                         <span className="material-symbols-outlined text-reptilez-green-600 text-3xl sm:text-4xl">visibility</span>
-                        <h2 className="text-gray-900 text-xl sm:text-2xl font-bold">Our Vision</h2>
+                        <h2 className="text-[#111827] text-xl sm:text-2xl font-bold">Our Vision</h2>
                     </div>
-                    <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4">
+                    <p className="text-[#374151] text-sm sm:text-base leading-relaxed">
                         To establish a premier Amateur cycling team in Tarlac Province that competes at the highest
                         national level races. We envision RCC as a model club and team that serves as an inspiration
                         and blueprint for upcoming amateur teams across the country.
                     </p>
-                    <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                    <p className="text-[#374151] text-sm sm:text-base leading-relaxed">
                         We strive to be recognized not only for our competitive achievements but also for our
                         commitment to youth development, character building, and excellence in sportsmanship.
                         Our goal is to create a legacy that inspires future generations of cyclists.
@@ -190,30 +190,29 @@ const AboutUsSection = () => {
                     }`}
             >
                 <div className="flex flex-col gap-2">
-                    <h2 className="text-gray-900 text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
+                    <h2 className="text-[#111827] text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
                         Our Core Objectives
                     </h2>
-                    <p className="text-gray-600 text-base font-normal leading-normal">
+                    <p className="text-[#374151] text-base font-normal leading-normal">
                         The pillars that guide our journey and define our purpose.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {objectives.map((objective, index) => (
                         <div
                             key={index}
-                            className={`bg-white border border-reptilez-green-200 rounded-xl p-6 backdrop-blur-sm hover:border-reptilez-green-400 transition-all duration-300 ${visibleSections['about-obj'] ? 'animate-fadeInUp' : 'opacity-0'
+                            data-animate-about
+                            className={`flex items-start gap-4 py-4 ${visibleSections['about-obj'] ? 'animate-fadeInUp opacity-100' : 'opacity-0'
                                 }`}
                             style={{ animationDelay: `${index * 150}ms` }}
                         >
-                            <div className="flex items-start gap-4">
-                                <div className={`flex items-center justify-center w-14 h-14 rounded-xl bg-reptilez-green-50 border border-reptilez-green-300 ${objective.color} ${objective.bgGlow}`}>
-                                    <span className="material-symbols-outlined text-2xl">{objective.icon}</span>
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-gray-900 text-xl font-bold mb-2">{objective.title}</h3>
-                                    <p className="text-gray-600 text-sm leading-relaxed">{objective.description}</p>
-                                </div>
+                            <div className={`flex items-center justify-center w-12 h-12 rounded-lg shrink-0 ${objective.color} ${objective.bgGlow}`}>
+                                <span className="material-symbols-outlined text-2xl">{objective.icon}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-[#111827] text-lg font-bold mb-2">{objective.title}</h3>
+                                <p className="text-[#374151] text-sm leading-relaxed">{objective.description}</p>
                             </div>
                         </div>
                     ))}
@@ -228,30 +227,29 @@ const AboutUsSection = () => {
                     }`}
             >
                 <div className="flex flex-col gap-2">
-                    <h2 className="text-gray-900 text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
+                    <h2 className="text-[#111827] text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
                         Our Core Values
                     </h2>
-                    <p className="text-gray-600 text-base font-normal leading-normal">
+                    <p className="text-[#374151] text-base font-normal leading-normal">
                         The principles that guide everything we do.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {values.map((value, index) => (
                         <div
                             key={index}
-                            className={`bg-white border border-reptilez-green-200 rounded-xl p-6 backdrop-blur-sm hover:border-reptilez-green-400 transition-all duration-300 ${visibleSections['about-val'] ? 'animate-fadeInUp' : 'opacity-0'
+                            data-animate-about
+                            className={`flex items-start gap-4 py-4 ${visibleSections['about-val'] ? 'animate-fadeInUp opacity-100' : 'opacity-0'
                                 }`}
                             style={{ animationDelay: `${index * 150}ms` }}
                         >
-                            <div className="flex items-start gap-4">
-                                <div className={`flex items-center justify-center w-14 h-14 rounded-xl bg-reptilez-green-50 border border-reptilez-green-300 ${value.color}`}>
-                                    <span className="material-symbols-outlined text-2xl">{value.icon}</span>
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-gray-900 text-xl font-bold mb-2">{value.title}</h3>
-                                    <p className="text-gray-600 text-sm leading-relaxed">{value.description}</p>
-                                </div>
+                            <div className={`flex items-center justify-center w-12 h-12 rounded-lg shrink-0 bg-reptilez-green-50 ${value.color}`}>
+                                <span className="material-symbols-outlined text-2xl">{value.icon}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-[#111827] text-lg font-bold mb-2">{value.title}</h3>
+                                <p className="text-[#374151] text-sm leading-relaxed">{value.description}</p>
                             </div>
                         </div>
                     ))}

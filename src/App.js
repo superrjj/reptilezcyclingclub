@@ -36,7 +36,7 @@ const MainLayout = ({ children, onLongPressTitle, loginOpen, setLoginOpen }) => 
 
   return (
     <div
-      className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-reptilez-white-50 via-reptilez-white-100 to-reptilez-green-50"
+      className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-[#FAFAFA]"
       style={{
         backgroundAttachment: 'fixed',
       }}
