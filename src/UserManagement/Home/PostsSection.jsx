@@ -7,7 +7,7 @@ const fallbackPosts = [
         id: 'demo-1',
         title: 'RCC Recruitment',
         content: 'Halina\'t sumali sa team at sabayan kami sa aming mga weekend long rides at races.',
-        category: 'Announcements',
+        category: 'Announcement',
         status: 'Published',
         featured_image: '/latest_post.jpg',
         created_at: '2025-12-01T00:00:00.000Z',
@@ -24,7 +24,7 @@ const fallbackPosts = [
 ];
 
 const categoryThemes = {
-    Announcements: {
+    Announcement: {
         badge: 'bg-reptilez-green-100 text-reptilez-green-700 border border-reptilez-green-300',
     },
     'Race Reports': {

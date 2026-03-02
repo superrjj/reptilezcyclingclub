@@ -14,8 +14,8 @@ const Posts = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingPost, setEditingPost] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [mediaPreviews, setMediaPreviews] = useState([]);
+  const [mediaItems, setMediaItems] = useState([]);
+  const [draggingMediaId, setDraggingMediaId] = useState(null);
   const fileInputRef = useRef(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [authorProfiles, setAuthorProfiles] = useState({});
@@ -28,7 +28,7 @@ const Posts = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    category: 'Announcements',
+    category: 'Announcement',
     featured_image: '',
     media: [],
     status: 'Draft'
@@ -109,7 +109,16 @@ const Posts = () => {
   const handleStatusToggle = (e) => { setFormData(prev => ({ ...prev, status: e.target.checked ? 'Published' : 'Draft' })); };
   const showToast = (type, message) => { setToast({ visible: true, type, message }); setTimeout(() => { setToast((prev) => ({ ...prev, visible: false })); }, 3000); };
 
-  const handleMediaFiles = (files) => {
+  const makeMediaId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+  const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = (err) => reject(err);
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
+
+  const handleMediaFiles = async (files) => {
     if (!files || files.length === 0) return;
     const validFiles = Array.from(files).filter(file => {
       const isImage = file.type.startsWith('image/');
@@ -120,55 +129,88 @@ const Posts = () => {
       return true;
     });
     if (validFiles.length === 0) return;
-    setSelectedFiles(prev => [...prev, ...validFiles]);
-    validFiles.forEach(file => {
-      const reader = new FileReader();
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
-        showToast('error', `Error reading ${file.name}. Please try again.`);
-      };
-      reader.onloadend = () => {
-        if (reader.result) {
+    try {
+      const newItems = await Promise.all(validFiles.map(async (file) => {
+        try {
+          const url = await readFileAsDataUrl(file);
           const type = file.type.startsWith('video/') ? 'video' : 'image';
-          setMediaPreviews(prev => [...prev, { url: reader.result, type, file }]);
+          if (!url) return null;
+          return { id: makeMediaId(), url, type, file, name: file.name };
+        } catch (error) {
+          console.error('Error reading file:', error);
+          showToast('error', `Error reading ${file.name}. Please try again.`);
+          return null;
         }
-      };
-      reader.readAsDataURL(file);
+      }));
+      setMediaItems(prev => [...prev, ...newItems.filter(Boolean)]);
+    } catch (error) {
+      console.error('Unexpected error preparing media previews:', error);
+      showToast('error', 'Unable to add media. Please try again.');
+    }
+  };
+
+  const handleMediaUpload = async (e) => { const files = Array.from(e.target.files); await handleMediaFiles(files); };
+  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); };
+  const handleDrop = async (e) => { e.preventDefault(); e.stopPropagation(); const files = Array.from(e.dataTransfer.files); await handleMediaFiles(files); };
+
+  const removeMediaById = (id) => {
+    setMediaItems(prev => prev.filter((m) => m.id !== id));
+  };
+
+  const clearAllMedia = () => {
+    setMediaItems([]);
+    setFormData(prev => ({ ...prev, featured_image: '', media: [] }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const reorderMedia = (fromId, toId) => {
+    if (!fromId || !toId || fromId === toId) return;
+    setMediaItems((prev) => {
+      const fromIndex = prev.findIndex((m) => m.id === fromId);
+      const toIndex = prev.findIndex((m) => m.id === toId);
+      if (fromIndex < 0 || toIndex < 0) return prev;
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
     });
   };
 
-  const handleMediaUpload = async (e) => { const files = Array.from(e.target.files); handleMediaFiles(files); };
-  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); };
-  const handleDrop = (e) => { e.preventDefault(); e.stopPropagation(); const files = Array.from(e.dataTransfer.files); handleMediaFiles(files); };
-  const removeMedia = (index) => { setSelectedFiles(prev => prev.filter((_, i) => i !== index)); setMediaPreviews(prev => prev.filter((_, i) => i !== index)); };
-  const clearAllMedia = () => { setSelectedFiles([]); setMediaPreviews([]); setFormData(prev => ({ ...prev, featured_image: '', media: [] })); if (fileInputRef.current) { fileInputRef.current.value = ''; } };
+  const setAsCover = (id) => {
+    setMediaItems((prev) => {
+      const idx = prev.findIndex((m) => m.id === id);
+      if (idx < 0) return prev;
+      const item = prev[idx];
+      if (item.type !== 'image') return prev;
+      const next = [...prev];
+      next.splice(idx, 1);
+      next.unshift(item);
+      return next;
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
     try {
-      let mediaArray = formData.media || [];
-      if (selectedFiles.length > 0) {
-        const uploadPromises = selectedFiles.map(async (file) => {
-          try {
-            const url = await uploadImage(file, 'posts');
-            const type = file.type.startsWith('video/') ? 'video' : 'image';
-            return { url, type };
-          } catch (uploadError) {
-            console.error('Error uploading media, using base64 fallback:', uploadError);
-            const preview = mediaPreviews.find(p => p.file === file);
-            if (preview) {
-              const type = file.type.startsWith('video/') ? 'video' : 'image';
-              return { url: preview.url, type };
-            }
-            return null;
-          }
-        });
-        const uploadedMedia = await Promise.all(uploadPromises);
-        mediaArray = [...mediaArray, ...uploadedMedia.filter(Boolean)];
-      }
+      const uploadPromises = mediaItems.map(async (item) => {
+        if (!item) return null;
+        if (!item.file) {
+          return { url: item.url, type: item.type };
+        }
+        try {
+          const url = await uploadImage(item.file, 'posts');
+          return { url, type: item.type };
+        } catch (uploadError) {
+          console.error('Error uploading media, using base64 fallback:', uploadError);
+          return { url: item.url, type: item.type };
+        }
+      });
+      const mediaArray = (await Promise.all(uploadPromises)).filter(Boolean);
       const firstImage = mediaArray.find(m => m.type === 'image');
-      const featuredImage = firstImage ? firstImage.url : (formData.featured_image || '');
+      const featuredImage = firstImage ? firstImage.url : '';
       const authorId = user?.id && user.id !== 'admin' ? user.id : null;
       const postData = { ...formData, featured_image: featuredImage, media: mediaArray, author_id: authorId };
       if (editingPost) {
@@ -192,9 +234,33 @@ const Posts = () => {
   const handleEdit = (post) => {
     setEditingPost(post);
     const media = post.media || (post.featured_image ? [{ url: post.featured_image, type: 'image' }] : []);
-    setFormData({ title: post.title || '', content: post.content || '', category: post.category || 'Announcements', featured_image: post.featured_image || '', media: media, status: post.status || 'Draft' });
-    setMediaPreviews(media.map(m => ({ url: m.url, type: m.type })));
-    setSelectedFiles([]);
+    setFormData({
+      title: post.title || '',
+      content: post.content || '',
+      category: post.category || 'Announcement',
+      featured_image: post.featured_image || '',
+      media,
+      status: post.status || 'Draft'
+    });
+    let items = (Array.isArray(media) ? media : [])
+      .map((m, idx) => ({
+        id: `existing-${post.id}-${idx}`,
+        url: m.url,
+        type: m.type || 'image',
+      }))
+      .filter((m) => m.url);
+    if (post.featured_image) {
+      const matchIndex = items.findIndex((m) => m.type === 'image' && m.url === post.featured_image);
+      if (matchIndex > 0) {
+        const next = [...items];
+        const [matched] = next.splice(matchIndex, 1);
+        next.unshift(matched);
+        items = next;
+      } else if (matchIndex === -1) {
+        items.unshift({ id: `existing-cover-${post.id}`, url: post.featured_image, type: 'image' });
+      }
+    }
+    setMediaItems(items);
     setShowModal(true);
   };
 
@@ -212,10 +278,9 @@ const Posts = () => {
   };
 
   const resetForm = () => {
-    setFormData({ title: '', content: '', category: 'Announcements', featured_image: '', media: [], status: 'Draft' });
+    setFormData({ title: '', content: '', category: 'Announcement', featured_image: '', media: [], status: 'Draft' });
     setEditingPost(null);
-    setSelectedFiles([]);
-    setMediaPreviews([]);
+    setMediaItems([]);
     if (fileInputRef.current) { fileInputRef.current.value = ''; }
   };
 
@@ -233,6 +298,42 @@ const Posts = () => {
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
+  // Helpers to mirror public PostsSection card behavior
+  const categoryThemes = {
+    Announcement: {
+      badge: 'bg-reptilez-green-100 text-reptilez-green-700 border border-reptilez-green-300',
+    },
+    'Race Reports': {
+      badge: 'bg-red-100 text-red-700 border border-red-300',
+    },
+    default: {
+      badge: 'bg-reptilez-green-100 text-reptilez-green-700 border border-reptilez-green-300',
+    },
+  };
+
+  const getCategoryTheme = (category) => {
+    if (!category) return categoryThemes.default;
+    return categoryThemes[category] || categoryThemes.default;
+  };
+
+  const getPostMedia = (post) => {
+    if (post.media && Array.isArray(post.media) && post.media.length > 0) {
+      return post.media;
+    }
+    if (post.featured_image) {
+      return [{ url: post.featured_image, type: 'image' }];
+    }
+    return [];
+  };
+
+  const getCoverImage = (post) => {
+    const media = getPostMedia(post);
+    const firstImage = media.find(m => m.type === 'image');
+    return firstImage ? firstImage.url : null;
+  };
+
+  const MAX_PREVIEW = 120;
+
   return (
     <AdminLayout>
       <style jsx>{`
@@ -244,7 +345,7 @@ const Posts = () => {
           scrollbar-width: none;
         }
       `}</style>
-      <main className="relative flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-4 md:p-8">
+      <main className="relative flex-1 overflow-y-auto bg-white p-4 md:p-8">
         {deleteTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm">
             <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-background-dark/95 px-6 py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
@@ -290,15 +391,79 @@ const Posts = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-300 mb-2">Media</label>
-                  {(mediaPreviews.length > 0 || (formData.media && formData.media.length > 0)) ? (
+                  {mediaItems.length > 0 ? (
                     <div className="space-y-3">
+                      <div className="rounded-lg border border-gray-700 bg-gray-800/40 px-3 py-2 text-xs text-gray-300">
+                        Drag/long-press to reorder. The <span className="font-bold text-white">first image</span> will be the card background (cover).
+                      </div>
                       <div className="grid grid-cols-3 gap-3">
-                        {(mediaPreviews.length > 0 ? mediaPreviews : formData.media).map((preview, index) => (
-                          <div key={index} className="relative group">
-                            {preview.type === 'video' ? <video src={preview.url} className="h-32 w-full object-cover rounded-lg border border-gray-700" /> : <img src={preview.url} alt="Media preview" className="h-32 w-full object-cover rounded-lg border border-gray-700" />}
-                            <button type="button" onClick={() => removeMedia(index)} className="absolute right-2 top-2 rounded-full bg-red-500 p-1.5 text-white opacity-0 group-hover:opacity-100"><span className="material-symbols-outlined text-sm">close</span></button>
+                        {mediaItems.map((item) => {
+                          const coverId = mediaItems.find(m => m.type === 'image')?.id;
+                          const isCover = item.type === 'image' && item.id === coverId;
+                          return (
+                            <div
+                              key={item.id}
+                              className="relative group"
+                              draggable
+                              onDragStart={(e) => {
+                                setDraggingMediaId(item.id);
+                                e.dataTransfer.effectAllowed = 'move';
+                              }}
+                              onDragOver={(e) => {
+                                e.preventDefault();
+                                e.dataTransfer.dropEffect = 'move';
+                              }}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                reorderMedia(draggingMediaId, item.id);
+                                setDraggingMediaId(null);
+                              }}
+                              onDragEnd={() => setDraggingMediaId(null)}
+                            >
+                              {item.type === 'video'
+                                ? <video src={item.url} className="h-32 w-full object-cover rounded-lg border border-gray-700" />
+                                : <img src={item.url} alt={item.name || 'Media preview'} className="h-32 w-full object-cover rounded-lg border border-gray-700" />
+                              }
+
+                              {/* Drag handle */}
+                              <div className="absolute left-2 top-2 rounded-full bg-black/55 px-2 py-1 text-white text-xs flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                                <span className="material-symbols-outlined text-sm">drag_indicator</span>
+                                Drag
+                              </div>
+
+                              {/* Cover badge */}
+                              {isCover && (
+                                <div className="absolute left-2 bottom-2 rounded-full bg-primary/90 px-2.5 py-1 text-[11px] font-bold text-gray-900">
+                                  Cover
+                                </div>
+                              )}
+
+                              {/* Actions */}
+                              <div className="absolute right-2 top-2 flex flex-col gap-2">
+                                {item.type === 'image' && !isCover && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setAsCover(item.id)}
+                                    className="rounded-full bg-white/90 p-1.5 text-gray-900 opacity-0 group-hover:opacity-100 hover:bg-white"
+                                    aria-label="Set as cover"
+                                    title="Set as cover"
+                                  >
+                                    <span className="material-symbols-outlined text-sm">photo</span>
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => removeMediaById(item.id)}
+                                  className="rounded-full bg-red-500 p-1.5 text-white opacity-0 group-hover:opacity-100 hover:bg-red-600"
+                                  aria-label="Remove media"
+                                  title="Remove"
+                                >
+                                  <span className="material-symbols-outlined text-sm">close</span>
+                                </button>
+                              </div>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                       <button type="button" onClick={clearAllMedia} className="text-sm text-red-400">Clear all</button>
                     </div>
@@ -316,10 +481,14 @@ const Posts = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs sm:text-sm font-semibold text-gray-300 mb-2">Category</label>
-                    <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-white" name="category" value={formData.category} onChange={handleInputChange}>
-                      <option>Announcements</option>
-                      <option>Events</option>
-                      <option>News</option>
+                    <select
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-white"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                    >
+                      <option value="Announcement">Announcement</option>
+                      <option value="Race Reports">Race Reports</option>
                     </select>
                   </div>
                   <div>
@@ -352,11 +521,11 @@ const Posts = () => {
           </div>
         )}
 
-        <div className="mx-auto max-w-4xl space-y-6">
+        <div className="mx-auto max-w-6xl space-y-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-black text-white">Posts Management</h1>
-              <p className="text-gray-400 mt-1">Create and manage announcements</p>
+              <h1 className="text-3xl font-black text-gray-900">Posts Management</h1>
+              <p className="text-gray-500 mt-1">Create and manage announcements and race reports</p>
             </div>
             <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-primary hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-primary/30">
               <span className="material-symbols-outlined">add</span>Create Post
@@ -365,85 +534,146 @@ const Posts = () => {
 
           <div className="relative">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
-            <input className="w-full pl-12 pr-4 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary py-3 text-white placeholder-gray-400" placeholder="Search posts..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            <input
+              className="w-full pl-12 pr-4 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary py-3 text-gray-900 placeholder-gray-500"
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
           {loading ? (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((s) => (
-                <div key={s} className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 space-y-4">
-                  <div className="flex gap-3">
-                    <div className="size-12 rounded-full shimmer-bg" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 w-32 rounded-full shimmer-bg" />
-                      <div className="h-3 w-24 rounded-full shimmer-bg" />
-                    </div>
+                <div key={s} className="bg-white border border-reptilez-green-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="h-52 shimmer-bg" />
+                  <div className="p-5 space-y-3">
+                    <div className="h-4 w-20 rounded-full shimmer-bg" />
+                    <div className="h-5 w-3/4 rounded-full shimmer-bg" />
+                    <div className="h-3 w-full rounded-full shimmer-bg" />
+                    <div className="h-3 w-5/6 rounded-full shimmer-bg" />
                   </div>
-                  <div className="h-48 w-full rounded-lg shimmer-bg" />
                 </div>
               ))}
             </div>
           ) : posts.length === 0 ? (
-            <div className="py-20 text-center">
-              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"><span className="material-symbols-outlined text-primary text-4xl">post_add</span></div>
-              <p className="text-gray-400 text-lg font-semibold">No posts yet</p>
+            <div className="py-20 text-center bg-white rounded-xl border border-reptilez-green-100">
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-primary text-4xl">post_add</span>
+              </div>
+              <p className="text-gray-700 text-lg font-semibold">No posts yet</p>
               <p className="text-gray-500 text-sm mt-1">Create your first post</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {posts.map((post) => (
-                <article key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex gap-3">
-                        <img className="h-10 w-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXt23xlpLChR-wdeFdGq9v8UFYq9UyGOM3nv5SOGrJzRXtbjWheLP6RwBXXYSp79k3G25giEzhJYchikYxDeIgCNe_JFD0XZIqcmMbhWTKXtr8AGIWo_jgfyL_zG6-lWwZFTNY60dX8TB8k2e2t1yiXtZK5krAJiOtGYc9Ot85xhj5UcRa7v9HElNACJkxNaZmPhr5T6G0FoUvs3_3rgsp9ARhcz153hSZG_KmsyFKbahYGZAUqfUvctYXnap2ZbRQcK7KqdddvE" alt="Author" />
-                        <div>
-                          <p className="font-semibold text-gray-900">{post.author_id ? (authorProfiles[post.author_id] || 'Admin') : 'Admin'}</p>
-                          <p className="text-xs text-gray-500">{formatDate(post.created_at)}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {posts.map((post) => {
+                const coverImage = getCoverImage(post);
+                const media = getPostMedia(post);
+                const mediaImageCount = media.filter(m => m.type === 'image').length;
+                const content = post.content || '';
+                const isExpanded = expandedAdminPosts[post.id];
+                const truncated = content.length > MAX_PREVIEW && !isExpanded
+                  ? `${content.substring(0, MAX_PREVIEW)}...`
+                  : content;
+
+                return (
+                  <article
+                    key={post.id}
+                    className="bg-white border border-reptilez-green-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-reptilez-green-400 transition-all duration-300 flex flex-col"
+                  >
+                    {/* Cover Image + Category */}
+                    <div className="relative h-52 bg-gradient-to-br from-reptilez-green-50 to-reptilez-green-100 overflow-hidden">
+                      {coverImage ? (
+                        <img
+                          src={coverImage}
+                          alt={post.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="material-symbols-outlined text-6xl text-reptilez-green-300">article</span>
+                        </div>
+                      )}
+                      {mediaImageCount > 1 && (
+                        <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-semibold backdrop-blur-sm">
+                          <span className="material-symbols-outlined text-sm">photo_library</span>
+                          {mediaImageCount}
+                        </div>
+                      )}
+                      <div className="absolute bottom-3 left-3 flex gap-2 items-center">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${getCategoryTheme(post.category).badge} backdrop-blur-sm`}
+                        >
+                          {post.category || 'Announcement'}
+                        </span>
+                        <span className="rounded-full px-3 py-1 text-xs font-semibold bg-white/90 text-gray-700 border border-gray-200">
+                          {post.status || 'Draft'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="p-5 flex flex-col flex-1 gap-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="flex items-center justify-center rounded-full bg-reptilez-green-100 text-reptilez-green-700 size-8 text-xs font-bold flex-shrink-0">
+                            {((authorProfiles[post.author_id] || 'A') || 'A').charAt(0)}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-800 truncate">
+                              {post.author_id ? (authorProfiles[post.author_id] || 'Admin') : 'Admin'}
+                            </p>
+                            <p className="text-[11px] text-gray-500">{formatDate(post.created_at)}</p>
+                          </div>
                         </div>
                       </div>
-                      <span className="bg-reptilez-green-100 text-reptilez-green-700 text-xs font-semibold px-2 py-1 rounded-full">{post.status}</span>
+
+                      <h3 className="text-gray-900 text-lg font-bold leading-snug line-clamp-2">
+                        {post.title}
+                      </h3>
+
+                      <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line flex-1">
+                        {truncated}
+                      </p>
+
+                      {content.length > MAX_PREVIEW && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedAdminPosts(prev => ({ ...prev, [post.id]: !prev[post.id] }))
+                          }
+                          className="mt-1 text-xs font-semibold text-reptilez-green-600 hover:text-reptilez-green-700 self-start"
+                        >
+                          {isExpanded ? 'See less' : 'See more'}
+                        </button>
+                      )}
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">{post.title}</h3>
-                    <p className="whitespace-pre-line text-gray-700 text-sm">
-                      {(() => {
-                        const content = post.content || '';
-                        const isExpanded = expandedAdminPosts[post.id];
-                        if (content.length > 160 && !isExpanded) return `${content.substring(0, 160)}...`;
-                        return content;
-                      })()}
-                    </p>
-                    {(post.content || '').length > 160 && (
-                      <button className="mt-1 text-sm font-semibold text-reptilez-green-600 hover:text-reptilez-green-700" onClick={() => setExpandedAdminPosts(prev => ({ ...prev, [post.id]: !prev[post.id] }))}>
-                        {expandedAdminPosts[post.id] ? 'See less' : 'See more'}
-                      </button>
-                    )}
-                  </div>
-                  {(() => {
-                    const media = post.media?.length > 0 ? post.media : (post.featured_image ? [{ url: post.featured_image, type: 'image' }] : []);
-                    if (media.length === 0) return null;
-                    if (media.length === 1) {
-                      return media[0].type === 'video' ? <video className="w-full h-64 object-cover" src={media[0].url} controls /> : <img className="w-full h-64 object-cover" src={media[0].url} alt="Post media" />;
-                    }
-                    return (
-                      <div className="grid grid-cols-2 gap-1 bg-gray-100 p-1">
-                        {media.slice(0, 4).map((item, i) => (
-                          <div key={i} className="relative">
-                            {item.type === 'video' ? <video className="w-full h-32 object-cover" src={item.url} controls /> : <img className="w-full h-32 object-cover" src={item.url} alt="Post media" />}
-                            {media.length > 4 && i === 3 && (
-                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center"><span className="text-white font-bold">+{media.length - 4}</span></div>
-                            )}
-                          </div>
-                        ))}
+
+                    {/* Actions */}
+                    <div className="border-t border-reptilez-green-100 px-4 py-3 flex items-center justify-between bg-reptilez-green-50/40">
+                      <span className="text-[11px] text-gray-600">
+                        Last updated: {formatDate(post.updated_at || post.created_at)}
+                      </span>
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => handleEdit(post)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-reptilez-green-700 bg-white hover:bg-reptilez-green-600 hover:text-white border border-reptilez-green-200 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(post)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-red-600 bg-white hover:bg-red-500 hover:text-white border border-red-200 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm">delete</span>
+                          Delete
+                        </button>
                       </div>
-                    );
-                  })()}
-                  <div className="p-6 flex justify-between border-t border-gray-800">
-                    <button onClick={() => handleEdit(post)} className="flex items-center gap-2 text-primary hover:text-green-700"><span className="material-symbols-outlined text-base">edit</span>Edit</button>
-                    <button onClick={() => setDeleteTarget(post)} className="flex items-center gap-2 text-red-500 hover:text-red-600"><span className="material-symbols-outlined text-base">delete</span>Delete</button>
-                  </div>
-                </article>
-              ))}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>

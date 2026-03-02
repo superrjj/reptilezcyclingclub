@@ -190,7 +190,7 @@ const Dashboard = () => {
 
   return (
     <AdminLayout>
-      <main className="flex-1 flex flex-col bg-black/20 h-full overflow-hidden">
+      <main className="flex-1 flex flex-col bg-white h-full overflow-hidden">
         <div className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
           {/* Stats Cards */}
@@ -202,7 +202,7 @@ const Dashboard = () => {
             ) : (
               <>
                 {/* Total Members */}
-                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-white border border-gray-200 hover:border-primary/40 transition-all duration-300 hover:shadow-md">
                   <div className="flex items-start justify-between mb-3 sm:mb-4">
                     <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
                       <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">people</span>
@@ -213,45 +213,45 @@ const Dashboard = () => {
                       </span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Total Members</p>
-                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.totalMembers.toLocaleString()}</p>
-                  <p className="text-primary/70 text-xs">Active club members</p>
+                  <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">Total Members</p>
+                  <p className="text-gray-900 text-2xl sm:text-3xl font-bold mb-1">{stats.totalMembers.toLocaleString()}</p>
+                  <p className="text-gray-500 text-xs">Active club members</p>
                 </div>
 
                 {/* Upcoming Events */}
-                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-white border border-gray-200 hover:border-primary/40 transition-all duration-300 hover:shadow-md">
                   <div className="flex items-start justify-between mb-3 sm:mb-4">
                     <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
                       <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">event</span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Upcoming Events</p>
-                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.upcomingEvents}</p>
-                  <p className="text-primary/70 text-xs">Scheduled events</p>
+                  <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">Upcoming Events</p>
+                  <p className="text-gray-900 text-2xl sm:text-3xl font-bold mb-1">{stats.upcomingEvents}</p>
+                  <p className="text-gray-500 text-xs">Scheduled events</p>
                 </div>
 
                 {/* Total Posts */}
-                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-white border border-gray-200 hover:border-primary/40 transition-all duration-300 hover:shadow-md">
                   <div className="flex items-start justify-between mb-3 sm:mb-4">
                     <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
                       <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">article</span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Total Posts</p>
-                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.totalPosts.toLocaleString()}</p>
-                  <p className="text-primary/70 text-xs">Published posts</p>
+                  <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">Total Posts</p>
+                  <p className="text-gray-900 text-2xl sm:text-3xl font-bold mb-1">{stats.totalPosts.toLocaleString()}</p>
+                  <p className="text-gray-500 text-xs">Published posts</p>
                 </div>
 
                 {/* Total Events */}
-                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                <div className="group relative overflow-hidden rounded-xl p-4 sm:p-6 bg-white border border-gray-200 hover:border-primary/40 transition-all duration-300 hover:shadow-md">
                   <div className="flex items-start justify-between mb-3 sm:mb-4">
                     <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 border border-primary/30">
                       <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">calendar_month</span>
                     </div>
                   </div>
-                  <p className="text-white/70 text-xs sm:text-sm font-medium mb-1">Total Events</p>
-                  <p className="text-white text-2xl sm:text-3xl font-bold mb-1">{stats.totalEvents.toLocaleString()}</p>
-                  <p className="text-primary/70 text-xs">All time events</p>
+                  <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">Total Events</p>
+                  <p className="text-gray-900 text-2xl sm:text-3xl font-bold mb-1">{stats.totalEvents.toLocaleString()}</p>
+                  <p className="text-gray-500 text-xs">All time events</p>
                 </div>
               </>
             )}
@@ -263,14 +263,14 @@ const Dashboard = () => {
             {loading ? (
               <div className="xl:col-span-2 rounded-xl shimmer-bg h-80" />
             ) : (
-              <div className="flex flex-col gap-3 sm:gap-4 rounded-xl border border-primary/30 p-4 sm:p-6 xl:col-span-2 bg-gradient-to-br from-background-dark to-background-dark/80">
+              <div className="flex flex-col gap-3 sm:gap-4 rounded-xl border border-gray-200 p-4 sm:p-6 xl:col-span-2 bg-white shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-white text-base sm:text-lg font-semibold mb-1">Member Growth</p>
+                    <p className="text-gray-900 text-base sm:text-lg font-semibold mb-1">Member Growth</p>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-white text-2xl sm:text-3xl font-bold">{stats.totalMembers.toLocaleString()}</p>
+                      <p className="text-gray-900 text-2xl sm:text-3xl font-bold">{stats.totalMembers.toLocaleString()}</p>
                       {memberGrowthPercent !== 0 && (
-                        <p className={`text-xs sm:text-sm font-medium ${memberGrowthPercent > 0 ? 'text-primary' : 'text-red-400'}`}>
+                        <p className={`text-xs sm:text-sm font-medium ${memberGrowthPercent > 0 ? 'text-primary' : 'text-red-500'}`}>
                           {memberGrowthPercent > 0 ? '+' : ''}{memberGrowthPercent}%
                         </p>
                       )}
@@ -280,7 +280,7 @@ const Dashboard = () => {
                     <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">trending_up</span>
                   </div>
                 </div>
-                <p className="text-primary/70 text-xs sm:text-sm mb-3 sm:mb-4">Last 6 months</p>
+                <p className="text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4">Last 6 months</p>
                 
                 <div className="flex-1 min-h-[200px] relative">
                   {memberGrowth.length > 0 ? (
@@ -338,7 +338,7 @@ const Dashboard = () => {
                       })}
                     </svg>
                   ) : (
-                    <div className="flex items-center justify-center h-full text-white/40">
+                    <div className="flex items-center justify-center h-full text-gray-500">
                       <p>No data available</p>
                     </div>
                   )}
@@ -347,7 +347,7 @@ const Dashboard = () => {
                   {memberGrowth.length > 0 && (
                     <div className="flex justify-between mt-2">
                       {memberGrowth.map((data, index) => (
-                        <p key={index} className="text-primary/70 text-xs font-medium">
+                        <p key={index} className="text-gray-500 text-xs font-medium">
                           {data.month}
                         </p>
                       ))}
@@ -361,9 +361,9 @@ const Dashboard = () => {
             {loading ? (
               <div className="rounded-xl shimmer-bg h-80" />
             ) : (
-              <div className="flex flex-col gap-3 sm:gap-4 rounded-xl border border-primary/30 p-4 sm:p-6 bg-gradient-to-br from-background-dark to-background-dark/80">
+              <div className="flex flex-col gap-3 sm:gap-4 rounded-xl border border-gray-200 p-4 sm:p-6 bg-white shadow-sm">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-white text-base sm:text-lg font-semibold">Recent Activity</h3>
+                  <h3 className="text-gray-900 text-base sm:text-lg font-semibold">Recent Activity</h3>
                   <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
                     <span className="material-symbols-outlined text-primary text-lg sm:text-xl">notifications</span>
                   </div>
@@ -374,7 +374,7 @@ const Dashboard = () => {
                     recentActivities.map((activity, index) => (
                       <div 
                         key={`${activity.type}-${activity.id}-${index}`} 
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors group w-full"
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group w-full"
                       >
                         <div className="flex-shrink-0">
                           {activity.image ? (
@@ -392,17 +392,17 @@ const Dashboard = () => {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm font-medium leading-tight truncate group-hover:text-primary transition-colors">
+                          <p className="text-gray-900 text-sm font-medium leading-tight truncate group-hover:text-primary transition-colors">
                             {activity.title}
                           </p>
-                          <p className="text-white/50 text-xs mt-1">{formatTimeAgo(activity.time)}</p>
+                          <p className="text-gray-500 text-xs mt-1">{formatTimeAgo(activity.time)}</p>
                         </div>
                       </div>
                     ))
                   ) : (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <span className="material-symbols-outlined text-white/20 text-5xl mb-2">inbox</span>
-                      <p className="text-white/40 text-sm">No recent activity</p>
+                      <span className="material-symbols-outlined text-gray-300 text-5xl mb-2">inbox</span>
+                      <p className="text-gray-500 text-sm">No recent activity</p>
                     </div>
                   )}
                 </div>

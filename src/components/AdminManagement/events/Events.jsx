@@ -325,8 +325,8 @@ const Events = () => {
         <div
             className={`fixed right-4 md:right-6 top-20 z-50 flex items-center gap-3 rounded-lg border px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm font-semibold shadow-lg ${
             toast.type === 'success'
-              ? 'border-green-400/60 bg-green-500/10 text-green-700 dark:text-green-200'
-              : 'border-red-400/60 bg-red-500/10 text-red-700 dark:text-red-200'
+              ? 'border-green-400/60 bg-green-500/10 text-green-700'
+              : 'border-red-400/60 bg-red-500/10 text-red-700'
           }`}
         >
           <span className="material-symbols-outlined text-xl">
@@ -336,18 +336,18 @@ const Events = () => {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col bg-background-light dark:bg-background-dark h-full overflow-hidden">
+      <main className="flex-1 flex flex-col bg-white h-full overflow-hidden">
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
             {/* Sticky Header */}
-            <div className="sticky top-0 z-10 bg-background-light dark:bg-background-dark pb-4 md:pb-6 mb-4 md:mb-6 border-b border-gray-200 dark:border-gray-800">
+            <div className="sticky top-0 z-10 bg-white pb-4 md:pb-6 mb-4 md:mb-6 border-b border-gray-200">
               <div className="flex flex-col sm:flex-row sm:flex-wrap sm:justify-between items-start sm:items-center gap-3 md:gap-4">
-                <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em]">Event Management</h1>
+                <h1 className="text-gray-900 text-2xl md:text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em]">Event Management</h1>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full sm:w-auto">
                   <div className="relative w-full sm:w-48 md:w-64">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">search</span>
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
                     <input
-                      className="w-full h-10 px-10 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm focus:ring-primary focus:border-primary"
+                      className="w-full h-10 px-10 bg-gray-100 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 text-sm focus:ring-primary focus:border-primary"
                       placeholder="Search events..."
                       type="text"
                       value={searchQuery}
@@ -356,7 +356,7 @@ const Events = () => {
                   </div>
                   <button
                     onClick={() => setDialogOpen(true)}
-                    className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-gray-900 dark:text-[#1e2210] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-green-600 transition-colors"
+                    className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-green-600 transition-colors"
                   >
                     <span className="truncate">Add New Event</span>
                   </button>
@@ -365,13 +365,13 @@ const Events = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="flex flex-col gap-2 rounded-xl p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50">
-                <p className="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Total Events</p>
-                <p className="text-gray-900 dark:text-white tracking-light text-3xl font-bold leading-tight">{events.length}</p>
+              <div className="flex flex-col gap-2 rounded-xl p-6 border border-gray-200 bg-white shadow-sm">
+                <p className="text-gray-600 text-base font-medium leading-normal">Total Events</p>
+                <p className="text-gray-900 tracking-light text-3xl font-bold leading-tight">{events.length}</p>
               </div>
-              <div className="flex flex-col gap-2 rounded-xl p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50">
-                <p className="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Upcoming Events</p>
-                <p className="text-gray-900 dark:text-white tracking-light text-3xl font-bold leading-tight">
+              <div className="flex flex-col gap-2 rounded-xl p-6 border border-gray-200 bg-white shadow-sm">
+                <p className="text-gray-600 text-base font-medium leading-normal">Upcoming Events</p>
+                <p className="text-gray-900 tracking-light text-3xl font-bold leading-tight">
                   {events.filter(e => isUpcoming(e.event_date)).length}
                 </p>
               </div>
@@ -380,19 +380,19 @@ const Events = () => {
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((skeleton) => (
-                  <div key={skeleton} className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden flex flex-col">
-                    <div className="h-48 bg-gray-200 dark:bg-gray-700 shimmer-bg"></div>
+                  <div key={skeleton} className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                    <div className="h-48 bg-gray-200 shimmer-bg"></div>
                     <div className="p-4 space-y-3">
                       <div className="h-5 w-3/4 rounded-full shimmer-bg" />
                       <div className="h-4 w-1/2 rounded-full shimmer-bg" />
                       <div className="h-4 w-2/3 rounded-full shimmer-bg" />
                     </div>
-                    <div className="border-t border-gray-200 dark:border-gray-800 p-2 flex items-center justify-end">
+                    <div className="border-t border-gray-200 p-2 flex items-center justify-end">
                       <div className="flex gap-1">
-                        <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                        <div className="p-2 rounded-lg bg-gray-100">
                           <div className="w-5 h-5 rounded shimmer-bg" />
                         </div>
-                        <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                        <div className="p-2 rounded-lg bg-gray-100">
                           <div className="w-5 h-5 rounded shimmer-bg" />
                         </div>
                       </div>
@@ -401,7 +401,7 @@ const Events = () => {
                 ))}
               </div>
             ) : filteredEvents.length === 0 ? (
-              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+              <div className="text-center py-12 text-gray-500">
                 {searchQuery ? 'No events found matching your search.' : 'No events found.'}
               </div>
             ) : (
@@ -409,7 +409,7 @@ const Events = () => {
                 {filteredEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="bg-white dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow"
+                    className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow"
                   >
                     {/* Event Image */}
                     <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
@@ -435,7 +435,7 @@ const Events = () => {
 
                     {/* Event Details */}
                     <div className="flex-grow p-4 flex flex-col gap-3">
-                      <h3 className="text-gray-900 dark:text-white text-lg font-bold line-clamp-2">
+                      <h3 className="text-gray-900 text-lg font-bold line-clamp-2">
                         {event.title}
                       </h3>
                       
@@ -443,13 +443,13 @@ const Events = () => {
                         <div className="flex items-start gap-2">
                           <span className="material-symbols-outlined text-primary text-base mt-0.5">calendar_today</span>
                           <div className="flex-1">
-                            <p className="text-gray-600 dark:text-gray-400 font-medium">
+                            <p className="text-gray-600 font-medium">
                               {event.event_end_date
                                 ? `${formatDate(event.event_date)} - ${formatDate(event.event_end_date)}`
                                 : formatDate(event.event_date)}
                             </p>
                             {event.event_time && (
-                              <p className="text-gray-500 dark:text-gray-500 text-xs mt-0.5">
+                              <p className="text-gray-500 text-xs mt-0.5">
                                 Time: {formatTime(event.event_time)}
                               </p>
                             )}
@@ -458,31 +458,31 @@ const Events = () => {
                         
                         <div className="flex items-start gap-2">
                           <span className="material-symbols-outlined text-primary text-base mt-0.5">location_on</span>
-                          <p className="text-gray-600 dark:text-gray-400 flex-1">
+                          <p className="text-gray-600 flex-1">
                             {event.location}
                           </p>
                         </div>
                       </div>
 
                       {event.description && (
-                        <p className="text-gray-500 dark:text-gray-500 text-sm line-clamp-2 mt-1">
+                        <p className="text-gray-500 text-sm line-clamp-2 mt-1">
                           {event.description}
                         </p>
                       )}
                     </div>
 
                     {/* Actions */}
-                    <div className="border-t border-gray-200 dark:border-gray-800 p-2 flex items-center justify-end bg-white dark:bg-gray-900/60">
+                    <div className="border-t border-gray-200 p-2 flex items-center justify-end bg-white">
                       <div className="flex gap-1">
                         <button
                           onClick={() => handleEdit(event)}
-                          className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
                         >
                           <span className="material-symbols-outlined text-xl">edit</span>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(event)}
-                          className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="p-2 text-gray-500 hover:text-red-500 rounded-lg hover:bg-gray-100 transition-colors"
                         >
                           <span className="material-symbols-outlined text-xl">delete</span>
                         </button>
@@ -499,21 +499,21 @@ const Events = () => {
       {/* Add New Event Dialog */}
       {dialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-3 sm:px-4 py-3 sm:py-4">
-          <div className="w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 p-3 sm:p-4 md:p-6 shadow-[0_40px_140px_rgba(0,0,0,0.85)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl border border-gray-200 bg-white p-3 sm:p-4 md:p-6 shadow-[0_40px_140px_rgba(0,0,0,0.35)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <div className="flex items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-xs sm:text-sm font-medium text-primary mb-1">EVENT MANAGEMENT</p>
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-1 break-words">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-1 break-words">
                   {editingEvent ? 'Edit Event' : 'Add New Event'}
                 </h2>
-                <p className="text-white/60 text-xs sm:text-sm">
+                <p className="text-gray-500 text-xs sm:text-sm">
                   {editingEvent ? 'Update event information.' : 'Create a new cycling event for the club.'}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleCloseDialog}
-                className="text-white/60 hover:text-white transition-colors flex-shrink-0"
+                className="text-gray-500 hover:text-gray-900 transition-colors flex-shrink-0"
                 aria-label="Close dialog"
               >
                 <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
@@ -522,11 +522,11 @@ const Events = () => {
 
             <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="title">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor="title">
                   Event Title
                 </label>
                 <input
-                  className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-900 dark:text-white"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-md focus:ring-primary focus:border-primary px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-900"
                   id="title"
                   name="title"
                   placeholder="e.g., Larga Pilipinas"
@@ -539,11 +539,11 @@ const Events = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventDate">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="eventDate">
                     Start Date
                   </label>
                   <input
-                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900"
                     id="eventDate"
                     name="eventDate"
                     type="date"
@@ -554,11 +554,11 @@ const Events = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventEndDate">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="eventEndDate">
                     End Date (Optional)
                   </label>
                   <input
-                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900"
                     id="eventEndDate"
                     name="eventEndDate"
                     type="date"
@@ -571,11 +571,11 @@ const Events = () => {
 
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="eventTime">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="eventTime">
                     Event Time (Optional)
                   </label>
                   <input
-                    className={`w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white ${formData.isTimeTBA ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`w-full bg-gray-100 border border-gray-300 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 ${formData.isTimeTBA ? 'opacity-50 cursor-not-allowed' : ''}`}
                     id="eventTime"
                     name="eventTime"
                     type="time"
@@ -586,7 +586,7 @@ const Events = () => {
                   />
                 </div>
                 <div className="flex items-end">
-                  <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary transition-colors">
+                  <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700 cursor-pointer hover:text-primary transition-colors">
                     <div className="relative flex items-center">
                       <input
                         type="checkbox"
@@ -601,9 +601,9 @@ const Events = () => {
                         }
                       />
                       <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                        formData.isTimeTBA 
-                          ? 'bg-primary border-primary' 
-                          : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                        formData.isTimeTBA
+                          ? 'bg-primary border-primary'
+                          : 'bg-white border-gray-300'
                       }`}>
                         {formData.isTimeTBA && (
                           <span className="material-symbols-outlined text-white text-sm">check</span>
@@ -616,11 +616,11 @@ const Events = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="location">
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="location">
                   Location
                 </label>
                 <input
-                  className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900"
                   id="location"
                   name="location"
                   placeholder="e.g., Nampicuan, Nueva Ecija"
@@ -632,9 +632,9 @@ const Events = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Picture</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Event Picture</label>
                 {formData.picturePreview ? (
-                  <div className="relative mt-1 overflow-hidden rounded-md border border-gray-300 dark:border-gray-600">
+                  <div className="relative mt-1 overflow-hidden rounded-md border border-gray-300">
                     <img
                       src={formData.picturePreview}
                       alt="Preview"
@@ -650,15 +650,15 @@ const Events = () => {
                   </div>
                 ) : (
                   <div
-                    className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors"
+                    className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors"
                     onClick={() => document.getElementById('event-picture').click()}
                   >
                     <div className="space-y-1 text-center">
-                      <span className="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-500">upload_file</span>
-                      <div className="flex text-sm text-gray-600 dark:text-gray-400">
+                      <span className="material-symbols-outlined text-4xl text-gray-400">upload_file</span>
+                      <div className="flex text-sm text-gray-600">
                         <p>Click to upload or drag and drop</p>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-500">JPG/PNG, max 30MB</p>
+                      <p className="text-xs text-gray-500">JPG/PNG, max 30MB</p>
                     </div>
                   </div>
                 )}
@@ -672,11 +672,11 @@ const Events = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="description">
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="description">
                   Description (Optional)
                 </label>
                 <textarea
-                  className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 dark:text-white resize-none"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-md focus:ring-primary focus:border-primary px-4 py-2 text-gray-900 resize-none"
                   id="description"
                   name="description"
                   placeholder="Add event details, route information, or special notes..."
@@ -690,13 +690,13 @@ const Events = () => {
                 <button
                   type="button"
                   onClick={handleCloseDialog}
-                  className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-1 bg-gray-200 text-gray-900 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-primary text-gray-900 dark:text-[#1e2210] font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="flex-1 bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
                   disabled={uploading}
                 >
                   {uploading ? (

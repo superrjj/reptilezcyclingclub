@@ -184,18 +184,18 @@ const FileMaintenance = () => {
   };
 
   const ImageUploadSection = ({ type, title, description, images, fileInputRef }) => (
-    <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-4 sm:p-6">
+    <section className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
       <div className="mb-4 sm:mb-5">
         <p className="text-xs sm:text-sm font-medium text-primary mb-1">{title}</p>
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">{title} Management</h2>
-        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">{description}</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{title} Management</h2>
+        <p className="text-sm sm:text-base text-gray-500">{description}</p>
       </div>
 
       <form onSubmit={(e) => handleSubmit(e, type)} className="mb-4 sm:mb-6">
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{title} Image</label>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{title} Image</label>
           {imagePreviews[type] ? (
-            <div className="relative mt-1 overflow-hidden rounded-md border border-gray-300 dark:border-gray-600">
+            <div className="relative mt-1 overflow-hidden rounded-md border border-gray-300">
               <img
                 src={imagePreviews[type]}
                 alt="Preview"
@@ -212,7 +212,7 @@ const FileMaintenance = () => {
             </div>
           ) : (
             <div
-              className="mt-1 flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors"
+              className="mt-1 flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors"
               onClick={() => {
                 fileInputRef.current?.click();
               }}
@@ -220,11 +220,11 @@ const FileMaintenance = () => {
               onDrop={(e) => handleDrop(e, type)}
             >
               <div className="space-y-1 text-center">
-                <span className="material-symbols-outlined text-3xl sm:text-4xl text-gray-400 dark:text-gray-500">upload_file</span>
-                <div className="flex text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                <span className="material-symbols-outlined text-3xl sm:text-4xl text-gray-400">upload_file</span>
+                <div className="flex text-xs sm:text-sm text-gray-600">
                   <p>Drag & drop or tap to upload</p>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-500">JPG/PNG, max 30MB</p>
+                <p className="text-xs text-gray-500">JPG/PNG, max 30MB</p>
               </div>
             </div>
           )}
@@ -257,20 +257,20 @@ const FileMaintenance = () => {
       </form>
 
       <div>
-        <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">Existing {title} Images</p>
+        <p className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">Existing {title} Images</p>
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 sm:h-32 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shimmer-bg"></div>
+              <div key={i} className="h-24 sm:h-32 rounded-md bg-gray-100 border border-gray-200 shimmer-bg"></div>
             ))}
           </div>
         ) : images.length === 0 ? (
-          <div className="py-6 sm:py-8 text-center text-gray-500 dark:text-gray-400 text-xs sm:text-sm">No {title.toLowerCase()} images uploaded yet.</div>
+          <div className="py-6 sm:py-8 text-center text-gray-500 text-xs sm:text-sm">No {title.toLowerCase()} images uploaded yet.</div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {images.map((image) => (
               <div key={image.id} className="relative group">
-                <div className="overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 aspect-video">
+                <div className="overflow-hidden rounded-md border border-gray-200 aspect-video">
                   <img
                     src={image.image_url}
                     alt={title}
@@ -294,18 +294,18 @@ const FileMaintenance = () => {
 
   return (
     <AdminLayout>
-      <main className="relative flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-4 sm:p-6 md:p-8">
+      <main className="relative flex-1 overflow-y-auto bg-white p-4 sm:p-6 md:p-8">
         {/* Delete Confirmation Dialog */}
         {deleteTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-3 sm:px-4">
-            <div className="w-full max-w-sm rounded-xl sm:rounded-2xl border border-white/10 bg-background-dark/95 px-4 sm:px-6 py-5 sm:py-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.85)]">
+            <div className="w-full max-w-sm rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-4 sm:px-6 py-5 sm:py-6 text-gray-900 shadow-[0_30px_120px_rgba(0,0,0,0.35)]">
               <div className="flex items-start sm:items-center gap-3">
-                <div className="flex size-9 sm:size-10 items-center justify-center rounded-full bg-red-500/15 border border-red-400/60 text-red-400 flex-shrink-0">
+                <div className="flex size-9 sm:size-10 items-center justify-center rounded-full bg-red-50 border border-red-200 text-red-600 flex-shrink-0">
                   <span className="material-symbols-outlined text-xl sm:text-2xl">warning</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm sm:text-base font-semibold text-white">Delete image?</p>
-                  <p className="text-xs sm:text-sm text-white/60 mt-1">
+                  <p className="text-sm sm:text-base font-semibold text-gray-900">Delete image?</p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
                     This action cannot be undone. The image will be permanently removed.
                   </p>
                 </div>
@@ -314,7 +314,7 @@ const FileMaintenance = () => {
                 <button
                   type="button"
                   onClick={() => setDeleteTarget(null)}
-                  className="rounded-lg border border-white/20 px-4 py-2 text-white/80 hover:bg-white/5 transition-colors order-2 sm:order-1"
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors order-2 sm:order-1"
                 >
                   Cancel
                 </button>
@@ -335,8 +335,8 @@ const FileMaintenance = () => {
           <div
             className={`fixed right-3 sm:right-6 top-20 z-50 flex items-center gap-2 sm:gap-3 rounded-lg border px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold shadow-lg max-w-[calc(100vw-1.5rem)] ${
               toast.type === 'success'
-                ? 'border-green-400/60 bg-green-500/10 text-green-700 dark:text-green-200'
-                : 'border-red-400/60 bg-red-500/10 text-red-700 dark:text-red-200'
+                ? 'border-green-400/60 bg-green-500/10 text-green-700'
+                : 'border-red-400/60 bg-red-500/10 text-red-700'
             }`}
           >
             <span className="material-symbols-outlined text-lg sm:text-xl flex-shrink-0">
@@ -348,8 +348,8 @@ const FileMaintenance = () => {
 
         <div className="mx-auto max-w-6xl space-y-4 sm:space-y-6 px-4 sm:px-0">
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">File Maintenance</h1>
-            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">Upload and manage images for Hero and Gallery sections.</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">File Maintenance</h1>
+            <p className="text-sm sm:text-base text-gray-500 mt-1">Upload and manage images for Hero and Gallery sections.</p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

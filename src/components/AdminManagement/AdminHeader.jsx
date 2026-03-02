@@ -50,14 +50,14 @@ const AdminHeader = ({ mobileMenuOpen, setMobileMenuOpen, onLogout }) => {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200/70 dark:border-gray-800/70 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md px-4 py-3 shadow-sm">
+    <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200/70 bg-white/85 backdrop-blur-md px-4 py-3 shadow-sm">
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/15 text-primary border border-primary/30">
           <span className="material-symbols-outlined text-lg">account_circle</span>
         </div>
         <div className="flex flex-col">
-          <p className="text-xs uppercase tracking-[0.12em] text-gray-500 dark:text-gray-400 font-semibold">Logged in as</p>
-          <p className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
+          <p className="text-xs uppercase tracking-[0.12em] text-gray-500 font-semibold">Logged in as</p>
+          <p className="text-sm sm:text-base font-bold text-gray-900">
             {profileLoading ? 'Admin' : getDisplayName()}
           </p>
         </div>
@@ -67,7 +67,7 @@ const AdminHeader = ({ mobileMenuOpen, setMobileMenuOpen, onLogout }) => {
         <button
           type="button"
           onClick={() => setMobileMenuOpen((prev) => !prev)}
-          className="md:hidden inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="md:hidden inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
         >
           <span className="material-symbols-outlined text-base">{mobileMenuOpen ? 'close' : 'menu'}</span>
           Menu

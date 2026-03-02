@@ -82,7 +82,7 @@ const AdminLayout = ({ children }) => {
   }, [confirmLogoutOpen, logoutProcessing]);
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200">
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-white text-gray-800">
       {confirmLogoutOpen && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl px-3 sm:px-4 animate-[fadeIn_0.3s_ease-out]"
@@ -169,7 +169,7 @@ const AdminLayout = ({ children }) => {
         <button
           type="button"
           onClick={() => setMobileMenuOpen((prev) => !prev)}
-          className="fixed top-4 left-4 z-50 md:hidden rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="fixed top-4 left-4 z-50 md:hidden rounded-lg border border-gray-300 bg-white p-2 text-gray-700 hover:bg-gray-100 transition-colors"
           aria-label="Toggle navigation menu"
           aria-expanded={mobileMenuOpen}
         >
@@ -188,7 +188,7 @@ const AdminLayout = ({ children }) => {
         )}
 
         {/* SideNavBar */}
-        <aside className={`fixed md:static inset-y-0 left-0 z-40 w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-gray-200 dark:border-gray-800 h-full overflow-y-auto transform transition-transform duration-300 ease-in-out ${
+        <aside className={`fixed md:static inset-y-0 left-0 z-40 w-64 flex-shrink-0 bg-white border-r border-gray-200 h-full overflow-y-auto transform transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}>
           <div className="flex h-full flex-col justify-between p-4">
@@ -206,7 +206,7 @@ const AdminLayout = ({ children }) => {
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin') 
                       ? 'bg-primary text-white font-medium' 
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                      : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin"
                   onClick={(e) => { 
@@ -222,7 +222,7 @@ const AdminLayout = ({ children }) => {
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin/posts') 
                       ? 'bg-primary text-white font-medium' 
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                      : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/posts"
                   onClick={(e) => { 
@@ -238,7 +238,7 @@ const AdminLayout = ({ children }) => {
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin/events') 
                       ? 'bg-primary text-white font-medium' 
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                      : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/events"
                   onClick={(e) => { 
@@ -254,7 +254,7 @@ const AdminLayout = ({ children }) => {
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin/members') 
                       ? 'bg-primary text-white font-medium' 
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                      : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/members"
                   onClick={(e) => { 
@@ -270,7 +270,7 @@ const AdminLayout = ({ children }) => {
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive('/admin/file-maintenance') 
                       ? 'bg-primary text-white font-medium' 
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                      : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/file-maintenance"
                   onClick={(e) => { 
@@ -290,7 +290,7 @@ const AdminLayout = ({ children }) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col bg-background-light dark:bg-background-dark">
+        <main className="flex-1 flex flex-col bg-white">
           <AdminHeader
             mobileMenuOpen={mobileMenuOpen}
             setMobileMenuOpen={setMobileMenuOpen}
