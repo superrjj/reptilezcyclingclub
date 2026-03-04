@@ -138,7 +138,28 @@ const PostsSection = ({ refreshFunctionsRef }) => {
 
     const getPostMedia = (post) => {
         if (post.media && Array.isArray(post.media) && post.media.length > 0) {
-            return post.media;
+            return post.media
+                .map((m) => {
+                    if (!m) return null;
+                    const url = m.url || m.image_url || m.src || (typeof m === 'string' ? m : null);
+                    if (!url) return null;
+                    let type = m.type;
+                    if (!type && typeof url === 'string') {
+                        const lower = url.toLowerCase();
+                        if (/\.(mp4|mov|webm|mkv|avi)$/.test(lower)) {
+                            type = 'video';
+                        } else {
+                            type = 'image';
+                        }
+                    }
+                    if (type) {
+                        type = type.toLowerCase().includes('video') ? 'video' : 'image';
+                    } else {
+                        type = 'image';
+                    }
+                    return { url, type };
+                })
+                .filter(Boolean);
         }
         if (post.featured_image) {
             return [{ url: post.featured_image, type: 'image' }];
@@ -160,15 +181,15 @@ const PostsSection = ({ refreshFunctionsRef }) => {
     const handleNextMedia = () => {
         if (!selectedPost) return;
         const media = getPostMedia(selectedPost).filter(m => m.type === 'image');
-        if (currentMediaIndex < media.length - 1) {
-            setCurrentMediaIndex(prev => prev + 1);
-        }
+        if (media.length === 0) return;
+        setCurrentMediaIndex(prev => (prev + 1) % media.length);
     };
 
     const handlePrevMedia = () => {
-        if (currentMediaIndex > 0) {
-            setCurrentMediaIndex(prev => prev - 1);
-        }
+        if (!selectedPost) return;
+        const media = getPostMedia(selectedPost).filter(m => m.type === 'image');
+        if (media.length === 0) return;
+        setCurrentMediaIndex(prev => (prev - 1 + media.length) % media.length);
     };
 
     const MAX_PREVIEW = 120;

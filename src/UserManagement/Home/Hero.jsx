@@ -82,11 +82,11 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
       {heroImages.map((image, index) => (
         <div
           key={`${image}-${index}`}
-          className={`absolute inset-0 h-full w-full bg-cover bg-center bg-no-repeat transition-all duration-1000 ${index === currentIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-            }`}
+          className={`absolute inset-0 h-full w-full bg-cover bg-center bg-no-repeat transition-opacity duration-700 ${
+            index === currentIndex ? 'opacity-100' : 'opacity-0'
+          }`}
           style={{
             backgroundImage: `url("${image}")`,
-            transitionDelay: index === currentIndex ? '0ms' : '300ms'
           }}
         />
       ))}
