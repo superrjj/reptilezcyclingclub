@@ -31,12 +31,20 @@ const Footer = () => {
             alt="Drop & Roll logo"
             className="h-12 w-12 rounded-full object-contain bg-white/5"
           />
+
+          <img
+            src="/margin-logo.jpg"
+            alt="Margin Cycling"
+            className="h-12 w-12 rounded-full object-contain bg-white/5"
+          />
+
         </div>
+
 
         {/* Bottom row */}
         <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs md:text-sm text-white/70 text-center md:text-left">
-            © {new Date().getFullYear()} Reptilez Cycling Club. All Rights Reserved.
+            © {new Date().getFullYear()} D&amp;R Margin Racing. All Rights Reserved.
           </p>
 
           <div className="flex flex-col items-center gap-2">

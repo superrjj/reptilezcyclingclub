@@ -42,15 +42,15 @@ const MainLayout = ({ children, onLongPressTitle, loginOpen, setLoginOpen }) => 
       }}
     >
       {showGreeting && (
-        <div className="fixed inset-x-0 top-0 z-[60] bg-[#FEF3C7] border-b border-[#FACC15] text-[#92400E]">
-          <div className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-2 text-xs sm:text-sm">
-            <span className="font-medium tracking-wide">
-              Welcome to Reptilez Cycling Club
-            </span>
-            <button
-              type="button"
-              onClick={() => setShowGreeting(false)}
-              className="ml-4 inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#FACC15] bg-[#FEF3C7] text-[#92400E] hover:bg-[#FACC15] hover:text-[#78350F] transition-colors"
+       <div className="fixed inset-x-0 top-0 z-[60] bg-green-800 border-b border-green-700 text-green-100">
+  <div className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-2 text-xs sm:text-sm">
+    <span className="font-medium tracking-wide">
+      Welcome to D&amp;R Margin Racing
+    </span>
+    <button
+      type="button"
+      onClick={() => setShowGreeting(false)}
+      className="ml-4 inline-flex h-6 w-6 items-center justify-center rounded-full border border-green-600 bg-green-700 text-green-100 hover:bg-green-600 hover:text-white transition-colors"
               aria-label="Close welcome message"
             >
               <span className="material-symbols-outlined text-base leading-none">

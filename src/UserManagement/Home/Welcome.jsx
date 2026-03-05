@@ -40,7 +40,7 @@ const Welcome = () => {
         className="text-[22px] sm:text-3xl md:text-4xl font-bold leading-tight tracking-[-0.015em]"
         animationDuration={2}
       >
-        Welcome to Reptilez Cycling Club
+        Welcome to D&amp;R Margin Racing
       </GradientText>
       <p className="text-gray-700 text-base sm:text-lg font-normal leading-relaxed max-w-3xl">
         This cycling team is for group rides and road races. We are a passionate group of riders dedicated to pushing our limits and building a strong, supportive community. Whether you're a seasoned pro or just starting out, there's a place for you in our pack.

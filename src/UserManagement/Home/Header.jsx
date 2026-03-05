@@ -271,7 +271,7 @@ const Header = ({ onLongPressTitle, offsetTop = 0 }) => {
             onMouseLeave={endLongPress}
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Reptilez Cycling Club
+            D&amp;R Margin Racing
           </h2>
         </Link>
 
