@@ -278,7 +278,7 @@ const Posts = () => {
   };
 
   const resetForm = () => {
-    setFormData({ title: '', content: '', category: 'Announcement', featured_image: '', media: [], status: 'Draft' });
+    setFormData({ title: '', content: '', category: 'Announcements', featured_image: '', media: [], status: 'Draft' });
     setEditingPost(null);
     setMediaItems([]);
     if (fileInputRef.current) { fileInputRef.current.value = ''; }
@@ -300,7 +300,7 @@ const Posts = () => {
 
   // Helpers to mirror public PostsSection card behavior
   const categoryThemes = {
-    Announcement: {
+    Announcements: {
       badge: 'bg-reptilez-green-100 text-reptilez-green-700 border border-reptilez-green-300',
     },
     'Race Reports': {
@@ -487,7 +487,7 @@ const Posts = () => {
                       value={formData.category}
                       onChange={handleInputChange}
                     >
-                      <option value="Announcement">Announcement</option>
+                      <option value="Announcements">Announcements</option>
                       <option value="Race Reports">Race Reports</option>
                     </select>
                   </div>
@@ -515,7 +515,7 @@ const Posts = () => {
         )}
 
         {toast.visible && (
-          <div className={`fixed right-4 top-20 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-semibold shadow-lg ${toast.type === 'success' ? 'border-green-400/60 bg-green-500/10 text-green-200' : 'border-red-400/60 bg-red-500/10 text-red-200'}`}>
+          <div className={`fixed right-4 top-20 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-semibold shadow-lg ${toast.type === 'success' ? 'border-green-700 bg-green-800 text-green-100' : 'border-red-400/60 bg-red-500/10 text-red-200'}`}>
             <span className="material-symbols-outlined text-xl">{toast.type === 'success' ? 'check_circle' : 'error'}</span>
             <p>{toast.message}</p>
           </div>
@@ -604,7 +604,7 @@ const Posts = () => {
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${getCategoryTheme(post.category).badge} backdrop-blur-sm`}
                         >
-                          {post.category || 'Announcement'}
+                          {post.category || 'Announcements'}
                         </span>
                         <span className="rounded-full px-3 py-1 text-xs font-semibold bg-white/90 text-gray-700 border border-gray-200">
                           {post.status || 'Draft'}
