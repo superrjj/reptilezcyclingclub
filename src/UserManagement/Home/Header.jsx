@@ -251,7 +251,7 @@ const Header = ({ onLongPressTitle, offsetTop = 0 }) => {
           className="group flex items-center gap-2 sm:gap-3 transition-all duration-300 hover:scale-[1.02]"
         >
           <div className="flex items-center gap-1 sm:gap-2 relative">
-            {['/rcc1.png', '/rcc3.png'].map((src, idx) => (
+            {['/rcc1.png', '/rcc4-no-bg.png'].map((src, idx) => (
               <img
                 key={src}
                 src={src}

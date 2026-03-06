@@ -33,6 +33,12 @@ const Footer = () => {
           />
 
           <img
+            src="/rcc4-with-bg.jpg"
+            alt="Reptilez Cycling Club logo 4"
+            className="h-12 w-12 rounded-full object-contain bg-white/5"
+          />
+
+          <img
             src="/margin-logo.jpg"
             alt="Margin Cycling"
             className="h-12 w-12 rounded-full object-contain bg-white/5"
