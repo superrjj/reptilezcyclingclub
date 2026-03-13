@@ -140,7 +140,7 @@ const MembersSection = ({ refreshFunctionsRef }) => {
                         className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight"
                         animationDuration={2}
                         >
-                        Members of D&amp;R Margin Racing
+                        D&amp;R Margin Racing Members
                         </GradientText>
                         <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-reptilez-green-600 to-transparent rounded-full"></div>
                     </div>

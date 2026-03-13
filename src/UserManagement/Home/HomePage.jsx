@@ -43,10 +43,10 @@ const HomePage = () => {
       <Hero refreshFunctionsRef={refreshFunctionsRef} />
       <Welcome />
       <Cards refreshFunctionsRef={refreshFunctionsRef} />
+      <Gallery refreshFunctionsRef={refreshFunctionsRef} />
       <PostsSection refreshFunctionsRef={refreshFunctionsRef} />
       <EventsSection refreshFunctionsRef={refreshFunctionsRef} />
       <MembersSection refreshFunctionsRef={refreshFunctionsRef} />
-      <Gallery refreshFunctionsRef={refreshFunctionsRef} />
       <AboutUsSection />
       <Footer />
     </div>

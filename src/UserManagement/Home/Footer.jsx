@@ -1,52 +1,9 @@
-import React from 'react';
+import React from "react";
 
 const Footer = () => {
   return (
     <footer className="mt-10 bg-[#02152b] text-white pt-8 pb-4 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16">
       <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-        {/* Logos row */}
-        <div className="flex flex-wrap items-center justify-center gap-6 pb-6 border-b border-white/10">
-          <img
-            src="/rcc1.png"
-            alt="Reptilez Cycling Club logo 1"
-            className="h-12 w-12 rounded-full object-contain bg-white/5"
-          />
-          <img
-            src="/rcc2.png"
-            alt="Reptilez Cycling Club logo 2"
-            className="h-12 w-12 rounded-full object-contain bg-white/5"
-          />
-          <img
-            src="/rcc3.png"
-            alt="Reptilez Cycling Club logo 3"
-            className="h-12 w-12 rounded-full object-contain bg-white/5"
-          />
-          <img
-            src="/tarlac.png"
-            alt="Tarlac Cycling Community logo"
-            className="h-12 w-12 rounded-full object-contain bg-white/5"
-          />
-          <img
-            src="/dropnroll.jpg"
-            alt="Drop & Roll logo"
-            className="h-12 w-12 rounded-full object-contain bg-white/5"
-          />
-
-          <img
-            src="/rcc4-with-bg.jpg"
-            alt="Reptilez Cycling Club logo 4"
-            className="h-12 w-12 rounded-full object-contain bg-white/5"
-          />
-
-          <img
-            src="/margin-logo.jpg"
-            alt="Margin Cycling"
-            className="h-12 w-12 rounded-full object-contain bg-white/5"
-          />
-
-        </div>
-
-
         {/* Bottom row */}
         <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs md:text-sm text-white/70 text-center md:text-left">
@@ -119,7 +76,7 @@ const Footer = () => {
           </div>
 
           <p className="text-xs md:text-sm text-white/70 text-center md:text-right">
-            Developed by{' '}
+            Developed by{" "}
             <span className="font-semibold">John Harvee Quirido</span>
           </p>
         </div>

@@ -139,7 +139,7 @@ const EventsSection = ({ refreshFunctionsRef }) => {
                         className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight"
                         animationDuration={2}
                         >
-                        Events Race
+                        Race Events
                         </GradientText>
                         <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-reptilez-green-600 to-transparent rounded-full"></div>
                     </div>

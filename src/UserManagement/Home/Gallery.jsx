@@ -1,6 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getMaintenanceByType } from '../../services/maintenanceService';
 import GradientText from '../../components/ui/gradient-text';
+import { LogoCloudCarousel } from '../../components/ui/logo-cloud-carousel';
+
+const logos = [
+  { name: 'Reptilez Cycling Club', darkUrl: '/rcc1.png' },
+  { name: 'Reptilez Cycling Club', darkUrl: '/rcc2.png' },
+  { name: 'Reptilez Cycling Club', darkUrl: '/rcc3.png' },
+  { name: 'Tarlac Cycling Community', darkUrl: '/tarlac.png' },
+  { name: 'Drop & Roll', darkUrl: '/dropnroll.jpg' },
+  { name: 'Reptilez Cycling Club', darkUrl: '/rcc4-with-bg.jpg' },
+  { name: 'Margin Cycling', darkUrl: '/margin-logo.jpg' },
+  { name: 'Izarc Cycling Garments', darkUrl: '/izarc-logo.jpg'},
+];
 
 const Gallery = ({ refreshFunctionsRef }) => {
   const [images, setImages] = useState([]);
@@ -10,10 +22,14 @@ const Gallery = ({ refreshFunctionsRef }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
   const [isVisible, setIsVisible] = useState(false);
   const [isSectionVisible, setIsSectionVisible] = useState(false);
+  const [isSponsorsVisible, setIsSponsorsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const carouselRef = useRef(null);
   const sectionRef = useRef(null);
+  const sponsorsRef = useRef(null);
+  const autoPlayRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -48,7 +64,18 @@ const Gallery = ({ refreshFunctionsRef }) => {
     setTimeout(() => setIsVisible(true), 300);
   }, []);
 
-  // Scroll-based animation
+  // Auto-play: advance every 3.5s, loops, pauses on hover
+  useEffect(() => {
+    if (images.length <= 1 || isPaused) return;
+
+    autoPlayRef.current = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % images.length);
+    }, 1500);
+
+    return () => clearInterval(autoPlayRef.current);
+  }, [images.length, isPaused]);
+
+  // Scroll-based animation for main section
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -60,14 +87,30 @@ const Gallery = ({ refreshFunctionsRef }) => {
     );
 
     const currentRef = sectionRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
+    if (currentRef) observer.observe(currentRef);
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      if (currentRef) observer.unobserve(currentRef);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Scroll-based animation for sponsors section
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsSponsorsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    const currentRef = sponsorsRef.current;
+    if (currentRef) observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
       observer.disconnect();
     };
   }, []);
@@ -82,25 +125,19 @@ const Gallery = ({ refreshFunctionsRef }) => {
     }
   }, [refreshFunctionsRef]);
 
-  const handlePrev = () => {
-    if (activeIndex > 0) {
-      setActiveIndex(activeIndex - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (activeIndex < images.length - 1) {
-      setActiveIndex(activeIndex + 1);
-    }
-  };
-
+  // Scroll the inner carousel track without affecting page scroll
   useEffect(() => {
-    if (carouselRef.current) {
-      const cardElement = carouselRef.current.querySelector(`[data-index="${activeIndex}"]`);
-      if (cardElement) {
-        cardElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    }
+    if (!carouselRef.current) return;
+    const card = carouselRef.current.querySelector(`[data-index="${activeIndex}"]`);
+    if (!card) return;
+
+    const container = carouselRef.current;
+    const cardLeft = card.offsetLeft;
+    const cardWidth = card.offsetWidth;
+    const containerWidth = container.offsetWidth;
+    const targetScrollLeft = cardLeft - containerWidth / 2 + cardWidth / 2;
+
+    container.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
   }, [activeIndex]);
 
   const handleCloseModal = () => {
@@ -159,9 +196,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
     if (!showGalleryDialog) return;
 
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setShowGalleryDialog(false);
-      }
+      if (e.key === 'Escape') setShowGalleryDialog(false);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -189,7 +224,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight"
           animationDuration={2}
         >
-          Photos of D&amp;R Margin Racing
+          D&amp;R Margin Racing Photos
         </GradientText>
         <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
       </div>
@@ -235,21 +270,14 @@ const Gallery = ({ refreshFunctionsRef }) => {
         </div>
       ) : (
         <>
-          <div className={`w-full max-w-7xl mx-auto transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
-          }`}>
+          <div
+            className={`w-full max-w-7xl mx-auto transition-all duration-1000 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
+            }`}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
             <div className="relative">
-              {/* Previous Arrow */}
-              {activeIndex > 0 && (
-                <button
-                  onClick={handlePrev}
-                  className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-sm"
-                  aria-label="Previous"
-                >
-                  <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_left</span>
-                </button>
-              )}
-
               {/* Carousel Container */}
               <div 
                 ref={carouselRef}
@@ -262,9 +290,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
                 }}
               >
                 <style>{`
-                  .gallery-carousel::-webkit-scrollbar {
-                    display: none;
-                  }
+                  .gallery-carousel::-webkit-scrollbar { display: none; }
                 `}</style>
                 <div className="flex items-center justify-center gap-2 md:gap-5">
                   {images.map((image, index) => {
@@ -273,22 +299,16 @@ const Gallery = ({ refreshFunctionsRef }) => {
                     const isPrev = isMobile && index === activeIndex - 1;
                     const isNext = isMobile && index === activeIndex + 1;
                     
-                    // On mobile: show active, prev, and next only
-                    if (isMobile && !isActive && !isPrev && !isNext) {
-                      return null;
-                    }
+                    if (isMobile && !isActive && !isPrev && !isNext) return null;
                     
-                    // Responsive widths: mobile shows 3 cards (prev peek, active expanded, next peek)
                     let cardWidth;
                     if (isMobile) {
                       if (isActive) {
                         cardWidth = windowWidth <= 375 ? 280 : windowWidth <= 640 ? 300 : 320;
                       } else {
-                        // Prev or Next: show peek (50px for both)
                         cardWidth = 50;
                       }
                     } else {
-                      // Desktop: same as before
                       cardWidth = isActive 
                         ? (windowWidth <= 768 ? 400 : 450)
                         : (windowWidth <= 768 ? 140 : 160);
@@ -313,7 +333,6 @@ const Gallery = ({ refreshFunctionsRef }) => {
                           marginRight: isMobile && isNext ? 'auto' : '0',
                         }}
                       >
-                        {/* Image with padding */}
                         <div
                           className="absolute bg-cover bg-center rounded-lg"
                           style={{
@@ -332,25 +351,14 @@ const Gallery = ({ refreshFunctionsRef }) => {
                 </div>
               </div>
 
-              {/* Next Arrow */}
-              {activeIndex < images.length - 1 && (
-                <button
-                  onClick={handleNext}
-                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:scale-110 shadow-sm"
-                  aria-label="Next"
-                >
-                  <span className="material-symbols-outlined text-2xl md:text-3xl">chevron_right</span>
-                </button>
-              )}
-
-              {/* Scroll Slider Dots at Bottom */}
+              {/* Dots */}
               {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-white/95 backdrop-blur-sm rounded-full border border-[#E5E5E5] shadow-sm">
+                <div className="mt-4 flex items-center justify-center gap-2 px-3 py-2">
                   {images.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveIndex(index)}
-                        className={`transition-all duration-300 rounded-full ${
+                      className={`transition-all duration-300 rounded-full ${
                         activeIndex === index
                           ? 'bg-[#111827] w-8 h-2'
                           : 'bg-[#E5E5E5] hover:bg-[#D4D4D4] w-2 h-2'
@@ -365,7 +373,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
         </>
       )}
 
-      {/* Gallery Dialog - Enhanced */}
+      {/* Gallery Dialog */}
       {showGalleryDialog && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 animate-fadeIn"
@@ -375,12 +383,9 @@ const Gallery = ({ refreshFunctionsRef }) => {
             className="w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-3xl border border-[#E5E5E5] bg-white p-8 shadow-xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#E5E5E5] [&::-webkit-scrollbar-thumb]:rounded-full animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#E5E5E5]">
               <div>
-                <h2 className="text-3xl font-black text-[#111827]">
-                  Full Gallery
-                </h2>
+                <h2 className="text-3xl font-black text-[#111827]">Full Gallery</h2>
                 <p className="text-[#374151] text-sm mt-1">{images.length} images</p>
               </div>
               <button
@@ -392,7 +397,6 @@ const Gallery = ({ refreshFunctionsRef }) => {
               </button>
             </div>
 
-            {/* Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {images.map((image, index) => (
                 <div 
@@ -412,8 +416,6 @@ const Gallery = ({ refreshFunctionsRef }) => {
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  {/* Number badge */}
                   <div className="absolute top-3 left-3 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-[#E5E5E5] flex items-center justify-center text-[#111827] font-bold text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
                     {index + 1}
                   </div>
@@ -424,13 +426,12 @@ const Gallery = ({ refreshFunctionsRef }) => {
         </div>
       )}
 
-      {/* Image Lightbox - Enhanced */}
+      {/* Image Lightbox */}
       {selectedImage && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center animate-fadeIn"
           onClick={handleCloseModal}
         >
-          {/* Blurred Background Image */}
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
@@ -439,10 +440,8 @@ const Gallery = ({ refreshFunctionsRef }) => {
               transform: 'scale(1.1)',
             }}
           />
-          {/* Light overlay */}
           <div className="absolute inset-0 bg-white/90" />
 
-          {/* Close Button */}
           <button
             onClick={handleCloseModal}
             className="absolute top-6 right-6 z-10 w-14 h-14 rounded-full bg-white hover:bg-[#F5F5F5] backdrop-blur-sm border border-[#E5E5E5] text-[#374151] hover:text-[#111827] transition-all duration-300 flex items-center justify-center hover:rotate-90 hover:scale-110 shadow-sm"
@@ -451,7 +450,6 @@ const Gallery = ({ refreshFunctionsRef }) => {
             <span className="material-symbols-outlined text-3xl">close</span>
           </button>
 
-          {/* Previous Button */}
           {selectedImageIndex > 0 && (
             <button
               onClick={handlePrevImage}
@@ -462,7 +460,6 @@ const Gallery = ({ refreshFunctionsRef }) => {
             </button>
           )}
 
-          {/* Next Button */}
           {selectedImageIndex < images.length - 1 && (
             <button
               onClick={handleNextImage}
@@ -473,7 +470,6 @@ const Gallery = ({ refreshFunctionsRef }) => {
             </button>
           )}
 
-          {/* Image Container */}
           <div 
             className="relative w-full h-full flex items-center justify-center p-8 md:p-16 animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
@@ -485,12 +481,38 @@ const Gallery = ({ refreshFunctionsRef }) => {
             />
           </div>
 
-          {/* Image Counter */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full bg-white/95 backdrop-blur-md border border-[#E5E5E5] text-[#111827] text-base font-bold shadow-sm">
             {selectedImageIndex + 1} / {images.length}
           </div>
         </div>
       )}
+
+      {/* Sponsors / Logos Loop */}
+      <div
+        ref={sponsorsRef}
+        className={`w-full max-w-7xl mx-auto transition-all duration-700 ease-out ${
+          isSponsorsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}
+      >
+        <div className="mt-16 mb-10 pt-8 flex flex-col items-center gap-6">
+          <div className="text-center space-y-2">
+            <GradientText
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight"
+              animationDuration={2}
+            >
+              D&amp;R Margin Racing Sponsors
+            </GradientText>
+            <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
+          </div>
+
+          <LogoCloudCarousel
+            logos={logos}
+            variant="card"
+            speedSeconds={28}
+            className="w-full my-5"
+          />
+        </div>
+      </div>
 
       <style jsx>{`
         @keyframes fadeIn {
@@ -503,13 +525,8 @@ const Gallery = ({ refreshFunctionsRef }) => {
           to { opacity: 1; transform: scale(1); }
         }
 
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-
-        .animate-scaleIn {
-          animation: scaleIn 0.4s ease-out;
-        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+        .animate-scaleIn { animation: scaleIn 0.4s ease-out; }
 
         .shimmer-bg {
           background: linear-gradient(

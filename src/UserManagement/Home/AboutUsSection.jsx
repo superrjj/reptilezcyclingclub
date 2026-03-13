@@ -117,7 +117,7 @@ const AboutUsSection = () => {
                     className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight"
                     animationDuration={2}
                 >
-                    About Us
+                    About D&amp;R Margin Racing 
                 </GradientText>
                 <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
             </div>
