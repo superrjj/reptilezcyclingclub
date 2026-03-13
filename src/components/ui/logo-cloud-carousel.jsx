@@ -13,6 +13,7 @@ export function LogoCloudCarousel({
   variant = "circle", // "circle" | "card"
   title = "",
   titleClassName,
+  direction = "left", // "left" | "right"
 }) {
   const safeLogos = Array.isArray(logos) ? logos.filter(Boolean) : [];
   const track = safeLogos.length ? [...safeLogos, ...safeLogos] : [];
@@ -25,7 +26,7 @@ export function LogoCloudCarousel({
   }, []);
 
   return (
-    <div className={cx("w-full flex flex-col items-center gap-6 py-6", className)}>
+    <div className={cx("w-full flex flex-col items-center gap-2 py-1", className)}>
       {title ? (
         <div
           className={cx(
@@ -48,22 +49,26 @@ export function LogoCloudCarousel({
 
       <div
         className={cx(
-          "relative w-full overflow-hidden mt-4",
-          "[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
+          "relative w-full overflow-hidden",
+          "[mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
         )}
       >
         <style>{`
-          @keyframes logo-cloud-scroll {
+          @keyframes logo-cloud-scroll-left {
             from { transform: translateX(0); }
             to { transform: translateX(-50%); }
+          }
+          @keyframes logo-cloud-scroll-right {
+            from { transform: translateX(-50%); }
+            to { transform: translateX(0); }
           }
         `}</style>
 
         <div
-          className={cx("flex w-max items-center gap-6 py-4 mx-auto")}
+          className={cx("flex w-max items-center gap-3 sm:gap-4 md:gap-5 py-1 sm:py-2")}
           style={{
             animation: safeLogos.length
-              ? `logo-cloud-scroll ${speedSeconds}s linear infinite`
+              ? `logo-cloud-scroll-${direction} ${speedSeconds}s linear infinite`
               : undefined,
             animationPlayState: "running",
             willChange: "transform",
@@ -74,19 +79,19 @@ export function LogoCloudCarousel({
             const content = (
               <div
                 className={cx(
-                  "flex items-center justify-center transition-colors my-3 sm:my-4",
+                  "flex items-center justify-center transition-colors my-1",
                   isCard
                     ? "bg-white border border-black/10 shadow-sm"
                     : "bg-white/5 ring-1 ring-white/10",
                   isCard
-                    ? "rounded-2xl h-20 w-48 sm:h-24 sm:w-64 md:h-28 md:w-72"
-                    : "rounded-full h-12 w-12 sm:h-14 sm:w-14",
+                    ? "rounded-xl h-14 w-28 sm:h-18 sm:w-40 md:h-22 md:w-52 lg:h-24 lg:w-60"
+                    : "rounded-full h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14",
                   itemClassName
                 )}
                 title={logo.description || logo.name}
               >
                 {isCard ? (
-                  <div className="h-full w-full p-3 sm:p-4 md:p-5 flex items-center justify-center">
+                  <div className="h-full w-full p-2 sm:p-3 md:p-4 flex items-center justify-center">
                     <img
                       src={src}
                       alt={logo.name || "Logo"}
@@ -100,7 +105,7 @@ export function LogoCloudCarousel({
                   <img
                     src={src}
                     alt={logo.name || "Logo"}
-                    className="select-none h-10 w-10 sm:h-12 sm:w-12 rounded-full object-contain"
+                    className="select-none h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full object-contain"
                     loading="lazy"
                     decoding="async"
                     draggable={false}
@@ -121,7 +126,7 @@ export function LogoCloudCarousel({
                       "block focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
                       isCard ? "focus-visible:ring-black/40" : "focus-visible:ring-white/60",
                       "focus-visible:ring-offset-white",
-                      isCard ? "rounded-2xl" : "rounded-full"
+                      isCard ? "rounded-xl" : "rounded-full"
                     )}
                   >
                     {content}
