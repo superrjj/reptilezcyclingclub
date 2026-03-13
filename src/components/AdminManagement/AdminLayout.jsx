@@ -83,87 +83,58 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-white text-gray-800">
+
+      {/* ── Logout Confirmation Dialog — white theme ── */}
       {confirmLogoutOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl px-3 sm:px-4 animate-[fadeIn_0.3s_ease-out]"
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
           onClick={(e) => e.target === e.currentTarget && !logoutProcessing && cancelLogout()}
         >
-          <div className="w-full max-w-md rounded-2xl sm:rounded-3xl border-2 border-red-500/40 bg-gradient-to-br from-black via-gray-900/95 to-black p-4 sm:p-5 md:p-6 shadow-[0_0_80px_rgba(220,38,38,0.15),0_40px_140px_rgba(0,0,0,0.9)] animate-[slideUp_0.4s_ease-out] relative overflow-hidden">
-            {/* Animated background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-red-500/5 animate-pulse"></div>
-            <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-red-500/5 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-red-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            
-            <div className="relative z-10">
-              {/* Close Button */}
-              <div className="flex justify-end mb-3">
-                <button
-                  className="text-white/60 hover:text-white transition-all duration-300 hover:rotate-90 hover:scale-110 rounded-lg p-1 hover:bg-white/10"
-                  onClick={cancelLogout}
-                  type="button"
-                  disabled={logoutProcessing}
-                  aria-label="Close dialog"
-                >
-                  <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
-                </button>
+          <div className="w-full max-w-sm rounded-2xl border border-[#E5E5E5] bg-white px-6 py-6 shadow-xl">
+            {/* Icon + text */}
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-red-50 border border-red-200 text-red-500 flex-shrink-0">
+                <span className="material-symbols-outlined text-2xl">logout</span>
               </div>
+              <div>
+                <p className="text-sm font-bold text-[#111827]">Log out?</p>
+                <p className="text-xs text-[#6B7280] mt-0.5">You will be redirected to the login page.</p>
+              </div>
+            </div>
 
-              {/* Header */}
-              <div className="flex flex-col items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-red-500/30 blur-xl rounded-full animate-pulse"></div>
-                  <div className="relative flex size-14 sm:size-16 items-center justify-center rounded-full border-2 border-red-500/50 bg-gradient-to-br from-red-600/20 to-red-700/20 backdrop-blur-sm">
-                    <span className="material-symbols-outlined text-2xl sm:text-3xl text-red-400 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]">logout</span>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <h3 className="text-lg sm:text-xl font-black tracking-tight text-white mb-1 bg-clip-text bg-gradient-to-r from-white via-red-400 to-white">
-                    Sign Out?
-                  </h3>
-                  <p className="text-xs sm:text-sm text-white/70 font-medium">
-                    You will be redirected back to the public site
-                  </p>
-                </div>
-              </div>
-
-              {/* Warning Message */}
-              <div className="mb-4 sm:mb-5 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 bg-red-500/10 border-2 border-red-400/30 backdrop-blur-sm">
-                <div className="flex items-start gap-2.5 sm:gap-3">
-                  <span className="material-symbols-outlined text-red-400 text-base sm:text-lg flex-shrink-0 mt-0.5">info</span>
-                  <p className="text-xs sm:text-sm text-white/90 font-medium leading-relaxed">
-                    Are you sure you want to sign out from the Admin?.
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Button - Centered */}
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={confirmLogout}
-                  className="group relative rounded-xl bg-gradient-to-r from-red-600 via-red-500 to-red-600 px-8 sm:px-10 py-2.5 sm:py-3 text-sm sm:text-base font-black uppercase tracking-wider text-white transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
-                  disabled={logoutProcessing}
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    {logoutProcessing ? (
-                      <>
-                        <span className="material-symbols-outlined animate-spin text-lg">sync</span>
-                        <span>Signing out...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Yes, Logout</span>
-                        <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                      </>
-                    )}
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </button>
-              </div>
+            {/* Buttons */}
+            <div className="mt-5 flex justify-end gap-3 text-sm">
+              <button
+                type="button"
+                onClick={cancelLogout}
+                disabled={logoutProcessing}
+                className="rounded-lg border border-[#E5E5E5] px-4 py-2 text-[#374151] font-medium hover:bg-[#F5F5F5] transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmLogout}
+                disabled={logoutProcessing}
+                className="flex items-center gap-2 rounded-lg bg-red-500 hover:bg-red-600 px-4 py-2 font-semibold text-white transition-colors disabled:opacity-60"
+              >
+                {logoutProcessing ? (
+                  <>
+                    <span className="material-symbols-outlined animate-spin text-base">sync</span>
+                    Signing out...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-base">logout</span>
+                    Log out
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
       )}
+
       <div className="flex h-screen">
         {/* Mobile Menu Button */}
         <button
@@ -192,7 +163,7 @@ const AdminLayout = ({ children }) => {
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}>
           <div className="flex h-full flex-col justify-between p-4">
-              <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
               <div className="flex items-center justify-center px-2 py-3">
                 <img
                   src="/rcc2.png"
@@ -209,11 +180,7 @@ const AdminLayout = ({ children }) => {
                       : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin"
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    navigate('/admin');
-                    setMobileMenuOpen(false);
-                  }}
+                  onClick={(e) => { e.preventDefault(); navigate('/admin'); setMobileMenuOpen(false); }}
                 >
                   <span className="material-symbols-outlined">dashboard</span>
                   <p className="text-sm font-medium leading-normal">Dashboard</p>
@@ -225,11 +192,7 @@ const AdminLayout = ({ children }) => {
                       : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/posts"
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    navigate('/admin/posts');
-                    setMobileMenuOpen(false);
-                  }}
+                  onClick={(e) => { e.preventDefault(); navigate('/admin/posts'); setMobileMenuOpen(false); }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/posts') ? { fontVariationSettings: "'FILL' 1" } : {}}>article</span>
                   <p className="text-sm font-medium leading-normal">Posts</p>
@@ -241,11 +204,7 @@ const AdminLayout = ({ children }) => {
                       : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/events"
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    navigate('/admin/events');
-                    setMobileMenuOpen(false);
-                  }}
+                  onClick={(e) => { e.preventDefault(); navigate('/admin/events'); setMobileMenuOpen(false); }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/events') ? { fontVariationSettings: "'FILL' 1" } : {}}>event</span>
                   <p className="text-sm font-medium leading-normal">Events</p>
@@ -257,11 +216,7 @@ const AdminLayout = ({ children }) => {
                       : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/members"
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    navigate('/admin/members');
-                    setMobileMenuOpen(false);
-                  }}
+                  onClick={(e) => { e.preventDefault(); navigate('/admin/members'); setMobileMenuOpen(false); }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/members') ? { fontVariationSettings: "'FILL' 1" } : {}}>groups</span>
                   <p className="text-sm font-medium leading-normal">Members</p>
@@ -273,19 +228,13 @@ const AdminLayout = ({ children }) => {
                       : 'text-gray-900 hover:bg-primary/10 hover:text-primary'
                   }`}
                   href="/admin/file-maintenance"
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    navigate('/admin/file-maintenance');
-                    setMobileMenuOpen(false);
-                  }}
+                  onClick={(e) => { e.preventDefault(); navigate('/admin/file-maintenance'); setMobileMenuOpen(false); }}
                 >
                   <span className="material-symbols-outlined" style={isActive('/admin/file-maintenance') ? { fontVariationSettings: "'FILL' 1" } : {}}>folder_open</span>
                   <p className="text-sm font-medium leading-normal">File Maintenance</p>
                 </a>
               </nav>
             </div>
-            
-            {/* Bottom actions removed per user request */}
           </div>
         </aside>
 
@@ -296,7 +245,6 @@ const AdminLayout = ({ children }) => {
             setMobileMenuOpen={setMobileMenuOpen}
             onLogout={handleLogout}
           />
-
           <div className="flex-1 overflow-y-auto">
             {children}
           </div>
@@ -307,4 +255,3 @@ const AdminLayout = ({ children }) => {
 };
 
 export default AdminLayout;
-

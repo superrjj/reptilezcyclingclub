@@ -7,6 +7,235 @@ import { supabase, isSupabaseConfigured } from '../../../lib/supabase';
 import { useTabVisibility } from '../../../hooks/useTabVisibility';
 import { usePageMeta } from '../../../hooks/usePageMeta';
 
+// ─── Image Crop Modal ────────────────────────────────────────────────────────
+const CropModal = ({ imageSrc, onDone, onCancel }) => {
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeHandle, setResizeHandle] = useState(null);
+  const [imgEl, setImgEl] = useState(null);
+
+  // Crop box state (relative to canvas)
+  const [crop, setCrop] = useState({ x: 50, y: 50, w: 200, h: 200 });
+  const dragStart = useRef(null);
+
+  const HANDLE_SIZE = 10;
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      setImgEl(img);
+      // Init crop to center 60% of image
+      const cw = img.width;
+      const ch = img.height;
+      const w = Math.round(cw * 0.6);
+      const h = Math.round(ch * 0.6);
+      setCrop({ x: Math.round((cw - w) / 2), y: Math.round((ch - h) / 2), w, h });
+    };
+    img.src = imageSrc;
+  }, [imageSrc]);
+
+  useEffect(() => {
+    if (!imgEl || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = imgEl.width;
+    canvas.height = imgEl.height;
+    draw(ctx, imgEl, crop, canvas.width, canvas.height);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imgEl, crop]);
+
+  const draw = (ctx, img, c, cw, ch) => {
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, 0, 0);
+    // Dim outside crop
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(0, 0, cw, c.y);
+    ctx.fillRect(0, c.y + c.h, cw, ch - c.y - c.h);
+    ctx.fillRect(0, c.y, c.x, c.h);
+    ctx.fillRect(c.x + c.w, c.y, cw - c.x - c.w, c.h);
+    // Border
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(c.x, c.y, c.w, c.h);
+    // Rule-of-thirds grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 3; i++) {
+      ctx.beginPath(); ctx.moveTo(c.x + (c.w / 3) * i, c.y); ctx.lineTo(c.x + (c.w / 3) * i, c.y + c.h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(c.x, c.y + (c.h / 3) * i); ctx.lineTo(c.x + c.w, c.y + (c.h / 3) * i); ctx.stroke();
+    }
+    // Corner handles
+    ctx.fillStyle = '#fff';
+    const corners = getHandles(c);
+    corners.forEach(([hx, hy]) => ctx.fillRect(hx - HANDLE_SIZE / 2, hy - HANDLE_SIZE / 2, HANDLE_SIZE, HANDLE_SIZE));
+  };
+
+  const getHandles = (c) => [
+    [c.x, c.y], [c.x + c.w, c.y],
+    [c.x, c.y + c.h], [c.x + c.w, c.y + c.h],
+  ];
+
+  const getHandleNames = () => ['tl', 'tr', 'bl', 'br'];
+
+  const toCanvasCoords = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+    };
+  };
+
+  const hitHandle = (pos, c) => {
+    const handles = getHandles(c);
+    const names = getHandleNames();
+    for (let i = 0; i < handles.length; i++) {
+      const [hx, hy] = handles[i];
+      if (Math.abs(pos.x - hx) <= HANDLE_SIZE && Math.abs(pos.y - hy) <= HANDLE_SIZE) {
+        return names[i];
+      }
+    }
+    return null;
+  };
+
+  const inCrop = (pos, c) =>
+    pos.x >= c.x && pos.x <= c.x + c.w && pos.y >= c.y && pos.y <= c.y + c.h;
+
+  const onMouseDown = (e) => {
+    e.preventDefault();
+    const pos = toCanvasCoords(e);
+    const handle = hitHandle(pos, crop);
+    if (handle) {
+      setIsResizing(true);
+      setResizeHandle(handle);
+      dragStart.current = { pos, crop: { ...crop } };
+    } else if (inCrop(pos, crop)) {
+      setIsDragging(true);
+      dragStart.current = { pos, crop: { ...crop } };
+    }
+  };
+
+  const onMouseMove = (e) => {
+    if (!isDragging && !isResizing) return;
+    e.preventDefault();
+    const pos = toCanvasCoords(e);
+    const dx = pos.x - dragStart.current.pos.x;
+    const dy = pos.y - dragStart.current.pos.y;
+    const orig = dragStart.current.crop;
+    const cw = imgEl?.width || 9999;
+    const ch = imgEl?.height || 9999;
+    const MIN = 40;
+
+    if (isDragging) {
+      setCrop(prev => ({
+        ...prev,
+        x: Math.max(0, Math.min(cw - orig.w, orig.x + dx)),
+        y: Math.max(0, Math.min(ch - orig.h, orig.y + dy)),
+      }));
+    } else if (isResizing) {
+      let { x, y, w, h } = orig;
+      if (resizeHandle === 'tl') {
+        const nx = Math.min(orig.x + orig.w - MIN, orig.x + dx);
+        const ny = Math.min(orig.y + orig.h - MIN, orig.y + dy);
+        w = orig.x + orig.w - nx; h = orig.y + orig.h - ny; x = nx; y = ny;
+      } else if (resizeHandle === 'tr') {
+        const nw = Math.max(MIN, orig.w + dx);
+        const ny = Math.min(orig.y + orig.h - MIN, orig.y + dy);
+        w = nw; h = orig.y + orig.h - ny; y = ny;
+      } else if (resizeHandle === 'bl') {
+        const nx = Math.min(orig.x + orig.w - MIN, orig.x + dx);
+        w = orig.x + orig.w - nx; h = Math.max(MIN, orig.h + dy); x = nx;
+      } else if (resizeHandle === 'br') {
+        w = Math.max(MIN, orig.w + dx); h = Math.max(MIN, orig.h + dy);
+      }
+      // Clamp to image bounds
+      x = Math.max(0, x); y = Math.max(0, y);
+      w = Math.min(cw - x, w); h = Math.min(ch - y, h);
+      setCrop({ x, y, w, h });
+    }
+  };
+
+  const onMouseUp = () => {
+    setIsDragging(false);
+    setIsResizing(false);
+    setResizeHandle(null);
+    dragStart.current = null;
+  };
+
+  const handleApply = () => {
+    if (!imgEl) return;
+    const out = document.createElement('canvas');
+    out.width = Math.round(crop.w);
+    out.height = Math.round(crop.h);
+    const ctx = out.getContext('2d');
+    ctx.drawImage(imgEl, crop.x, crop.y, crop.w, crop.h, 0, 0, crop.w, crop.h);
+    out.toBlob((blob) => {
+      const croppedFile = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+      const url = URL.createObjectURL(blob);
+      onDone({ url, file: croppedFile });
+    }, 'image/jpeg', 0.92);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div className="w-full max-w-2xl bg-gray-900 rounded-2xl border border-primary/30 shadow-xl flex flex-col overflow-hidden max-h-[90vh]">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-700 flex-shrink-0">
+          <div>
+            <h3 className="text-white font-bold text-base">Crop Image</h3>
+            <p className="text-gray-400 text-xs mt-0.5">Drag to move • Drag corners to resize</p>
+          </div>
+          <button type="button" onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white">
+            <span className="material-symbols-outlined text-lg">close</span>
+          </button>
+        </div>
+
+        {/* Canvas */}
+        <div ref={containerRef} className="flex-1 overflow-auto flex items-center justify-center bg-black/60 p-4">
+          {imgEl ? (
+            <canvas
+              ref={canvasRef}
+              className="max-w-full max-h-[55vh] rounded-lg"
+              style={{ cursor: isDragging ? 'grabbing' : isResizing ? 'nwse-resize' : 'crosshair', touchAction: 'none' }}
+              onMouseDown={onMouseDown}
+              onMouseMove={onMouseMove}
+              onMouseUp={onMouseUp}
+              onMouseLeave={onMouseUp}
+              onTouchStart={onMouseDown}
+              onTouchMove={onMouseMove}
+              onTouchEnd={onMouseUp}
+            />
+          ) : (
+            <div className="text-gray-400 text-sm">Loading image...</div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-gray-700 flex-shrink-0">
+          <p className="text-xs text-gray-400">
+            {Math.round(crop.w)} × {Math.round(crop.h)} px
+          </p>
+          <div className="flex gap-3">
+            <button type="button" onClick={onCancel} className="rounded-lg border border-gray-600 px-4 py-2 text-sm text-gray-300 hover:bg-white/10">
+              Cancel
+            </button>
+            <button type="button" onClick={handleApply} className="rounded-lg bg-primary hover:bg-green-700 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-primary/30">
+              Apply Crop
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Posts Component ─────────────────────────────────────────────────────────
 const Posts = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
@@ -19,6 +248,7 @@ const Posts = () => {
   const fileInputRef = useRef(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [authorProfiles, setAuthorProfiles] = useState({});
+  const [cropTarget, setCropTarget] = useState(null); // { id, url }
 
   usePageMeta('Admin Posts');
   const [showModal, setShowModal] = useState(false);
@@ -65,6 +295,7 @@ const Posts = () => {
     fetchPosts(); 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   useEffect(() => {
     if (searchQuery.trim()) {
       const searchPostsData = async () => {
@@ -191,6 +422,16 @@ const Posts = () => {
     });
   };
 
+  // Apply cropped result back to mediaItems
+  const handleCropDone = ({ url, file }) => {
+    setMediaItems(prev => prev.map(m =>
+      m.id === cropTarget.id
+        ? { ...m, url, file, name: file.name }
+        : m
+    ));
+    setCropTarget(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
@@ -298,7 +539,6 @@ const Posts = () => {
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
-  // Helpers to mirror public PostsSection card behavior
   const categoryThemes = {
     Announcements: {
       badge: 'bg-reptilez-green-100 text-reptilez-green-700 border border-reptilez-green-300',
@@ -337,14 +577,19 @@ const Posts = () => {
   return (
     <AdminLayout>
       <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
+
+      {/* Crop Modal */}
+      {cropTarget && (
+        <CropModal
+          imageSrc={cropTarget.url}
+          onDone={handleCropDone}
+          onCancel={() => setCropTarget(null)}
+        />
+      )}
+
       <main className="relative flex-1 overflow-y-auto bg-white p-4 md:p-8">
         {deleteTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm">
@@ -394,7 +639,7 @@ const Posts = () => {
                   {mediaItems.length > 0 ? (
                     <div className="space-y-3">
                       <div className="rounded-lg border border-gray-700 bg-gray-800/40 px-3 py-2 text-xs text-gray-300">
-                        Drag/long-press to reorder. The <span className="font-bold text-white">first image</span> will be the card background (cover).
+                        Drag/long-press to reorder. The <span className="font-bold text-white">first image</span> will be the card background (cover). Click <span className="font-bold text-white">crop</span> to adjust framing.
                       </div>
                       <div className="grid grid-cols-3 gap-3">
                         {mediaItems.map((item) => {
@@ -440,6 +685,18 @@ const Posts = () => {
 
                               {/* Actions */}
                               <div className="absolute right-2 top-2 flex flex-col gap-2">
+                                {/* Crop button — images only */}
+                                {item.type === 'image' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setCropTarget({ id: item.id, url: item.url })}
+                                    className="rounded-full bg-white/90 p-1.5 text-gray-900 opacity-0 group-hover:opacity-100 hover:bg-white"
+                                    aria-label="Crop image"
+                                    title="Crop / Resize"
+                                  >
+                                    <span className="material-symbols-outlined text-sm">crop</span>
+                                  </button>
+                                )}
                                 {item.type === 'image' && !isCover && (
                                   <button
                                     type="button"
@@ -581,14 +838,9 @@ const Posts = () => {
                     key={post.id}
                     className="bg-white border border-reptilez-green-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-reptilez-green-400 transition-all duration-300 flex flex-col"
                   >
-                    {/* Cover Image + Category */}
                     <div className="relative h-52 bg-gradient-to-br from-reptilez-green-50 to-reptilez-green-100 overflow-hidden">
                       {coverImage ? (
-                        <img
-                          src={coverImage}
-                          alt={post.title}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={coverImage} alt={post.title} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <span className="material-symbols-outlined text-6xl text-reptilez-green-300">article</span>
@@ -601,9 +853,7 @@ const Posts = () => {
                         </div>
                       )}
                       <div className="absolute bottom-3 left-3 flex gap-2 items-center">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${getCategoryTheme(post.category).badge} backdrop-blur-sm`}
-                        >
+                        <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${getCategoryTheme(post.category).badge} backdrop-blur-sm`}>
                           {post.category || 'Announcements'}
                         </span>
                         <span className="rounded-full px-3 py-1 text-xs font-semibold bg-white/90 text-gray-700 border border-gray-200">
@@ -612,7 +862,6 @@ const Posts = () => {
                       </div>
                     </div>
 
-                    {/* Card Content */}
                     <div className="p-5 flex flex-col flex-1 gap-2">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
@@ -628,20 +877,14 @@ const Posts = () => {
                         </div>
                       </div>
 
-                      <h3 className="text-gray-900 text-lg font-bold leading-snug line-clamp-2">
-                        {post.title}
-                      </h3>
+                      <h3 className="text-gray-900 text-lg font-bold leading-snug line-clamp-2">{post.title}</h3>
 
-                      <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line flex-1">
-                        {truncated}
-                      </p>
+                      <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line flex-1">{truncated}</p>
 
                       {content.length > MAX_PREVIEW && (
                         <button
                           type="button"
-                          onClick={() =>
-                            setExpandedAdminPosts(prev => ({ ...prev, [post.id]: !prev[post.id] }))
-                          }
+                          onClick={() => setExpandedAdminPosts(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
                           className="mt-1 text-xs font-semibold text-reptilez-green-600 hover:text-reptilez-green-700 self-start"
                         >
                           {isExpanded ? 'See less' : 'See more'}
@@ -649,7 +892,6 @@ const Posts = () => {
                       )}
                     </div>
 
-                    {/* Actions */}
                     <div className="border-t border-reptilez-green-100 px-4 py-3 flex items-center justify-between bg-reptilez-green-50/40">
                       <span className="text-[11px] text-gray-600">
                         Last updated: {formatDate(post.updated_at || post.created_at)}
@@ -659,15 +901,13 @@ const Posts = () => {
                           onClick={() => handleEdit(post)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-reptilez-green-700 bg-white hover:bg-reptilez-green-600 hover:text-white border border-reptilez-green-200 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-sm">edit</span>
-                          Edit
+                          <span className="material-symbols-outlined text-sm">edit</span>Edit
                         </button>
                         <button
                           onClick={() => setDeleteTarget(post)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-red-600 bg-white hover:bg-red-500 hover:text-white border border-red-200 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-sm">delete</span>
-                          Delete
+                          <span className="material-symbols-outlined text-sm">delete</span>Delete
                         </button>
                       </div>
                     </div>
