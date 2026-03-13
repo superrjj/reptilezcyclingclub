@@ -292,7 +292,7 @@ const Header = ({ onLongPressTitle, offsetTop = 0 }) => {
                 onClick={handleLogout}
                 className="font-sans-simple rounded-lg sm:rounded-xl px-3 sm:px-5 py-2 bg-red-600 text-white text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-red-700"
               >
-                LOGOUT
+                Logout
               </button>
             </div>
           )}
