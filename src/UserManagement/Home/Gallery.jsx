@@ -70,7 +70,7 @@ const Gallery = ({ refreshFunctionsRef }) => {
 
     autoPlayRef.current = setInterval(() => {
       setActiveIndex(prev => (prev + 1) % images.length);
-    }, 1500);
+    }, 3500);
 
     return () => clearInterval(autoPlayRef.current);
   }, [images.length, isPaused]);
