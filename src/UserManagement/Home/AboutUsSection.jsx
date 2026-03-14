@@ -15,6 +15,7 @@ const AboutUsSection = () => {
     const [followLoading, setFollowLoading] = useState(false);
     const [authOpen, setAuthOpen] = useState(false);
     const [publicUserId, setPublicUserId] = useState(null);
+    const [showFollowHint, setShowFollowHint] = useState(false);
 
     // Fixed ID representing this website/page (followers follow THIS only)
     const PAGE_PROFILE_ID = '11111111-1111-1111-1111-111111111111';
@@ -126,6 +127,7 @@ const AboutUsSection = () => {
     }, [publicUserId]);
 
     const handleFollowClick = async () => {
+        setShowFollowHint(false);
         if (!publicUserId) {
             setAuthOpen(true);
             return;
@@ -231,14 +233,13 @@ const AboutUsSection = () => {
         >
 
             {/* Animated Title with Gradient */}
-            <div className={`text-center space-y-2 transition-all duration-1000 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
-            }`}>
+            <div className={`text-center space-y-2 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
+                }`}>
                 <GradientText
                     className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight"
                     animationDuration={2}
                 >
-                    About D&amp;R Margin Racing 
+                    About D&amp;R Margin Racing
                 </GradientText>
                 <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
             </div>
@@ -321,26 +322,43 @@ const AboutUsSection = () => {
                                 </div>
                             </div>
 
-                            <div className="w-full sm:w-auto flex justify-center sm:justify-end md:self-center">
-                                <button
-                                    type="button"
-                                    onClick={handleFollowClick}
-                                    disabled={followLoading}
-                                    className={`inline-flex items-center justify-center px-6 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide shadow-md transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${
-                                        isFollowing
+                            <div className="w-full sm:w-auto flex flex-col items-center sm:items-end gap-1 md:self-center">
+                                <div className="relative">
+                                    <button
+                                        type="button"
+                                        onClick={handleFollowClick}
+                                        disabled={followLoading}
+                                        className={`inline-flex items-center justify-center px-6 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide shadow-md transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${isFollowing
                                             ? 'bg-gray-100 text-gray-900 border border-gray-300 hover:bg-gray-200'
-                                            : 'bg-reptilez-green-600 text-white hover:bg-reptilez-green-700'
-                                    }`}
-                                >
-                                    {followLoading ? '...' : isFollowing ? 'Following' : 'Follow'}
-                                </button>
+                                            : showFollowHint
+                                                ? 'bg-reptilez-green-600 text-white ring-4 ring-reptilez-green-300 ring-offset-1 hover:bg-reptilez-green-700'
+                                                : 'bg-reptilez-green-600 text-white hover:bg-reptilez-green-700'
+                                            }`}
+                                    >
+                                        {followLoading ? '...' : isFollowing ? 'Following' : 'Follow'}
+                                    </button>
+                                    {showFollowHint && !isFollowing && (
+                                        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 flex items-center pointer-events-none">
+                                            <span className="text-[10px] font-semibold text-reptilez-green-700 whitespace-nowrap bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-reptilez-green-200">
+                                                Click to follow!
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <PublicAuthDialog open={authOpen} onClose={() => setAuthOpen(false)} defaultMode="register" />
+            <PublicAuthDialog
+                open={authOpen}
+                onClose={() => setAuthOpen(false)}
+                onRegistered={(user) => {
+                    if (user?.id) setPublicUserId(user.id);
+                    setShowFollowHint(true);
+                }}
+            />
 
             {/* Mission & Vision */}
             <div
