@@ -122,14 +122,15 @@ const AboutUsSection = () => {
                 <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
             </div>
 
-            {/* Hero Image - Full Screen */}
+            {/* Hero Image - Landscape aspect on all devices (mobile iPhone/Android included) */}
             <div
                 id="about-hero"
                 data-animate-about
                 className={`flex flex-col gap-6 transition-all duration-1000 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 ${visibleSections['about-hero'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                     }`}
             >
-                <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-screen overflow-hidden">
+                {/* Aspect-ratio keeps landscape shape on every screen size */}
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[180px] sm:min-h-[220px]">
                     <div
                         className="absolute inset-0 bg-center bg-cover bg-no-repeat"
                         style={{ backgroundImage: 'url("/rcc_bg.jpg")' }}

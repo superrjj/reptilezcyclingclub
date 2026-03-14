@@ -53,8 +53,7 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
   if (loading) {
     return (
       <div className={fullBleedClasses}>
-        {/* Same aspect ratio as AboutUs landscape image on mobile */}
-        <div className="w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:min-h-screen shimmer-bg bg-reptilez-green-50 flex items-center justify-center">
+        <div className="w-full min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] lg:min-h-screen aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-auto shimmer-bg bg-reptilez-green-50 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 border-4 border-reptilez-green-300 border-t-reptilez-green-600 rounded-full animate-spin" />
             <p className="text-gray-600 text-sm font-medium">Loading amazing races...</p>
@@ -67,7 +66,7 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
   if (heroImages.length === 0) {
     return (
       <div className={fullBleedClasses}>
-        <div className="w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:min-h-screen bg-reptilez-green-50 flex items-center justify-center">
+        <div className="w-full min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] lg:min-h-screen aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-auto bg-reptilez-green-50 flex items-center justify-center">
           <div className="text-center text-gray-600">
             <div className="w-20 h-20 rounded-full bg-reptilez-green-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
               <span className="text-4xl">🚴</span>
@@ -87,14 +86,11 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
       }`}
     >
       {/*
-        KEY FIX: Use aspect-ratio on mobile so the image fills width like a landscape photo.
-        - mobile  : aspect-[4/3]  → wide enough, not portrait-cropped
-        - sm      : aspect-[16/9] → standard widescreen
-        - md+     : aspect-[21/9] → cinematic banner
-        - lg+     : min-h-screen  → full viewport height on desktop
-        Each slide is position:absolute so they stack and cross-fade cleanly.
+        Taller container (min-h) so images aren't cropped at the bottom; aspect-ratio for shape.
+        - min-h on mobile/sm/md so hero has enough height to show full image
+        - lg+ full viewport height
       */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-auto lg:min-h-screen">
+      <div className="relative w-full min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] lg:min-h-screen aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-auto">
         {heroImages.map((image, index) => (
           <div
             key={`${image}-${index}`}
@@ -110,43 +106,48 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
           />
         ))}
 
-        {/* Support our Team button */}
-        <div className="absolute bottom-10 sm:bottom-12 left-1/2 -translate-x-1/2 z-20">
-          <div className="relative flex min-w-[140px] items-center justify-center rounded-full h-10 px-6 sm:h-11 sm:px-8 bg-gradient-to-r from-reptilez-green-600 via-reptilez-green-500 to-reptilez-green-600 text-white text-sm font-black leading-normal tracking-wide sm:text-base uppercase border-2 border-reptilez-green-400/30 shadow-lg">
-            <span className="relative truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
+        {/* Support our Team button - compact pill like before, only shrinks on mobile */}
+        <div
+          className="absolute bottom-10 sm:bottom-12 left-1/2 -translate-x-1/2 z-20"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        >
+          <div className="relative flex items-center justify-center rounded-full h-9 px-5 sm:h-10 sm:px-6 md:h-11 md:px-8 bg-gradient-to-r from-reptilez-green-600 via-reptilez-green-500 to-reptilez-green-600 text-white text-xs sm:text-sm md:text-base font-black leading-normal tracking-wide uppercase border-2 border-reptilez-green-400/30 shadow-lg whitespace-nowrap w-fit min-w-[120px] sm:min-w-[140px]">
+            <span className="relative drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
               Support our Team
             </span>
           </div>
         </div>
 
         {/* Progress dots */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
           {heroImages.map((_, idx) => (
             <div
               key={idx}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
+              className={`rounded-full transition-all duration-500 flex-shrink-0 ${
                 idx === currentIndex
-                  ? 'w-12 bg-reptilez-green-600 shadow-[0_0_10px_rgba(22,163,74,0.6)]'
-                  : 'w-1.5 bg-white/50 hover:bg-white/70'
+                  ? 'w-8 sm:w-12 h-1.5 bg-reptilez-green-600 shadow-[0_0_10px_rgba(22,163,74,0.6)]'
+                  : 'w-1.5 h-1.5 bg-white/50 hover:bg-white/70'
               }`}
             />
           ))}
         </div>
 
-        {/* Navigation arrows */}
+        {/* Navigation arrows - smaller on mobile, visible on touch devices */}
         <button
           onClick={() =>
             setCurrentIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length)
           }
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border border-reptilez-green-200 flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 hover:bg-reptilez-green-600 hover:border-reptilez-green-600 hover:text-white hover:scale-110 transition-all duration-300 z-20 shadow-lg"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-sm border border-reptilez-green-200 flex items-center justify-center text-gray-700 max-sm:opacity-80 opacity-0 group-hover:opacity-100 hover:bg-reptilez-green-600 hover:border-reptilez-green-600 hover:text-white hover:scale-110 active:scale-95 transition-all duration-300 z-20 shadow-lg touch-manipulation"
+          aria-label="Previous slide"
         >
-          <span className="text-2xl">‹</span>
+          <span className="text-xl sm:text-2xl leading-none">‹</span>
         </button>
         <button
           onClick={() => setCurrentIndex((prev) => (prev + 1) % heroImages.length)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border border-reptilez-green-200 flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 hover:bg-reptilez-green-600 hover:border-reptilez-green-600 hover:text-white hover:scale-110 transition-all duration-300 z-20 shadow-lg"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-sm border border-reptilez-green-200 flex items-center justify-center text-gray-700 max-sm:opacity-80 opacity-0 group-hover:opacity-100 hover:bg-reptilez-green-600 hover:border-reptilez-green-600 hover:text-white hover:scale-110 active:scale-95 transition-all duration-300 z-20 shadow-lg touch-manipulation"
+          aria-label="Next slide"
         >
-          <span className="text-2xl">›</span>
+          <span className="text-xl sm:text-2xl leading-none">›</span>
         </button>
       </div>
     </div>
