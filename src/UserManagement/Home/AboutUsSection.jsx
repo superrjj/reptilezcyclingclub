@@ -129,10 +129,10 @@ const AboutUsSection = () => {
                 className={`flex flex-col gap-6 transition-all duration-1000 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 ${visibleSections['about-hero'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                     }`}
             >
-                {/* Aspect-ratio keeps landscape shape on every screen size */}
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[180px] sm:min-h-[220px]">
+                {/* Tall height so orig landscape image shows fully */}
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[320px] sm:min-h-[450px] md:min-h-[550px] lg:min-h-[80vh] xl:min-h-[110vh]">
                     <div
-                        className="absolute inset-0 bg-center bg-cover bg-no-repeat"
+                        className="absolute inset-0 bg-bottom bg-cover bg-no-repeat"
                         style={{ backgroundImage: 'url("/rcc_bg.jpg")' }}
                         role="img"
                         aria-label="Reptilez Cycling Club team photo"

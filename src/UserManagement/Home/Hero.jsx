@@ -53,7 +53,7 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
   if (loading) {
     return (
       <div className={fullBleedClasses}>
-        <div className="w-full min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] lg:min-h-screen aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-auto shimmer-bg bg-reptilez-green-50 flex items-center justify-center">
+        <div className="w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[320px] sm:min-h-[450px] md:min-h-[550px] lg:min-h-[80vh] xl:min-h-[110vh] shimmer-bg bg-reptilez-green-50 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 border-4 border-reptilez-green-300 border-t-reptilez-green-600 rounded-full animate-spin" />
             <p className="text-gray-600 text-sm font-medium">Loading amazing races...</p>
@@ -66,7 +66,7 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
   if (heroImages.length === 0) {
     return (
       <div className={fullBleedClasses}>
-        <div className="w-full min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] lg:min-h-screen aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-auto bg-reptilez-green-50 flex items-center justify-center">
+        <div className="w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[320px] sm:min-h-[450px] md:min-h-[550px] lg:min-h-[80vh] xl:min-h-[110vh] bg-reptilez-green-50 flex items-center justify-center">
           <div className="text-center text-gray-600">
             <div className="w-20 h-20 rounded-full bg-reptilez-green-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
               <span className="text-4xl">🚴</span>
@@ -85,12 +85,8 @@ const Hero = forwardRef(({ refreshFunctionsRef }, ref) => {
         isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
       }`}
     >
-      {/*
-        Taller container (min-h) so images aren't cropped at the bottom; aspect-ratio for shape.
-        - min-h on mobile/sm/md so hero has enough height to show full image
-        - lg+ full viewport height
-      */}
-      <div className="relative w-full min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] lg:min-h-screen aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-auto">
+      {/* Same container as AboutUsSection: tall height so orig landscape shows fully */}
+      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[320px] sm:min-h-[450px] md:min-h-[550px] lg:min-h-[80vh] xl:min-h-[110vh]">
         {heroImages.map((image, index) => (
           <div
             key={`${image}-${index}`}
