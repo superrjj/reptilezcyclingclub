@@ -1,10 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import GradientText from '../../components/ui/gradient-text';
+import { getMembers } from '../../services/membersService';
+import { getPosts } from '../../services/postsService';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import PublicAuthDialog from '../PublicAuthDialog';
 
 const AboutUsSection = () => {
     const [visibleSections, setVisibleSections] = useState({});
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
+    const [stats, setStats] = useState({ posts: 0, members: 0 });
+    const [followers, setFollowers] = useState(0);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
+    const [authOpen, setAuthOpen] = useState(false);
+    const [publicUserId, setPublicUserId] = useState(null);
+
+    // Fixed ID representing this website/page (followers follow THIS only)
+    const PAGE_PROFILE_ID = '11111111-1111-1111-1111-111111111111';
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -42,6 +55,114 @@ const AboutUsSection = () => {
             titleObserver.disconnect();
         };
     }, []);
+
+    // Load total posts and total members from Supabase (via services)
+    useEffect(() => {
+        const loadStats = async () => {
+            try {
+                const [posts, members] = await Promise.all([getPosts(), getMembers()]);
+                const publishedPosts = (posts || []).filter(
+                    (post) => !post.status || post.status === 'Published'
+                );
+                setStats({
+                    posts: publishedPosts.length,
+                    members: (members || []).length,
+                });
+            } catch (error) {
+                console.error('Error loading AboutUs stats:', error);
+            }
+        };
+
+        loadStats();
+    }, []);
+
+    // Load current public user from localStorage (custom public auth)
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem('rcc-public-user');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed?.id) {
+                    setPublicUserId(parsed.id);
+                }
+            }
+        } catch (e) {
+            console.error('Error reading public user from storage:', e);
+        }
+    }, []);
+
+    // Load followers count + whether current public user follows the page
+    useEffect(() => {
+        const loadFollowState = async () => {
+            if (!isSupabaseConfigured || !supabase) return;
+            if (PAGE_PROFILE_ID === 'REPLACE_WITH_PAGE_PROFILE_ID') return;
+
+            try {
+                const { count, error } = await supabase
+                    .from('page_followers')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('page_profile_id', PAGE_PROFILE_ID);
+
+                if (!error) setFollowers(count || 0);
+
+                if (publicUserId) {
+                    const { data, error: followError } = await supabase
+                        .from('page_followers')
+                        .select('id')
+                        .eq('page_profile_id', PAGE_PROFILE_ID)
+                        .eq('follower_profile_id', publicUserId)
+                        .maybeSingle();
+
+                    if (!followError) setIsFollowing(!!data);
+                } else {
+                    setIsFollowing(false);
+                }
+            } catch (e) {
+                console.error('Error loading follow state:', e);
+            }
+        };
+
+        loadFollowState();
+    }, [publicUserId]);
+
+    const handleFollowClick = async () => {
+        if (!publicUserId) {
+            setAuthOpen(true);
+            return;
+        }
+        if (!isSupabaseConfigured || !supabase) return;
+        if (PAGE_PROFILE_ID === 'REPLACE_WITH_PAGE_PROFILE_ID') return;
+
+        setFollowLoading(true);
+        try {
+            if (isFollowing) {
+                const { error } = await supabase
+                    .from('page_followers')
+                    .delete()
+                    .eq('page_profile_id', PAGE_PROFILE_ID)
+                    .eq('follower_profile_id', publicUserId);
+
+                if (!error) {
+                    setIsFollowing(false);
+                    setFollowers((prev) => Math.max(0, prev - 1));
+                }
+            } else {
+                const { error } = await supabase.from('page_followers').insert({
+                    page_profile_id: PAGE_PROFILE_ID,
+                    follower_profile_id: publicUserId,
+                });
+
+                if (!error) {
+                    setIsFollowing(true);
+                    setFollowers((prev) => prev + 1);
+                }
+            }
+        } catch (e) {
+            console.error('Error toggling follow:', e);
+        } finally {
+            setFollowLoading(false);
+        }
+    };
 
     const values = [
         {
@@ -122,15 +243,15 @@ const AboutUsSection = () => {
                 <div className="w-24 h-1 mx-auto bg-black/10 rounded-full"></div>
             </div>
 
-            {/* Hero Image - Landscape aspect on all devices (mobile iPhone/Android included) */}
+            {/* Hero Image + Profile Header (parang FB/IG page) */}
             <div
                 id="about-hero"
                 data-animate-about
                 className={`flex flex-col gap-6 transition-all duration-1000 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 ${visibleSections['about-hero'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                     }`}
             >
-                {/* Tall height so orig landscape image shows fully */}
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[320px] sm:min-h-[450px] md:min-h-[550px] lg:min-h-[80vh] xl:min-h-[110vh]">
+                {/* Cover photo */}
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/10] lg:aspect-[21/9] xl:aspect-[3/1] overflow-hidden min-h-[380px] sm:min-h-[480px] md:min-h-[560px] lg:min-h-[80vh] xl:min-h-[110vh]">
                     <div
                         className="absolute inset-0 bg-bottom bg-cover bg-no-repeat"
                         style={{ backgroundImage: 'url("/rcc_bg.jpg")' }}
@@ -138,7 +259,88 @@ const AboutUsSection = () => {
                         aria-label="Reptilez Cycling Club team photo"
                     />
                 </div>
+
+                {/* Profile card overlapped sa baba ng cover image */}
+                <div className="-mt-16 sm:-mt-20 md:-mt-24 px-4 sm:px-8 md:px-12 lg:px-20">
+                    <div className="w-full max-w-6xl mx-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-[0_18px_45px_rgba(15,23,42,0.18)] border border-gray-100 px-5 sm:px-8 py-5 sm:py-6 flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6">
+                        {/* Avatar */}
+                        <div className="relative -mt-10 sm:-mt-12 md:-mt-14 flex justify-center sm:block w-full sm:w-auto">
+                            <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-[4px] border-white shadow-[0_10px_25px_rgba(15,23,42,0.4)] bg-gray-200">
+                                <img
+                                    src="/rcc3.png"
+                                    alt="D&R Margin Racing"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Name + stats + button (static for now; later wired to Supabase) */}
+                        <div className="flex-1 w-full flex flex-col sm:flex-row md:flex-row md:items-center md:justify-between flex-wrap items-center sm:items-end gap-4 sm:gap-8">
+                            <div className="text-center sm:text-left">
+                                <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-[#111827]">
+                                    D&amp;R Margin Racing
+                                </h2>
+                                <div className="mt-1 flex items-center justify-center sm:justify-start gap-1.5">
+                                    <p className="text-xs sm:text-sm text-[#4B5563]">
+                                        Official cycling team page
+                                    </p>
+                                    <span
+                                        className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-sky-500/15 text-sky-600"
+                                        aria-label="Verified"
+                                        title="Verified"
+                                    >
+                                        <span className="material-symbols-outlined text-[14px] leading-none">
+                                            verified
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-1 flex-wrap justify-center md:justify-center gap-6 md:gap-10 text-xs sm:text-sm text-[#111827]">
+                                <div className="text-center">
+                                    <div className="font-bold text-base sm:text-lg">
+                                        {stats.posts}
+                                    </div>
+                                    <div className="text-[#6B7280] text-[11px] sm:text-xs uppercase tracking-wide">
+                                        Posts
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="font-bold text-base sm:text-lg">{followers}</div>
+                                    <div className="text-[#6B7280] text-[11px] sm:text-xs uppercase tracking-wide">
+                                        Followers
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="font-bold text-base sm:text-lg">
+                                        {stats.members}
+                                    </div>
+                                    <div className="text-[#6B7280] text-[11px] sm:text-xs uppercase tracking-wide">
+                                        Members
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="w-full sm:w-auto flex justify-center sm:justify-end md:self-center">
+                                <button
+                                    type="button"
+                                    onClick={handleFollowClick}
+                                    disabled={followLoading}
+                                    className={`inline-flex items-center justify-center px-6 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide shadow-md transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${
+                                        isFollowing
+                                            ? 'bg-gray-100 text-gray-900 border border-gray-300 hover:bg-gray-200'
+                                            : 'bg-reptilez-green-600 text-white hover:bg-reptilez-green-700'
+                                    }`}
+                                >
+                                    {followLoading ? '...' : isFollowing ? 'Following' : 'Follow'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <PublicAuthDialog open={authOpen} onClose={() => setAuthOpen(false)} defaultMode="register" />
 
             {/* Mission & Vision */}
             <div

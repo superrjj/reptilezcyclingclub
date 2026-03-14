@@ -194,7 +194,7 @@
       { label: 'POSTS', path: '/', sectionId: 'posts' },
       { label: 'EVENTS', path: '/', sectionId: 'events' },
       { label: 'MEMBERS', path: '/', sectionId: 'members' },
-      { label: 'ABOUT US', path: '/', sectionId: 'about-us' },
+      { label: 'FOLLOW US', path: '/', sectionId: 'about-us' },
     ];
 
     const morphingNavItems = [
@@ -202,7 +202,7 @@
       { id: 'posts', label: 'POSTS', path: '/', sectionId: 'posts' },
       { id: 'events', label: 'EVENTS', path: '/', sectionId: 'events' },
       { id: 'members', label: 'MEMBERS', path: '/', sectionId: 'members' },
-      { id: 'about', label: 'ABOUT US', path: '/', sectionId: 'about-us' },
+      { id: 'about', label: 'FOLLOW US', path: '/', sectionId: 'about-us' },
     ];
 
     const handleMorphingNavChange = (id) => {
