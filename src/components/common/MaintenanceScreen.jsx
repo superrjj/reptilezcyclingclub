@@ -8,11 +8,11 @@ const MaintenanceScreen = () => {
   useEffect(() => {
     setIsVisible(true);
     
-    const endDate = new Date('2026-03-02T10:00:00');
+    const endDate = new Date('2026-04-15T23:59:59');
     
     // Calculate progress based on date range
     const calculateProgress = () => {
-      const startDate = new Date('2026-02-27T21:20:00');
+      const startDate = new Date('2026-03-20T23:59:59');
       const now = new Date();
       
       const totalDuration = endDate.getTime() - startDate.getTime();
@@ -105,7 +105,7 @@ const MaintenanceScreen = () => {
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm mb-4 sm:mb-5 hover:shadow-md transition-shadow duration-300">
           <span className="material-symbols-outlined text-primary text-base">calendar_today</span>
           <span className="text-gray-700 text-xs sm:text-sm font-semibold">
-            February 27 - March 2, 2026
+            March 20, 2026 - April 15, 2026
           </span>
         </div>
 
