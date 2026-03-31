@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { compressImage } from '../utils/compressImage';
 
 /**
  * Upload image to Supabase Storage
@@ -6,15 +7,16 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
  * @param {string} folder - Folder name in storage (e.g., 'posts')
  * @returns {Promise<string>} Public URL of uploaded image
  */
-export const uploadImage = async (file, folder = 'posts') => {
-  if (!isSupabaseConfigured || !supabase) {
-    throw new Error('Supabase is not configured.');
-  }
+export const uploadImage = async (file, folder) => {
+  // Compress before upload (skips videos/GIFs automatically)
+  const fileToUpload = file.type.startsWith('image/')
+    ? await compressImage(file)
+    : file;
 
   try {
     // Generate unique filename - sanitize original filename and remove special characters
-    const fileExt = file.name.split('.').pop();
-    const sanitizedName = file.name
+    const fileExt = fileToUpload.name.split('.').pop();
+    const sanitizedName = fileToUpload.name
       .replace(/\.[^/.]+$/, '') // Remove extension
       .replace(/[^a-zA-Z0-9]/g, '-') // Replace special chars with hyphens
       .toLowerCase()
@@ -22,10 +24,14 @@ export const uploadImage = async (file, folder = 'posts') => {
     const fileName = `${sanitizedName}_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
 
+    if (!isSupabaseConfigured || !supabase) {
+      throw new Error('Supabase is not configured.');
+    }
+
     // Upload file to Supabase Storage
     const { error } = await supabase.storage
       .from('images')
-      .upload(filePath, file, {
+      .upload(filePath, fileToUpload, {
         cacheControl: '3600',
         upsert: false
       });
@@ -79,4 +85,3 @@ export const deleteImage = async (imageUrl, folder = 'posts') => {
     throw error;
   }
 };
-
