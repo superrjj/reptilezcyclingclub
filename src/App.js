@@ -11,6 +11,7 @@ import Posts from './components/AdminManagement/posts/Posts.jsx';
 import AdminEvents from './components/AdminManagement/events/Events.jsx';
 import AdminMembers from './components/AdminManagement/members/Members.jsx';
 import FileMaintenance from './components/AdminManagement/fileMaintenance/FileMaintenance.jsx';
+import DefacementScreen from './components/common/DefacementScreen.jsx';
 import MaintenanceScreen from './components/common/MaintenanceScreen.jsx';
 
 // Generic protected route (any authenticated user)
@@ -80,13 +81,14 @@ const MainLayout = ({ children, onLongPressTitle, loginOpen, setLoginOpen }) => 
 function App() {
   const [loginOpen, setLoginOpen] = useState(false);
 
-  // TEMPORARY: Set to false to disable maintenance screen
-  const MAINTENANCE_MODE = false
+  const DEFACEMENT_MODE = true;
+  const MAINTENANCE_MODE = false;
 
   return (
     <AuthProvider>
-      {MAINTENANCE_MODE && <MaintenanceScreen />}
-      {!MAINTENANCE_MODE && (
+      {DEFACEMENT_MODE && <DefacementScreen />}
+      {MAINTENANCE_MODE && !DEFACEMENT_MODE && <MaintenanceScreen />}
+      {!DEFACEMENT_MODE && !MAINTENANCE_MODE && (
         <Router>
           <Routes>
             <Route
