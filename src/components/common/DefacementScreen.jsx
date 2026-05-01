@@ -6,7 +6,7 @@ const DefacementScreen = () => {
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-black text-green-400"
       style={{
         backgroundImage:
-          'linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.9)), url("/russ.jpg")',
+          'linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.9)), url("/ash.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         fontFamily: '"Courier New", monospace',

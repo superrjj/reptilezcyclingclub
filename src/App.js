@@ -82,7 +82,7 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false);
 
   const DEFACEMENT_MODE = false;
-  const MAINTENANCE_MODE = false;
+  const MAINTENANCE_MODE = true;
 
   return (
     <AuthProvider>
