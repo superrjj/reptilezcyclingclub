@@ -81,8 +81,8 @@ const MainLayout = ({ children, onLongPressTitle, loginOpen, setLoginOpen }) => 
 function App() {
   const [loginOpen, setLoginOpen] = useState(false);
 
-  const DEFACEMENT_MODE = false;
-  const MAINTENANCE_MODE = true;
+  const DEFACEMENT_MODE = true;
+  const MAINTENANCE_MODE = false;
 
   return (
     <AuthProvider>
